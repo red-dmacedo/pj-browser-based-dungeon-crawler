@@ -158,5 +158,7 @@ export const icons = {
 };
 
 // ===== Elements =====
-export const mapEl = document.querySelector("#map");
-export const mapElements = document.querySelectorAll(".sqr");
+export const elem = {
+  mapEl: document.querySelector("#map"),
+  mapSquares: document.querySelectorAll(".sqr"),
+}

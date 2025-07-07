@@ -16,7 +16,9 @@ map
 const game = {};
 
 // ===== Functions =====
-function init(){
+game.init = function (){
+  console.log('init')
+  clearMap();
   game.map = data.floors.f1.map
   renderMap();
 };
@@ -36,23 +38,39 @@ function updateMap(){
 };
 
 function renderMap(){
-  for(let idx=0;idx<data.mapElements.length;idx++){
-    // console.log(data.mapElements[idx].id)
-    data.mapElements[idx].textContent += game.map[idx];
-    
+  for(let idx=0;idx<data.elem.mapSquares.length;idx++){
+    data.elem.mapSquares[idx].textContent += game.map[idx];
   };
-  console.dir(game.map)
+  // console.dir(game.map);
 };
 
 function movePlayer(e){
   if (!e.target.classList.contains("sqr")) return;
   console.log(e.target.id);
+  e.target.textContent += data.icons.player;
   highlightSquare(e);
 };
 
 function highlightSquare(e){
   e.target.setAttribute("style","background-color: beige")
 }
+
+function toggleMapElEventListener(enable="true"){
+  (enable) ? // <= ternary
+    data.elem.mapEl.addEventListener("click", movePlayer) : // <= then statement
+    data.elem.mapEl.removeEventListener("click", movePlayer); // <= else statement
+}
+
 // ===== Script =====
-init();
-data.mapEl.addEventListener("click", movePlayer);
+// game.init();
+toggleMapElEventListener();
+
+/*
+GRAVEYARD
+
+function paction1(e){                                                    //  <| - Created to test the
+  if(e) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
+};                                                                       //  <|   function
+document.querySelector("#paction1").addEventListener("click", paction1); //  <| - Disable word wrap!
+
+*/
