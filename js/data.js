@@ -157,4 +157,6 @@ export const icons = {
   hp: "🟥",
 };
 
+// ===== Elements =====
+export const mapEl = document.querySelector("#map");
 export const mapElements = document.querySelectorAll(".sqr");

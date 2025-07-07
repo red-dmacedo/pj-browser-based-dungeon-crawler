@@ -31,6 +31,10 @@ function clearMap(){
   ]
 };
 
+function updateMap(){
+  // placeholder
+};
+
 function renderMap(){
   for(let idx=0;idx<data.mapElements.length;idx++){
     // console.log(data.mapElements[idx].id)
@@ -40,5 +44,15 @@ function renderMap(){
   console.dir(game.map)
 };
 
-// init();
-// clearMap();
+function movePlayer(e){
+  if (!e.target.classList.contains("sqr")) return;
+  console.log(e.target.id);
+  highlightSquare(e);
+};
+
+function highlightSquare(e){
+  e.target.setAttribute("style","background-color: beige")
+}
+// ===== Script =====
+init();
+data.mapEl.addEventListener("click", movePlayer);

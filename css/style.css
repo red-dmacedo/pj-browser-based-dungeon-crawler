@@ -16,6 +16,11 @@ h2 {
 
 h3 {
   text-decoration: underline;
+  margin: 5px; /* allow heading to sit closer to statbox */
+}
+
+p {
+  margin: 5px;
 }
 
 button:hover {
@@ -23,31 +28,6 @@ button:hover {
 }
 
 /* ===== Classes ===== */
-
-.map {
-  display: flex;
-  flex-wrap: wrap;
-  width: 325px;
-  margin: 10px;
-  align-items: center;
-  justify-content: center;
-}
-
-#sqr-start {
-  aspect-ratio: 1/1;
-  border: 3px solid black;
-  font-size: 18px;
-  margin: 3px;
-  border-color: black;
-  background-color:gray;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  width: 50px;
-  height: 50px;
-  background-color: lightgray;
-  text-align: center;
-}
 
 .sqr {
   width: 15%;
@@ -117,4 +97,29 @@ button:hover {
 #battle-spacer {
   height: 10px;
   width: 100px;
+}
+
+#map {
+  display: flex;
+  flex-wrap: wrap;
+  width: 325px;
+  margin: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+#sqr-start {
+  aspect-ratio: 1/1;
+  border: 3px solid black;
+  font-size: 18px;
+  margin: 3px;
+  border-color: black;
+  background-color:gray;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  width: 50px;
+  height: 50px;
+  background-color: lightgray;
+  text-align: center;
 }
