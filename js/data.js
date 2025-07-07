@@ -48,3 +48,65 @@ export const attacks = {
     helpText:"Low damage; Kills enemies below x% HP"
   },
 };
+
+export const playerLevels = {
+  lv1: {
+    name: "Lv1",
+    startingXp: 0,
+    maxXp: 100,
+    playerHp: 100,
+    playerMp: 100,
+  },
+  lv2: {
+    name: "Lv2",
+    startingXp: 0,
+    maxXp: 300,
+    playerHp: 120,
+    playerMp: 120,
+  },
+  lv3: {
+    name: "Lv3",
+    startingXp: 0,
+    maxXp: 300,
+    playerHp: 140,
+    playerMp: 140,
+  },
+  lv4: {
+    name: "Lv4",
+    startingXp: 0,
+    maxXp: 500,
+    playerHp: 160,
+    playerMp: 160,
+  },
+  lv5: {
+    name: "Lv5",
+    startingXp: 0,
+    maxXp: 1000,
+    playerHp: 200,
+    playerMp: 200,
+  },
+};
+
+export const enemies = {
+  slime: {
+    name: "Slime", 
+    type: "🌊", 
+    attacks: ["water", "nudge"],
+    difficultyRating: 1,
+    killXp: 10,
+  },
+  fairy: {
+    name: "Fairy",
+    type: "⚡",
+    attacks: ["fairyLightning"],
+    difficultyRating: 1,
+    killXp: 30,
+  },
+  minotaur: {
+    name: "Minotaur",
+    type: "🪓",
+    attacks: ["tackle", "slash"],
+    difficultyRating: 2,
+    killXp: 50,
+  },
+};
