@@ -147,4 +147,14 @@ export const floors = {
   },
 };
 
-export const playerIcon = "👣";
+export const icons = {
+  player: "👣",
+  boss: "☠️",
+  battle: "⚔️",
+  healing: "❤️",
+  treasure: "💰",
+  mp: "🔵",
+  hp: "🟥",
+};
+
+export const mapElements = document.querySelectorAll(".sqr");

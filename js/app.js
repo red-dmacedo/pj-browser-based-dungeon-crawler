@@ -11,4 +11,34 @@ map
 ]
 */
 
-const game = {}; // initialize game object
+// ===== Variables =====
+// initialize game object
+const game = {};
+
+// ===== Functions =====
+function init(){
+  game.map = data.floors.f1.map
+  renderMap();
+};
+
+function clearMap(){
+  game.map = [
+    "", "", "", "", "",
+    "", "", "", "", "",
+    "", "", "", "", "",
+    "", "", "", "", "",
+    "", "", "", "", ""
+  ]
+};
+
+function renderMap(){
+  for(let idx=0;idx<data.mapElements.length;idx++){
+    // console.log(data.mapElements[idx].id)
+    data.mapElements[idx].textContent += game.map[idx];
+    
+  };
+  console.dir(game.map)
+};
+
+// init();
+// clearMap();
