@@ -11,8 +11,10 @@ body {
   min-width: auto;
 }
 
-#game-area h1, h2 {
-  color: white;
+main {
+  text-decoration: underline;
+  justify-content: center;
+  align-items: center;
 }
 
 h2 {
@@ -30,13 +32,6 @@ h3 {
 
 p {
   margin: 5px;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
 }
 
 button:hover {
@@ -99,6 +94,31 @@ button:hover {
 .map-adjacent {
   display: flex;
   flex-direction: row;
+}
+
+.inventory {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  margin: 3px;
+  gap: 3px;
+}
+
+.inventory-area {
+  height: 315px;
+  width: 300px;
+  /* max-height: 30px; */
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+  /* overflow-y: scroll; */
+}
+
+.row-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
 }
 
 /* ===== Ids ===== */
@@ -171,30 +191,37 @@ button:hover {
   font-weight: bold;
 }
 
-/* Silly */
-
-.inventory {
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-  margin: 3px;
-  gap: 3px;
+#reset-btn {
+  margin: 20px;
+  font-weight: bold;
 }
 
-.inventory-area {
-  height: 315px;
-  width: 300px;
-  /* max-height: 30px; */
-  background-color: beige;
+#reset-btn:hover {
+  background-color: lightgray;
+}
+
+#game-area h1, h2 {
+  color: white;
+}
+
+#list-items {
+  display: flex;
+  justify-content: flex-start;
+}
+
+#instructions {
   display: flex;
   flex-direction: column;
-  /* overflow-y: scroll; */
+  justify-content: center;
+  /* text-align: center; */
+  align-items: center;
+  background-color: white;
+  width: 80%;
 }
 
 #battle-spacer {
   height: 250px;
   width: 600px;
-  color: rgba(0,0,0,1);
 }
 
 #battle-text {

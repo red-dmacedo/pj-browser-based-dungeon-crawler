@@ -17,17 +17,18 @@ map
 
 // ===== Functions / Methods =====
 const game = {
+  room: "25",
   init: function () {
-    console.log('init') // delete me later
-    this.clearMap();
-    this.map = data.floors.f1.map;
-    this.toggleMapElEventListener();
-    this.renderMap();
+    // console.log('init') // delete me later
+    game.clearMap();
+    game.map = data.floors.f1.map;
+    game.toggleMapElEventListener();
+    game.renderMap();
   },
 
   clearMap: function () {
-    console.log("clearMap") // delete me later
-    this.map = [
+    // console.log("clearMap") // delete me later
+    game.map = [
       "", "", "", "", "",
       "", "", "", "", "",
       "", "", "", "", "",
@@ -36,24 +37,31 @@ const game = {
     ]
   },
 
-  updateMap: function (e) {
-    e.target.textContent += data.icons.player; // add player icon to current room/square
-    this.highlightSquare(e); // show where the player has been
+  updateMap: function () {
+    for(let i=0; i < data.elem.mapSquares.length; i++){
+      data.elem.mapSquares[i].textContent = game.map[i];
+    }
+    // e.target.textContent += data.icons.player; // add player icon to current room/square
+    game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
   },
 
   renderMap: function () {
     for(let i=0;i<data.elem.mapSquares.length;i++){
-      data.elem.mapSquares[i].textContent += this.map[i];
+      data.elem.mapSquares[i].textContent = game.map[i];
     };
   },
 
   movePlayer: function (e) {
     if (!e.target.classList.contains("sqr")) return; // Leave if target was not on the map
-    if(data.elem.startSquare) this.hideStartSquare(); // hide start square
+    if(data.elem.startSquare) {
+      game.hideStartSquare(); // hide start square
+      game.room = e.target.id;
+      game.map[e.target.id] = data.icons.player;
+    };
 
     console.log(e.target.id); // delete me later
 
-    this.updateMap();
+    game.updateMap(e);
   },
 
   hideStartSquare: function () {
@@ -65,14 +73,16 @@ const game = {
     data.elem.startSquare.style.opacity = 1;
   },
 
-  highlightSquare: function (e) {
-    e.target.setAttribute("style","background-color: beige");
+  highlightSquare: function (square, unHighlight=false) {
+    (unHighlight) ?
+      square.removeAttribute("style") :
+      square.setAttribute("style","background-color: beige");
   },
 
   toggleMapElEventListener: function (enable="true") {
     (enable) ? // <= ternary
-      data.elem.mapEl.addEventListener("click", this.movePlayer) : // <= then statement
-      data.elem.mapEl.removeEventListener("click", this.movePlayer); // <= else statement
+      data.elem.mapEl.addEventListener("click", game.movePlayer) : // <= then statement
+      data.elem.mapEl.removeEventListener("click", game.movePlayer); // <= else statement
   },
 }
 // ===== Script =====
