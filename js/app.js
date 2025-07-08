@@ -17,9 +17,8 @@ map
 
 // ===== Functions / Methods =====
 const game = {
-  room: "25",
+  room: 25,
   init: function () {
-    // console.log('init') // delete me later
     game.clearMap();
     game.map = data.floors.f1.map;
     game.toggleMapElEventListener();
@@ -38,10 +37,12 @@ const game = {
   },
 
   updateMap: function () {
+    game.map[game.room] = data.icons.player;
     for(let i=0; i < data.elem.mapSquares.length; i++){
-      data.elem.mapSquares[i].textContent = game.map[i];
+      let item = data.elem.mapSquares[i]
+      if (item.textContent === data.icons.player) item.textContent = "";
+      item.textContent = game.map[i];
     }
-    // e.target.textContent += data.icons.player; // add player icon to current room/square
     game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
   },
 
@@ -51,15 +52,17 @@ const game = {
     };
   },
 
-  movePlayer: function (e) {
-    if (!e.target.classList.contains("sqr")) return; // Leave if target was not on the map
+  movePlayer: function (e) { // <= player movement and map updates
+    if (
+      !e.target.classList.contains("sqr") || // Leave if target was not a square on the map
+      !(game.validateMovement(e.target.id)) // do nothing if move is not valid
+    ) return;
+
     if(data.elem.startSquare) {
       game.hideStartSquare(); // hide start square
       game.room = e.target.id;
       game.map[e.target.id] = data.icons.player;
     };
-
-    console.log(e.target.id); // delete me later
 
     game.updateMap(e);
   },
@@ -86,15 +89,21 @@ const game = {
   },
 
   validateMovement: function(idx){
-    if( !Number(idx) ){ idx = Number(idx) };
-    testValue = game.room - idx;
+    if( typeof(idx) !== "Number" ){ idx = Number(idx) };
+
+    if( game.room === 25 && idx === 22 ) return true; // first move on the map
+
+    let testValue = game.room - idx;
+
     return (
-      (testValue === 1 && idx % 5 !== 0) || // move right, unless there is a wall there
-      (testValue === -1 && idx % 5 !== 4) || // move left, unless there is a wall there
-      testValue === 5 || // upwards movement | wall detection is unnecessary
-      testValue === -5 // downwards movement | wall detection is unnecessary
+      (testValue === 1 && idx % 5 !== 0) ||   // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 4) ||  // move left, unless there is a wall there
+      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
+      testValue === -5                        // downwards movement | wall detection is unnecessary
     );
   },
+
+  battleStart(e){},
 }
 // ===== Script =====
 game.init();
