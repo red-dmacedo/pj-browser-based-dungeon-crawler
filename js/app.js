@@ -37,19 +37,17 @@ const game = {
   },
 
   updateMap: function () {
-    game.map[game.room] = data.icons.player;
-    for(let i=0; i < data.elem.mapSquares.length; i++){
-      let item = data.elem.mapSquares[i]
-      if (item.textContent === data.icons.player) item.textContent = "";
-      item.textContent = game.map[i];
+    for(let i=0; i < game.map.length; i++){
+      if (game.map[i] === data.icons.player) game.map[i] = "";
     }
-    game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
+    game.map[game.room] = data.icons.player;
   },
 
   renderMap: function () {
     for(let i=0;i<data.elem.mapSquares.length;i++){
       data.elem.mapSquares[i].textContent = game.map[i];
     };
+    game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
   },
 
   movePlayer: function (e) { // <= player movement and map updates
@@ -58,13 +56,16 @@ const game = {
       !(game.validateMovement(e.target.id)) // do nothing if move is not valid
     ) return;
 
+    game.room = Number(e.target.id); // update current room
+
     if(data.elem.startSquare) {
       game.hideStartSquare(); // hide start square
       game.room = e.target.id;
       game.map[e.target.id] = data.icons.player;
     };
 
-    game.updateMap(e);
+    game.updateMap();
+    game.renderMap();
   },
 
   hideStartSquare: function () {
@@ -76,10 +77,10 @@ const game = {
     data.elem.startSquare.style.opacity = 1;
   },
 
-  highlightSquare: function (square, unHighlight=false) {
+  highlightSquare: function (squareEl, unHighlight=false) {
     (unHighlight) ?
-      square.removeAttribute("style") :
-      square.setAttribute("style","background-color: beige");
+      squareEl.removeAttribute("style") :
+      squareEl.setAttribute("style","background-color: beige");
   },
 
   toggleMapElEventListener: function (enable="true") {
@@ -96,8 +97,8 @@ const game = {
     let testValue = game.room - idx;
 
     return (
-      (testValue === 1 && idx % 5 !== 0) ||   // move right, unless there is a wall there
-      (testValue === -1 && idx % 5 !== 4) ||  // move left, unless there is a wall there
+      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
       testValue === 5 ||                      // upwards movement | wall detection is unnecessary
       testValue === -5                        // downwards movement | wall detection is unnecessary
     );
