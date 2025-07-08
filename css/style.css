@@ -1,12 +1,18 @@
+
+
 /* ===== Elements ===== */
 body {
-  background-color: lightgray;
+  background-color: darkgray;
   font-family: system-ui, sans-serif;
   margin: 0;
   display: flex;
   align-items: center;
   flex-direction: column;
   min-width: auto;
+}
+
+#game-area h1, h2 {
+  color: white;
 }
 
 h2 {
@@ -17,10 +23,20 @@ h2 {
 h3 {
   text-decoration: underline;
   margin: 5px; /* allow heading to sit closer to statbox */
+  text-align: center;
+  color: white;
+  background-color: black;
 }
 
 p {
   margin: 5px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
 button:hover {
@@ -59,7 +75,6 @@ button:hover {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin: 3;
   background-color: beige;
   height: 30px;
 }
@@ -81,12 +96,18 @@ button:hover {
   align-items: center;
 }
 
+.map-adjacent {
+  display: flex;
+  flex-direction: row;
+}
+
 /* ===== Ids ===== */
 
 #battle-area {
   display: flex;
   flex-direction: row;
   margin: 1em;
+  gap: 10px;
 }
 
 #map-area {
@@ -122,4 +143,66 @@ button:hover {
   height: 50px;
   background-color: lightgray;
   text-align: center;
+}
+
+#game-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("https://images.freeimages.com/images/large-previews/f7c/krzyztopor-castle-1232338.jpg?fmt=webp&h=350");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#hp {
+  color: green;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#mp {
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#xp {
+  font-weight: bold;
+}
+
+/* Silly */
+
+.inventory {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  margin: 3px;
+  gap: 3px;
+}
+
+.inventory-area {
+  height: 315px;
+  width: 300px;
+  /* max-height: 30px; */
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+  /* overflow-y: scroll; */
+}
+
+#battle-spacer {
+  height: 250px;
+  width: 600px;
+  color: rgba(0,0,0,1);
+}
+
+#battle-text {
+  overflow-y: scroll;
+  background-color: beige;
+  height: 200px
+}
+
+#battle-text p:hover {
+  background-color: lightgray;
 }

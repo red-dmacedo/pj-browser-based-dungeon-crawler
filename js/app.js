@@ -13,60 +13,73 @@ map
 
 // ===== Variables =====
 // initialize game object
-const game = {};
+// const game = {};
 
-// ===== Functions =====
-game.init = function (){
-  console.log('init')
-  clearMap();
-  game.map = data.floors.f1.map
-  renderMap();
-};
+// ===== Functions / Methods =====
+const game = {
+  init: function () {
+    console.log('init') // delete me later
+    this.clearMap();
+    this.map = data.floors.f1.map;
+    this.toggleMapElEventListener();
+    this.renderMap();
+  },
 
-function clearMap(){
-  game.map = [
-    "", "", "", "", "",
-    "", "", "", "", "",
-    "", "", "", "", "",
-    "", "", "", "", "",
-    "", "", "", "", ""
-  ]
-};
+  clearMap: function () {
+    console.log("clearMap") // delete me later
+    this.map = [
+      "", "", "", "", "",
+      "", "", "", "", "",
+      "", "", "", "", "",
+      "", "", "", "", "",
+      "", "", "", "", ""
+    ]
+  },
 
-function updateMap(){
-  // placeholder
-};
+  updateMap: function (e) {
+    e.target.textContent += data.icons.player; // add player icon to current room/square
+    this.highlightSquare(e); // show where the player has been
+  },
 
-function renderMap(){
-  for(let idx=0;idx<data.elem.mapSquares.length;idx++){
-    data.elem.mapSquares[idx].textContent += game.map[idx];
-  };
-  // console.dir(game.map);
-};
+  renderMap: function () {
+    for(let i=0;i<data.elem.mapSquares.length;i++){
+      data.elem.mapSquares[i].textContent += this.map[i];
+    };
+  },
 
-function movePlayer(e){
-  if (!e.target.classList.contains("sqr")) return;
-  console.log(e.target.id);
-  e.target.textContent += data.icons.player;
-  highlightSquare(e);
-};
+  movePlayer: function (e) {
+    if (!e.target.classList.contains("sqr")) return; // Leave if target was not on the map
+    if(data.elem.startSquare) this.hideStartSquare(); // hide start square
 
-function highlightSquare(e){
-  e.target.setAttribute("style","background-color: beige")
+    console.log(e.target.id); // delete me later
+
+    this.updateMap();
+  },
+
+  hideStartSquare: function () {
+    console.log("hideStartSquare") // delete me later
+    data.elem.startSquare.style.opacity = 0;
+  },
+
+  showStartSquare: function () {
+    data.elem.startSquare.style.opacity = 1;
+  },
+
+  highlightSquare: function (e) {
+    e.target.setAttribute("style","background-color: beige");
+  },
+
+  toggleMapElEventListener: function (enable="true") {
+    (enable) ? // <= ternary
+      data.elem.mapEl.addEventListener("click", this.movePlayer) : // <= then statement
+      data.elem.mapEl.removeEventListener("click", this.movePlayer); // <= else statement
+  },
 }
-
-function toggleMapElEventListener(enable="true"){
-  (enable) ? // <= ternary
-    data.elem.mapEl.addEventListener("click", movePlayer) : // <= then statement
-    data.elem.mapEl.removeEventListener("click", movePlayer); // <= else statement
-}
-
 // ===== Script =====
-// game.init();
-toggleMapElEventListener();
+game.init();
 
 /*
-GRAVEYARD
+  ===== GRAVEYARD =====
 
 function paction1(e){                                                    //  <| - Created to test the
   if(e) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
