@@ -84,6 +84,17 @@ const game = {
       data.elem.mapEl.addEventListener("click", game.movePlayer) : // <= then statement
       data.elem.mapEl.removeEventListener("click", game.movePlayer); // <= else statement
   },
+
+  validateMovement: function(idx){
+    if( !Number(idx) ){ idx = Number(idx) };
+    testValue = game.room - idx;
+    return (
+      (testValue === 1 && idx % 5 !== 0) || // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 4) || // move left, unless there is a wall there
+      testValue === 5 || // upwards movement | wall detection is unnecessary
+      testValue === -5 // downwards movement | wall detection is unnecessary
+    );
+  },
 }
 // ===== Script =====
 game.init();
