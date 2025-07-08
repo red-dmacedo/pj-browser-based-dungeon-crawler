@@ -161,5 +161,5 @@ export const icons = {
 export const elem = {
   mapEl: document.querySelector("#map"),
   mapSquares: document.querySelectorAll(".sqr"),
-  startSquare: document.querySelector("#sqr-start"),
+  startSquare: document.querySelector(".sqr25"),
 };

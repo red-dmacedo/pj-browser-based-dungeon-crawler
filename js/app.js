@@ -17,6 +17,8 @@ map
 
 // ===== Functions / Methods =====
 const game = {
+  startRoom: 25,
+  firstEnterableRoom: 22,
   room: 25,
   init: function () {
     game.clearMap();
@@ -47,6 +49,7 @@ const game = {
     for(let i=0;i<data.elem.mapSquares.length;i++){
       data.elem.mapSquares[i].textContent = game.map[i];
     };
+    if(game.room === game.startRoom) return; // prevent highlight when player is in start room
     game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
   },
 
@@ -58,23 +61,11 @@ const game = {
 
     game.room = Number(e.target.id); // update current room
 
-    if(data.elem.startSquare) {
-      game.hideStartSquare(); // hide start square
-      game.room = e.target.id;
-      game.map[e.target.id] = data.icons.player;
-    };
+    // Hide the start square if it is visible
+    if(data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
 
     game.updateMap();
     game.renderMap();
-  },
-
-  hideStartSquare: function () {
-    console.log("hideStartSquare") // delete me later
-    data.elem.startSquare.style.opacity = 0;
-  },
-
-  showStartSquare: function () {
-    data.elem.startSquare.style.opacity = 1;
   },
 
   highlightSquare: function (squareEl, unHighlight=false) {
@@ -92,7 +83,7 @@ const game = {
   validateMovement: function(idx){
     if( typeof(idx) !== "Number" ){ idx = Number(idx) };
 
-    if( game.room === 25 && idx === 22 ) return true; // first move on the map
+    if( game.room === game.startRoom && idx === game.firstEnterableRoom ) return true; // first move on the map
 
     let testValue = game.room - idx;
 
