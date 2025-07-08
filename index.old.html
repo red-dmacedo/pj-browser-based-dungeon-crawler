@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/style.css">
+  <script defer type="module" src="./js/data.js"></script>
+  <script defer type="module" src="./js/app.js"></script>
+  <title>Dungeon Crawler - BASIC</title>
+</head>
+<body>
+  <div id="game-area">
+  <h1>Dungeon Crawler - BASIC</h1>
+  <div id="map-area">
+    <h2 id="map-header">Map</h2>
+    <button type="button" id="reset-btn">Reset</button>
+    <div class="map-adjacent">
+      <div class="inventory-area">
+        <h3>Inventory</h3>
+        <div class="inventory">
+        </div>
+      </div>
+      <section id="map">
+        <div class="sqr" id="0">🗡️</div>
+        <div class="sqr" id="1"></div>
+        <div class="sqr" id="2"></div>
+        <div class="sqr" id="3"></div>
+        <div class="sqr" id="4"></div>
+        <div class="sqr" id="5"></div>
+        <div class="sqr" id="6"></div>
+        <div class="sqr" id="7"></div>
+        <div class="sqr" id="8"></div>
+        <div class="sqr" id="9"></div>
+        <div class="sqr" id="10"></div>
+        <div class="sqr" id="11"></div>
+        <div class="sqr" id="12"></div>
+        <div class="sqr" id="13"></div>
+        <div class="sqr" id="14"></div>
+        <div class="sqr" id="15"></div>
+        <div class="sqr" id="16"></div>
+        <div class="sqr" id="17"></div>
+        <div class="sqr" id="18"></div>
+        <div class="sqr" id="19"></div>
+        <div class="sqr" id="20"></div>
+        <div class="sqr" id="21"></div>
+        <div class="sqr" id="22"></div>
+        <div class="sqr" id="23"></div>
+        <div class="sqr" id="24"></div>
+      </section>
+      <div class="inventory-area">
+        <h3>Equipment</h3>
+        <div class="equiment">
+          <ul>
+            <li><strong>Headgear:</strong> helmet</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="sqr-start">start</div>
+  <section id="battle-area">
+    <div class="battle-options" id="player-opts">
+      <h3>Player</h3>
+      <div class="command-box">
+        <div>
+          <div class="statbox">
+            <h4>Lv:</h4>
+            <p id="xp">1</p>
+          </div>
+          <div class="statbox">
+            <h4>🟥HP:</h4>
+            <p id="hp">100</p>
+          </div>
+          <div class="statbox">
+            <h4>🔵MP:</h4>
+            <p id="mp">100</p>
+          </div>
+          <div class="statbox">
+            <h4>XP:</h4>
+            <p id="xp">0/100</p>
+          </div>
+        </div>
+        <div class="command-btns" id="btns-player">
+          <button id="paction1" title="my hover text inline">player action1</button>
+          <button>player action2: not a scribblenaut</button>
+        </div>
+      </div>
+    </div>
+    <div id="battle-spacer">
+      <h3>Battle</h3>
+      <div id="battle-text">
+      </div>
+    </div>
+    <div class="battle-options" id="cpu-opts">
+      <h3>CPU</h3>
+      <div class="command-box">
+        <div>
+          <div class="statbox">
+            <p id="cpu-xp-spacer"></p>
+          </div>
+          <div class="statbox">
+            <h4>🟥HP: </h4>
+            <p id="hp">100</p>
+          </div>
+          <div class="statbox">
+            <h4>🔵MP: </h4>
+            <p id="mp">100</p>
+          </div>
+          <div class="statbox">
+            <p id="cpu-xp-spacer"></p>
+          </div>
+        </div>
+        <div class="command-btns" id="btns-cpu">
+          <button>Cpu action1</button>
+          <button>Cpu action2: not a scribblenaut</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+  <section id=instructions>
+    <main>
+      <h1>Instructions</h1>
+      <div class="row-items">
+        <p>paragraph text goes here</p>
+        <div id="list-items">
+          <ul>
+            <li>item A
+                <li>stuff1</li>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </section>
+</body>
+</html>

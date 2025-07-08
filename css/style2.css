@@ -3,9 +3,6 @@ body {
   background-color: darkgray;
   font-family: system-ui, sans-serif;
   margin: 0;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
   min-width: auto;
 }
 
@@ -25,4 +22,40 @@ body {
   display: flex;
 }
 
+.sqr:hover {
+  background-color: white;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.map-adjacent {
+  height: 315px;
+  width: 300px;
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ===== Ids ===== */
+#map {
+  display: flex;
+  flex-wrap: wrap;
+  width: 325px;
+  margin: 10px;
+  align-items: center;
+  justify-content: center;
+}
