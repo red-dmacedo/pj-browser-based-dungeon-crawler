@@ -1,0 +1,235 @@
+
+
+/* ===== Elements ===== */
+body {
+  background-color: darkgray;
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-width: auto;
+}
+
+main {
+  text-decoration: underline;
+  justify-content: center;
+  align-items: center;
+}
+
+h2 {
+  text-align: center;
+  padding: 0;
+}
+
+h3 {
+  text-decoration: underline;
+  margin: 5px; /* allow heading to sit closer to statbox */
+  text-align: center;
+  color: white;
+  background-color: black;
+}
+
+p {
+  margin: 5px;
+}
+
+button:hover {
+  background-color: lightgray;
+}
+
+/* ===== Classes ===== */
+
+.sqr {
+  width: 15%;
+  aspect-ratio: 1/1;
+  border: 3px solid black;
+  font-size: 18px;
+  text-align: center;
+  text-wrap-mode: nowrap;
+  margin: 3px;
+  border-color: black;
+  background-color:gray;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.sqr:hover {
+  background-color: white;
+}
+
+.battle-options {
+  display: flex;
+  width: 300px;
+  flex-direction: column;
+}
+
+.statbox {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: beige;
+  height: 30px;
+}
+
+.command-box button {
+  font-size: 1.3em;
+  border-radius: 5px;
+  height: auto;
+  width: 200px;
+  padding: 5px;
+  margin: 2px;
+}
+
+.command-btns {
+  display: flex;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-adjacent {
+  display: flex;
+  flex-direction: row;
+}
+
+.inventory {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  margin: 3px;
+  gap: 3px;
+}
+
+.inventory-area {
+  height: 315px;
+  width: 300px;
+  /* max-height: 30px; */
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+  /* overflow-y: scroll; */
+}
+
+.row-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+}
+
+/* ===== Ids ===== */
+
+#battle-area {
+  display: flex;
+  flex-direction: row;
+  margin: 1em;
+  gap: 10px;
+}
+
+#map-area {
+  display: flex;
+  flex-direction: column;
+}
+
+#battle-spacer {
+  height: 10px;
+  width: 100px;
+}
+
+#map {
+  display: flex;
+  flex-wrap: wrap;
+  width: 325px;
+  margin: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+#sqr-start {
+  aspect-ratio: 1/1;
+  border: 3px solid black;
+  font-size: 18px;
+  margin: 3px;
+  border-color: black;
+  background-color:gray;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  width: 50px;
+  height: 50px;
+  background-color: lightgray;
+  text-align: center;
+}
+
+#game-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("https://images.freeimages.com/images/large-previews/f7c/krzyztopor-castle-1232338.jpg?fmt=webp&h=350");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#hp {
+  color: green;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#mp {
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#xp {
+  font-weight: bold;
+}
+
+#reset-btn {
+  margin: 20px;
+  font-weight: bold;
+}
+
+#reset-btn:hover {
+  background-color: lightgray;
+}
+
+#game-area h1, h2 {
+  color: white;
+}
+
+#list-items {
+  display: flex;
+  justify-content: flex-start;
+}
+
+#instructions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* text-align: center; */
+  align-items: center;
+  background-color: white;
+  width: 80%;
+}
+
+#battle-spacer {
+  height: 250px;
+  width: 600px;
+}
+
+#battle-text {
+  overflow-y: scroll;
+  background-color: beige;
+  height: 200px
+}
+
+#battle-text p:hover {
+  background-color: lightgray;
+}

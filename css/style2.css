@@ -67,6 +67,21 @@ h3 {
   vertical-align:text-top;
 }
 
+.sqr25 {
+  aspect-ratio: 1/1;
+  width: 40px;
+  border: 3px solid black;
+  font-size: 18px;
+  text-align: center;
+  text-wrap-mode: nowrap;
+  margin: 3px;
+  border-color: black;
+  background-color:gray;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
 /* ===== Ids ===== */
 #map {
   display: flex;
