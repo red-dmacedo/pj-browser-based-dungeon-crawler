@@ -99,3 +99,9 @@ export const elem = {
   mapSquares: document.querySelectorAll(".sqr"),
   startSquare: document.querySelector(".sqr25"),
 };
+
+export const invBtns = {
+  skillsEl: document.querySelector('#inv-skills-btn'),
+  itemsEl: document.querySelector('#inv-items-btn'),
+  equipmentEl: document.querySelector('#inv-equipment-btn'),
+};

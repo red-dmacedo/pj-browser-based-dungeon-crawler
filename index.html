@@ -8,14 +8,19 @@
   <script defer type="module" src="./js/app.js"></script>
   <title>Red's Dungeon Crawler</title>
 </head>
-<body class="center flex-column">
+<body class="flex-column">
   <div class="flex-column center" id="body-sub">
-    <h1 class="center" style="background-color: white;">Red's Dungeon Crawler</h1>
+    <h1 class="center">Red's Dungeon Crawler</h1>
     <section class="flex-column" id="game-area">
-      <div class="flex-row center">
-        <div class="map-adjacent inventory">
-          <h3 class="center">Inventory</h3>
-          <div id="inventory" class="flex-column center">
+      <div class="flex-row" id="top-panel">
+        <div class="map-adjacent inventory center-items">
+          <h3 style="margin-bottom: 5px;">Inventory</h3>
+          <div id="inv-menu" class="flex-row gap5">
+            <button type="button" id="inv-skills-btn" class="inv-menu-btn highlight-btn">Skills</button>
+            <button type="button" id="inv-items-btn" class="inv-menu-btn">Items</button>
+            <button type="button" id="inv-equipment-btn" class="inv-menu-btn">Equipment</button>
+          </div>
+          <div id="inventory" class="flex-column center-items">
             <h4>Items</h4>
             <button type="button" class="inv-btn">button1</button>
             <button type="button" class="inv-btn">button2</button>
@@ -66,25 +71,18 @@
           <div class="sqr" id="23"></div>
           <div class="sqr" id="24"></div>
         </section>
-        <div class="map-adjacent equipment">
-          <h3 class="center">Equipment</h3>
-          <div class="flex-column center" id="equipment">
-            <ul>
-              <li>Item1
-                <ul>
-                  <li>sub1</li>
-                </ul>
-              </li>
-              <li>Item2</li>
-            </ul>
+        <div class="map-adjacent equipment center-items">
+          <h3 style="margin-bottom: 0;">Equipment</h3>
+          <div class="flex-column" id="equipment">
+            <p>Sword: Basic</p>
           </div>
         </div>
       </div>
-      <div class="center flex-column">
+      <div class="flex-column">
         <div class="sqr25" id="25">Start</div>
       </div>
-      <section class="center flex-row" id="battle-area">
-        <div class="statbox center flex-column">
+      <section class="flex-row" id="battle-area">
+        <div class="statbox flex-column">
           <h3>Player</h3>
           <!-- <div class="flex-column stats player-stats">
             <div class="flex-row center gap10">
@@ -130,16 +128,16 @@
               </div>
             </div>
           </div> -->
-          <div class="center flex-column command-box">
-            <button type="button" class="inv-btn center">button1</button>
-            <button type="button" class="inv-btn center">button2</button>
-            <button type="button" class="inv-btn center">button3</button>
+          <div class="flex-column command-box">
+            <button type="button" class="inv-btn">button1</button>
+            <button type="button" class="inv-btn">button2</button>
+            <button type="button" class="inv-btn">button3</button>
           </div>
         </div>
         <div class="statbox flex-column">
           <h3>Battle Log</h3>
-          <div class="center flex-column">
-            <div class="center" id="battle-log">
+          <div class="flex-column">
+            <div id="battle-log">
               <p>- Attempted overflow text in here. Don't think too hard on it.</p>
               <p>- player took 20 dmg</p>
               <p>- text1</p>
@@ -151,17 +149,17 @@
             </div>
           </div>
         </div>
-        <div class="center flex-column statbox">
+        <div class="flex-column statbox">
           <h3>Cpu</h3>
-          <div class="center flex-column command-box">
-            <button type="button" class="inv-btn center">button1</button>
-            <button type="button" class="inv-btn center">button2</button>
-            <button type="button" class="inv-btn center">button3</button>
+          <div class="flex-column command-box">
+            <button type="button" class="inv-btn">button1</button>
+            <button type="button" class="inv-btn">button2</button>
+            <button type="button" class="inv-btn">button3</button>
           </div>
         </div>
       </section>
     </section>
-    <section class="flex-column center" id="instructions">
+    <section class="flex-column" id="instructions">
       <h1>Instructions</h1>
       <p>ptag</p>
     </section>

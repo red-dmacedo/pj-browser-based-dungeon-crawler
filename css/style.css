@@ -5,13 +5,13 @@ body {
   margin: 0;
 }
 
-#body-sub {
-  min-width: 700px;
-  max-width: 1000px;
+h1 {
+  background-color: white;
 }
 
 h3 {
   text-decoration: underline;
+  /* align-self: center; */
 }
 
 h4 {
@@ -19,7 +19,6 @@ h4 {
   margin-top: 0;
   margin-bottom: 20px;
 }
-
 /* ===== Classes ===== */
 .sqr {
   width: 15%;
@@ -51,12 +50,11 @@ h4 {
 }
 
 .center {
-  align-items: center;
-  text-align: center;
+  align-self: center;
 }
 
-.justify {
-  justify-content: center;
+.center-items {
+  align-items: center;
 }
 
 .map-adjacent {
@@ -157,5 +155,28 @@ h4 {
 }
 
 #battle-log p:hover {
+  background-color: lightgray;
+}
+
+#body-sub {
+  min-width: 700px;
+  max-width: 1000px;
+}
+
+#equipment {
+  overflow-y: scroll;
+  font-weight: bold;
+}
+
+#inv-menu {
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.inv-menu-btn {
+  border-radius: 10px;
+}
+
+.highlight-btn {
   background-color: lightgray;
 }
