@@ -15,28 +15,28 @@
       <div class="flex-row center">
         <div class="map-adjacent inventory">
           <h3 class="center">Inventory</h3>
-          <div id="inventory" class="flex-column center-top-align">
+          <div id="inventory" class="flex-column center">
             <h4>Items</h4>
-            <button type="button" class="inv-btn center">button1</button>
-            <button type="button" class="inv-btn center">button2</button>
-            <button type="button" class="inv-btn center">button3</button>
-            <button type="button" class="inv-btn center">button4</button>
-            <button type="button" class="inv-btn center">button5</button>
-            <button type="button" class="inv-btn center">button6</button>
-            <button type="button" class="inv-btn center">button7</button>
-            <button type="button" class="inv-btn center">button8</button>
-            <button type="button" class="inv-btn center">button9</button>
-            <button type="button" class="inv-btn center">button10</button>
-            <button type="button" class="inv-btn center">button11</button>
-            <button type="button" class="inv-btn center">button12</button>
-            <button type="button" class="inv-btn center">super random button13 over here doing nothing</button>
-            <button type="button" class="inv-btn center">button14</button>
-            <button type="button" class="inv-btn center">button15</button>
-            <button type="button" class="inv-btn center">button16</button>
-            <button type="button" class="inv-btn center">button17</button>
-            <button type="button" class="inv-btn center">button18</button>
-            <button type="button" class="inv-btn center">button19</button>
-            <button type="button" class="inv-btn center">button20</button>
+            <button type="button" class="inv-btn">button1</button>
+            <button type="button" class="inv-btn">button2</button>
+            <button type="button" class="inv-btn">button3</button>
+            <button type="button" class="inv-btn">button4</button>
+            <button type="button" class="inv-btn">button5</button>
+            <button type="button" class="inv-btn">button6</button>
+            <button type="button" class="inv-btn">button7</button>
+            <button type="button" class="inv-btn">button8</button>
+            <button type="button" class="inv-btn">button9</button>
+            <button type="button" class="inv-btn">button10</button>
+            <button type="button" class="inv-btn">button11</button>
+            <button type="button" class="inv-btn">button12</button>
+            <button type="button" class="inv-btn">super random button13 over here doing nothing</button>
+            <button type="button" class="inv-btn">button14</button>
+            <button type="button" class="inv-btn">button15</button>
+            <button type="button" class="inv-btn">button16</button>
+            <button type="button" class="inv-btn">button17</button>
+            <button type="button" class="inv-btn">button18</button>
+            <button type="button" class="inv-btn">button19</button>
+            <button type="button" class="inv-btn">button20</button>
           </div>
         </div>
         <section id="map">
@@ -84,34 +84,62 @@
         <div class="sqr25" id="25">Start</div>
       </div>
       <section class="center flex-row" id="battle-area">
-        <div class="center-top-align flex-column statbox">
+        <div class="statbox center flex-column">
           <h3>Player</h3>
-          <div class="center-top-align flex-column stats player-stats">
-            <div class="flex-row center">
-              <h4>Lv:</h4>
-              <p id="player-level">1</p>
+          <!-- <div class="flex-column stats player-stats">
+            <div class="flex-row center gap10">
+              <div class="flex-row center gap5">
+                <h4>Lv:</h4>
+                <p id="player-level">1</p>
+              </div>
+              <div class="flex-row center gap5">
+                <h4>XP:</h4>
+                <p class="center gap5" id="player-xp">0/100</p>
+              </div>
             </div>
-            <div class="flex-row" style="gap: 5px">
+            <div class="flex-row gap5">
               <div class="flex-row center">
-                <h4>HP:</h4>
+                <h4>🟥HP:</h4>
                 <p id="player-hp">100</p>
               </div>
               <div class="flex-row center">
-                <h4>MP:</h4>
-                <p id="player-mp">100</p>
+                <h4>🔵MP:</h4>
+                <p class="bold" id="player-mp">100</p>
               </div>
             </div>
-          </div>
+          </div> -->
+          <!------------------------------ player stats ------------------------------>
+          <!-- <div class="stats flex-column">
+            <div class="flex-row gap10">
+              <div class="stat-line">
+                <h4>Lv:</h4>
+                <h4 id="player-lv">1</h4>
+              </div>
+              <div class="stat-line">
+                <h4>XP:</h4>
+                <h4 id="player-xp">0/100</h4>
+              </div>
+            <div class="flex-row gap10">
+              <div class="stat-line">
+                <h4>🟥HP:</h4>
+                <h4 id="player-hp">100/100</h4>
+              </div>
+              <div class="stat-line">
+                <h4>🔵MP:</h4>
+                <h4 id="player-mp">100/100</h4>
+              </div>
+            </div>
+          </div> -->
           <div class="center flex-column command-box">
             <button type="button" class="inv-btn center">button1</button>
             <button type="button" class="inv-btn center">button2</button>
             <button type="button" class="inv-btn center">button3</button>
           </div>
         </div>
-        <div class="flex-column statbox">
+        <div class="statbox flex-column">
           <h3>Battle Log</h3>
-          <div class="center-top-align flex-column">
-            <div class="center-top-align" id="battle-log">
+          <div class="center flex-column">
+            <div class="center" id="battle-log">
               <p>- Attempted overflow text in here. Don't think too hard on it.</p>
               <p>- player took 20 dmg</p>
               <p>- text1</p>
@@ -123,7 +151,7 @@
             </div>
           </div>
         </div>
-        <div class="center-top-align flex-column statbox">
+        <div class="center flex-column statbox">
           <h3>Cpu</h3>
           <div class="center flex-column command-box">
             <button type="button" class="inv-btn center">button1</button>

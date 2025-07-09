@@ -52,13 +52,11 @@ h4 {
 
 .center {
   align-items: center;
-  justify-content: center;
-  align-content: center;
   text-align: center;
 }
 
-.center-top-align {
-  align-items: center;
+.justify {
+  justify-content: center;
 }
 
 .map-adjacent {
@@ -72,13 +70,19 @@ h4 {
   display: flex;
   width: 200px;
   aspect-ratio: 1/0.3;
+  justify-content: center;
+  align-items: center;
 }
 
 .statbox {
   width: 33%;
   height: 300px;
-  vertical-align:text-top;
 }
+
+/* .stats {
+  display: flex;
+  flex-direction: column;
+} */
 
 .sqr25 {
   aspect-ratio: 1/1;
@@ -96,7 +100,23 @@ h4 {
   display: flex;
 }
 
-/* .command-box {} */
+.gap5 {
+  gap: 5px;
+}
+
+.gap10 {
+  gap: 10px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.stat-line {
+  gap: 5px;
+  display: flex;
+  flex-direction: row;
+}
 
 /* ===== Ids ===== */
 #map {
