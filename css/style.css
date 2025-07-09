@@ -14,6 +14,12 @@ h3 {
   text-decoration: underline;
 }
 
+h4 {
+  height: 5px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
 /* ===== Classes ===== */
 .sqr {
   width: 15%;
@@ -64,7 +70,7 @@ h3 {
 
 .inv-btn {
   display: flex;
-  width: 100px;
+  width: 200px;
   aspect-ratio: 1/0.3;
 }
 
@@ -117,7 +123,7 @@ h3 {
   overflow-y: scroll;
   /* min-height: 0; */
   /* max-height: 20px; */
-  /* gap: 5px; */
+  gap: 5px;
   /* background-color: beige; */
 }
 
