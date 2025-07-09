@@ -17,6 +17,7 @@ map
 const player = data.player;
 let invBtnEls = document.querySelectorAll('#inventory button'); // refreshable
 let invEl = document.querySelector('#inventory');
+const invMenu = document.querySelector('#inv-menu');
 
 // ===== Functions / Methods =====
 const game = {
@@ -127,20 +128,47 @@ function clearInvBtns(){
 function fetchInvBtnEls(){
   invBtnEls = document.querySelectorAll('#inventory button'); // global variable
 }
+
+function invSwitcher(e){
+  const btnNames = ['Skills', 'Items', 'Equipment'];
+  if( !(btnNames.includes(e.target.textContent)) ) return;
+  let useList;
+  clearInvBtns();
+  switch( e.target.textContent ) {
+    case btnNames[0]: {
+      useList = player.skillList;
+      break;
+    };
+    case btnNames[1]: {
+      useList = player.items;
+      break;
+    };
+    case btnNames[2]: {
+      useList = player.equipment;
+      break;
+    };
+    default: {
+      console.log(`No case for ${e.target.textContent}`)
+      return;
+    };
+  };
+  useList.forEach( (i) => { newInvBtn(i.name); })
+};
 // ===== Script =====
 game.init();
 
-clearInvBtns();
+invMenu.addEventListener("click", invSwitcher)
 
-// newInvBtn('my super button', 'crazy stuff');
+clearInvBtns();
+player.setPlayerLv(3);
+player.addItems("sword_I","hp_potion_I");
+// player.addItems("sword_I","hp_potion_II");
+
+// player.skillList.forEach( (skill) => { newInvBtn(skill.name); });
 
 // clearInvBtns();
 
-player.setPlayerLv(3);
-player.skillList.forEach( (skill) => { newInvBtn(skill.name); });
-
-console.dir(player.items);
-player.addItems("sword_I","hp_potion_II");
+// console.dir(player.items);
 console.dir(player.items);
 
 // console.dir(iplayer.skillList);

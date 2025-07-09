@@ -70,7 +70,7 @@ button:hover {
 
 .inv-btn {
   display: flex;
-  width: 200px;
+  width: 150px;
   aspect-ratio: 1/0.3;
   justify-content: center;
   align-items: center;
