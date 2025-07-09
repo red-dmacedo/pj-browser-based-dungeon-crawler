@@ -124,10 +124,11 @@ button:hover {
   border-radius: 0px;
   gap: 0px;
   margin: 0px;
+  background-color: rgba(255,255,255,0);
 }
 
 .highlight-btn {
-  background-color: lightgray;
+  opacity: 30%;
 }
 
 /* ===== Ids ===== */
@@ -153,10 +154,11 @@ button:hover {
 
 #inventory {
   overflow-y: scroll;
-  /* min-height: 0; */
-  /* max-height: 20px; */
+  height: 65%;
+  /* min-height: 65%; */
+  /* prevent #inv-menu overlap */
+  /* max-height: 65%; */
   gap: 5px;
-  /* background-color: beige; */
 }
 
 #battle-log {
@@ -183,6 +185,6 @@ button:hover {
 }
 
 #inv-menu {
-  gap: 3px;
   margin-bottom: 10px;
+  /* overflow-x: scroll; */ /* Only neccessary if more inventory categories are needed */
 }

@@ -16,15 +16,15 @@ export const enemies = {
 };
 
 export const allItems = {
-  hp_potion_I:    { name: "hp_potion_I",    stat: "hp", value: 50,  helpText: "Recover 50% hp", },
-  hp_potion_II:   { name: "hp_potion_II",   stat: "hp", value: 80,  helpText: "Recover 80% hp", },
-  hp_potion_III:  { name: "hp_potion_III",  stat: "hp", value: 100, helpText: "Recover 100% hp", },
-  mp_potion_I:    { name: "mp_potion_I",    stat: "mp", value: 50,  helpText: "Recover 50% mp", },
-  mp_potion_II:   { name: "mp_potion_II",   stat: "mp", value: 80,  helpText: "Recover 80% mp", },
-  mp_potion_III:  { name: "mp_potion_III",  stat: "mp", value: 100, helpText: "Recover 100% mp", },
-  sword_I:        { name: "sword_I",        stat: "atk", value: 10, helpText: "A rusted sword", },
-  sword_II:       { name: "sword_II",       stat: "atk", value: 30, helpText: "A decorative sword", },
-  sword_III:      { name: "sword_III",      stat: "atk", value: 60, helpText: "A masterfully crafted sword", },
+  hp_potion_I:    { name: "hp_potion_I",    type: "consumable", stat: "hp", value: 50,  helpText: "Recover 50% hp", },
+  hp_potion_II:   { name: "hp_potion_II",   type: "consumable", stat: "hp", value: 80,  helpText: "Recover 80% hp", },
+  hp_potion_III:  { name: "hp_potion_III",  type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
+  mp_potion_I:    { name: "mp_potion_I",    type: "consumable", stat: "mp", value: 50,  helpText: "Recover 50% mp", },
+  mp_potion_II:   { name: "mp_potion_II",   type: "consumable", stat: "mp", value: 80,  helpText: "Recover 80% mp", },
+  mp_potion_III:  { name: "mp_potion_III",  type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
+  sword_I:        { name: "sword_I",        type: "equipment",  stat: "atk", value: 10, helpText: "A rusted sword", },
+  sword_II:       { name: "sword_II",       type: "equipment",  stat: "atk", value: 30, helpText: "A decorative sword", },
+  sword_III:      { name: "sword_III",      type: "equipment",  stat: "atk", value: 60, helpText: "A masterfully crafted sword", },
 };
 
 export const floors = {
@@ -127,7 +127,10 @@ export const player = {
   },
   addItems: function(...names){
     for(let i of names){
-      this.items.push(allItems[i])
+      let item = allItems[i];
+      (item.type === "consumable") ?
+        this.items.push(item) :
+        this.equipment.push(item);
     };
   },
   lvUpCheck: function(){

@@ -17,7 +17,7 @@ map
 const player = data.player;
 let invBtnEls = document.querySelectorAll('#inventory button'); // refreshable
 let invEl = document.querySelector('#inventory');
-const invMenu = document.querySelector('#inv-menu');
+const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Functions / Methods =====
 const game = {
@@ -25,10 +25,16 @@ const game = {
   firstEnterableRoom: 22,
   room: 25,
   init: function () {
-    game.setMap(1);
+    game.setMap(3);
     player.init();
     game.toggleMapElEventListener();
     game.renderMap();
+    invMenuEl.addEventListener("click", invSwitcher);
+    document.addEventListener("DOMContentLoaded", game.onPageLoad)
+  },
+
+  onPageLoad: function(){
+    data.invBtns.skillsBtnEl.click(); // Click skill button
   },
 
   setMap: function(floorNum){
@@ -127,11 +133,16 @@ function clearInvBtns(){
 
 function fetchInvBtnEls(){
   invBtnEls = document.querySelectorAll('#inventory button'); // global variable
-}
+};
 
 function invSwitcher(e){
   const btnNames = ['Skills', 'Items', 'Equipment'];
-  if( !(btnNames.includes(e.target.textContent)) ) return;
+  if( !(btnNames.includes(e.target.textContent)) ) return; // Exit if button is not in the list
+  
+  document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
+
+  e.target.classList.add( "highlight-btn" ) // highlight selected button
+
   let useList;
   clearInvBtns();
   switch( e.target.textContent ) {
@@ -148,8 +159,8 @@ function invSwitcher(e){
       break;
     };
     default: {
-      console.log(`No case for ${e.target.textContent}`)
-      return;
+      console.log(`invSwitcher: No case for ${e.target.textContent}`);
+      return; // leave function
     };
   };
   useList.forEach( (i) => { newInvBtn(i.name); })
@@ -157,7 +168,6 @@ function invSwitcher(e){
 // ===== Script =====
 game.init();
 
-invMenu.addEventListener("click", invSwitcher)
 
 clearInvBtns();
 player.setPlayerLv(3);
