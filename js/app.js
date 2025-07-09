@@ -14,6 +14,7 @@ map
 // ===== Variables =====
 // initialize game object
 // const game = {};
+const iplayer = data.player;
 
 // ===== Functions / Methods =====
 const game = {
@@ -29,7 +30,7 @@ const game = {
 
   clearMap: function () {
     // console.log("clearMap") // delete me later
-    game.map = [
+    this.map = [
       "", "", "", "", "",
       "", "", "", "", "",
       "", "", "", "", "",
@@ -100,6 +101,12 @@ const game = {
 // ===== Script =====
 game.init();
 
+// console.dir(iplayer.skillList);
+// for(let s of iplayer.levels.lv1.newSkills){
+//   iplayer.addSkill(s)
+// };
+
+// console.dir(iplayer.skillList);
 /*
   ===== GRAVEYARD =====
 
