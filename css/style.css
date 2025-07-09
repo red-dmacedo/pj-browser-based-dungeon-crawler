@@ -11,7 +11,7 @@ h1 {
 
 h3 {
   text-decoration: underline;
-  /* align-self: center; */
+  margin-bottom: 5px;
 }
 
 h4 {
@@ -131,6 +131,20 @@ button:hover {
   opacity: 30%;
 }
 
+.flex-line {
+  height: 20px;
+  font-size: 12px;
+  gap: 5px;
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.flex-line:hover {
+  background-color: lightgray;
+}
+
+
 /* ===== Ids ===== */
 #map {
   display: flex;
@@ -147,6 +161,10 @@ button:hover {
   align-self: center;
 }
 
+#battle-area {
+  height: 300px;
+}
+
 #instructions {
   background-color: white;
   width: 100%;
@@ -154,10 +172,8 @@ button:hover {
 
 #inventory {
   overflow-y: scroll;
+  width: 90%;
   height: 65%;
-  /* min-height: 65%; */
-  /* prevent #inv-menu overlap */
-  /* max-height: 65%; */
   gap: 5px;
 }
 
@@ -182,9 +198,29 @@ button:hover {
 #equipment {
   overflow-y: scroll;
   font-weight: bold;
+  margin-top: 20px;
+  justify-items: end;
+  align-items: end;
+  /* align-self: flex-end; */
 }
 
 #inv-menu {
   margin-bottom: 10px;
   /* overflow-x: scroll; */ /* Only neccessary if more inventory categories are needed */
+}
+
+#equipment {
+  overflow-y: scroll;
+  width: 80%;
+  height: 80%;
+  gap: 5px;
+  align-items: center;
+}
+
+#player-hp {
+  color: green;
+}
+
+#player-mp {
+  color: blue
 }

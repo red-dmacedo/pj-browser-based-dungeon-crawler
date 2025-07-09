@@ -72,8 +72,15 @@
         </section>
         <div class="map-adjacent equipment center-items">
           <h3 style="margin-bottom: 0;">Equipment</h3>
-          <div class="flex-column" id="equipment">
-            <p>Sword:sword_I</p>
+          <div class="flex-column center-items" id="equipment">
+            <div class="flex-line">
+              <p>Sword:</p>
+              <p id="acc1">None</p>
+            </div>
+            <div class="flex-line">
+              <p>Accessory:</p>
+              <p id="acc2">None</p>
+            </div>
           </div>
         </div>
       </div>
@@ -106,27 +113,43 @@
             </div>
           </div> -->
           <!------------------------------ player stats ------------------------------>
-          <!-- <div class="stats flex-column">
-            <div class="flex-row gap10">
-              <div class="stat-line">
+          <!-- <div class="">
+            <div class="">
+              <div class="flex-line">
                 <h4>Lv:</h4>
                 <h4 id="player-lv">1</h4>
               </div>
-              <div class="stat-line">
+              <div class="flex-line">
                 <h4>XP:</h4>
                 <h4 id="player-xp">0/100</h4>
               </div>
-            <div class="flex-row gap10">
-              <div class="stat-line">
+            <div class="">
+              <div class="flex-line">
                 <h4>🟥HP:</h4>
                 <h4 id="player-hp">100/100</h4>
               </div>
-              <div class="stat-line">
+              <div class="flex-line">
                 <h4>🔵MP:</h4>
                 <h4 id="player-mp">100/100</h4>
               </div>
             </div>
           </div> -->
+          <!------------------------------ player stats ------------------------------>
+          <div class="center-items flex-column stat-display">
+            <div class="flex-line bold" style="margin-top: 0px;">
+              <p>Lv:</p><p id="player-lv">1</p>
+            </div>
+            <div class="flex-line bold">
+              <p>XP:</p><p id="player-xp">0/100</p>
+            </div>
+            <div class="flex-line bold">
+              <p>🟥HP:</p><p id="player-hp">100/100</p>
+            </div>
+          </div>
+            <div class="flex-line bold">
+              <p>🔵MP:</p><p id="player-mp">100/100</p>
+            </div>
+          </div>
           <div class="flex-column command-box">
             <button type="button" class="inv-btn">button1</button>
             <button type="button" class="inv-btn">button2</button>
@@ -148,7 +171,7 @@
             </div>
           </div>
         </div>
-        <div class="flex-column statbox center-items">
+        <div class="statbox flex-column center-items">
           <h3>Cpu</h3>
           <div class="flex-column command-box">
             <button type="button" class="inv-btn">button1</button>

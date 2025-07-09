@@ -16,15 +16,17 @@ export const enemies = {
 };
 
 export const allItems = {
-  hp_potion_I:    { name: "hp_potion_I",    type: "consumable", stat: "hp", value: 50,  helpText: "Recover 50% hp", },
-  hp_potion_II:   { name: "hp_potion_II",   type: "consumable", stat: "hp", value: 80,  helpText: "Recover 80% hp", },
-  hp_potion_III:  { name: "hp_potion_III",  type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
-  mp_potion_I:    { name: "mp_potion_I",    type: "consumable", stat: "mp", value: 50,  helpText: "Recover 50% mp", },
-  mp_potion_II:   { name: "mp_potion_II",   type: "consumable", stat: "mp", value: 80,  helpText: "Recover 80% mp", },
-  mp_potion_III:  { name: "mp_potion_III",  type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
-  sword_I:        { name: "sword_I",        type: "equipment",  stat: "atk", value: 10, helpText: "A rusted sword", },
-  sword_II:       { name: "sword_II",       type: "equipment",  stat: "atk", value: 30, helpText: "A decorative sword", },
-  sword_III:      { name: "sword_III",      type: "equipment",  stat: "atk", value: 60, helpText: "A masterfully crafted sword", },
+  hp_potion_I: { name: "hp_potion_I", type: "consumable", stat: "hp", value: 50, helpText: "Recover 50% hp", },
+  hp_potion_II: { name: "hp_potion_II", type: "consumable", stat: "hp", value: 80, helpText: "Recover 80% hp", },
+  hp_potion_III: { name: "hp_potion_III", type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
+  mp_potion_I: { name: "mp_potion_I", type: "consumable", stat: "mp", value: 50, helpText: "Recover 50% mp", },
+  mp_potion_II: { name: "mp_potion_II", type: "consumable", stat: "mp", value: 80, helpText: "Recover 80% mp", },
+  mp_potion_III: { name: "mp_potion_III", type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
+  ruby_amulet: { name: "ruby_amulet", type: "equipment", stat: "matk", value: 40, helpText: "A valuable necklace - +40 matk", },
+  sword_I: { name: "sword_I", type: "equipment", stat: "atk", value: 10, helpText: "A rusted sword - +10 atk", },
+  sword_II: { name: "sword_II", type: "equipment", stat: "atk", value: 30, helpText: "A decorative sword - +30 atk", },
+  sword_III: { name: "sword_III", type: "equipment", stat: "atk", value: 60, helpText: "A masterfully crafted sword - +60 atk", },
+  wizard_cap: { name: "wizard_cap", type: "equipment", stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
 };
 
 export const floors = {
@@ -102,6 +104,7 @@ export const player = {
   maxXp: 10,
   icon: icons.player,
   equipment: [],
+  skillList: [],
   items: [],
   levels: {
     lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water", ], },
@@ -110,7 +113,6 @@ export const player = {
     lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III", ], },
     lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV", ], },
   },
-  skillList: [],
   addSkill: function (name) {
     let skill = skills[name];
     if(skill) this.skillList.push(skill);
@@ -121,6 +123,9 @@ export const player = {
   },
   sortEquipment: function(){
     this.equipment.sort( (a, b) => a.name.localeCompare(b.name) );
+  },
+  sortItems: function(){
+    this.item.sort( (a, b) => a.name.localeCompare(b.name) );
   },
   sortSkills: function(){
     this.skillList.sort( (a, b) => a.name.localeCompare(b.name) );
