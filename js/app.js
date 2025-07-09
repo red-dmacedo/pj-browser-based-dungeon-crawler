@@ -14,7 +14,9 @@ map
 // ===== Variables =====
 // initialize game object
 // const game = {};
-const iplayer = data.player;
+const player = data.player;
+let invBtnEls = document.querySelectorAll('#inventory button'); // refreshable
+let invEl = document.querySelector('#inventory');
 
 // ===== Functions / Methods =====
 const game = {
@@ -22,15 +24,23 @@ const game = {
   firstEnterableRoom: 22,
   room: 25,
   init: function () {
-    game.clearMap();
-    game.map = data.floors.f1.map;
+    game.setMap(1);
+    player.init();
     game.toggleMapElEventListener();
     game.renderMap();
   },
 
+  setMap: function(floorNum){
+    let newMap = data.floors[`f${floorNum}`];
+    game.clearMap(); // Clear old map data
+    game.map[newMap.bossLocation] = data.icons.boss; // Set boss location
+    newMap.guaranteedEncounters.forEach( (idx) => {
+      game.map[idx] = data.icons.battle // Set guaranteed encounters
+    });
+  },
+
   clearMap: function () {
-    // console.log("clearMap") // delete me later
-    this.map = [
+    game.map = [
       "", "", "", "", "",
       "", "", "", "", "",
       "", "", "", "", "",
@@ -75,7 +85,7 @@ const game = {
       squareEl.setAttribute("style","background-color: beige");
   },
 
-  toggleMapElEventListener: function (enable="true") {
+  toggleMapElEventListener: function ( enable = true ) {
     (enable) ? // <= ternary
       data.elem.mapEl.addEventListener("click", game.movePlayer) : // <= then statement
       data.elem.mapEl.removeEventListener("click", game.movePlayer); // <= else statement
@@ -98,13 +108,40 @@ const game = {
 
   battleStart(e){},
 }
+
+function newInvBtn(text){
+  let nBtn = document.createElement('button');
+  nBtn.type = 'button';
+  nBtn.classList.add( 'inv-btn' );
+  nBtn.textContent = text;
+  // nBtn.item = item;
+  invEl.appendChild(nBtn);
+};
+
+function clearInvBtns(){
+  fetchInvBtnEls();
+  invBtnEls.forEach( (el) => { el.remove(); });
+  fetchInvBtnEls();
+};
+
+function fetchInvBtnEls(){
+  invBtnEls = document.querySelectorAll('#inventory button'); // global variable
+}
 // ===== Script =====
 game.init();
 
-// console.dir(iplayer.skillList);
-// for(let s of iplayer.levels.lv1.newSkills){
-//   iplayer.addSkill(s)
-// };
+clearInvBtns();
+
+// newInvBtn('my super button', 'crazy stuff');
+
+// clearInvBtns();
+
+player.setPlayerLv(3);
+player.skillList.forEach( (skill) => { newInvBtn(skill.name); });
+
+console.dir(player.items);
+player.addItems("sword_I","hp_potion_II");
+console.dir(player.items);
 
 // console.dir(iplayer.skillList);
 /*
@@ -113,6 +150,6 @@ game.init();
 function paction1(e){                                                    //  <| - Created to test the
   if(e) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
 };                                                                       //  <|   function
-document.querySelector("#paction1").addEventListener("click", paction1); //  <| - Disable word wrap!
+document.querySelector("#paction1").addEventListener("click", paction1); //  <|
 
 */
