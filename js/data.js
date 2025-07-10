@@ -11,9 +11,9 @@ export const skills = {
 };
 
 export const enemies = {
-  slime:    { name: "slime",    type: "🌊", skillList: ["water", "nudge"],     difficultyRating: 1, killXp: 10, },
-  fairy:    { name: "fairy",    type: "⚡", skillList: ["lightning"],          difficultyRating: 1, killXp: 30, },
-  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_II"], difficultyRating: 2, killXp: 50, },
+  slime:    { name: "slime",    type: "🌊", skillList: ["water", "nudge"],     difficultyRating: 1, killXp: 10, hp: 50, mp: 100, },
+  fairy:    { name: "fairy",    type: "⚡", skillList: ["lightning"],          difficultyRating: 1, killXp: 30, hp: 100, mp: 100, },
+  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
 };
 
 export const allItems = {
@@ -31,17 +31,19 @@ export const allItems = {
 };
 
 export const floors = {
+  /* this map is kept here as a reference
+  map:[
+    "0",   "1",  "2",  "3",  "4",
+    "5",   "6",  "7",  "8",  "9",
+    "10",  "11", "12", "13", "14",
+    "15",  "16", "17", "18", "19",
+    "20",  "21", "22", "23", "24"
+  ]
+  */
   f1: {
     name:"1F",
     bossLocation: 19,
     guaranteedEncounters: [9,],
-    // map:[
-    //   "", "", "", "", "",
-    //   "", "", "", "", "⚔️",
-    //   "", "", "", "", "",
-    //   "", "", "", "", "☠️",
-    //   "", "", "", "", ""
-    // ]
   },
   f2: {
     name:"2F",
@@ -213,9 +215,9 @@ export const player = {
   },
 
   addXp: function(num) {
-    this.xp += num;
-    this.lvUpCheck();
-    this.displayXp();
+    this.xp += num; // add xp
+    this.lvUpCheck(); // check for level up
+    this.displayXp(); // display result to html
   },
 
   useSkill: function(name){
@@ -236,33 +238,46 @@ export const enemy = {
   enemyEls: {
     hpEl: document.querySelector('#enemy-hp'),
     mpEl: document.querySelector('#enemy-mp'),
+    nameEl: document.querySelector('#enemy-name'),
   },
 
+  displayName: function() { this.enemyEls.nameEl.textContent = this.name.toUpperCase(); },
   displayHp: function() { this.enemyEls.hpEl.textContent = `${this.hp}/${this.maxHp}`; },
   displayMp: function() { this.enemyEls.mpEl.textContent = `${this.mp}/${this.maxMp}`; },
   displayStats: function() {
-    this.
-      displayHp();
-      displayMp();
+    this.displayHp();
+    this.displayMp();
+    this.displayName();
   },
 
   init: function(){
     this.name = "Cpu";
+    this.clearSkillList();
     this.hp = 0;
     this.mp = 0;
   },
 
   setEnemy: function(name) {
-    newEnemy = enemies[name];
+    this.clearSkillList();
+    let newEnemy = enemies[name]; // get enemy by name
     this.name = newEnemy.name;
-    this.hp = newEnemy.hp;
+    // hp
+    this.maxHp = newEnemy.hp;
+    this.hp = this.maxHp;
+    // mp
+    this.maxMp = newEnemy.mp;
+    this.mp = this.maxMp;
+    // xp
     this.killXp = newEnemy.killXp;
+    this.displayStats();
   },
 
   useSkill: function(name){
     let skill = skills[name];
     this.mp = this.mp - skill.mpCost
   },
+
+  clearSkillList: function(){ this.skillList.length = 0; },
 
 };
 

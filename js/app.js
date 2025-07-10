@@ -185,6 +185,8 @@ player.addItems("sword_I","hp_potion_I","mp_potion_I");
 clearInvBtns();
 player.setXp(302);
 player.setXp(300);
+
+data.enemy.setEnemy("minotaur")
 // player.setLv(5);
 // player.lvUpCheck();
 
