@@ -10,6 +10,7 @@ h1 {
 }
 
 h3 {
+  background-color: rgba(255,255,255,0.7);
   text-decoration: underline;
   margin-bottom: 5px;
 }
@@ -130,7 +131,6 @@ button:hover {
   border-radius: 0px;
   gap: 0px;
   margin: 0px;
-  background-color: rgba(255,255,255,0);
 }
 
 .highlight-btn {
@@ -153,15 +153,16 @@ button:hover {
 .battle-btn {
   aspect-ratio: 5/1;
   width: 70%;
+  margin-top: 5px;
 }
 
 .command-box {
-  margin-top: 10px;
-  gap: 5px;
+  margin-top: 5px;
   overflow-y: scroll;
   align-items: center;
   width: 90%;
   height: 50%;
+  background-color: rgba(255,255,255,0.3);
 }
 
 .hp-stat {
@@ -170,6 +171,10 @@ button:hover {
 
 .mp-stat {
   color: blue
+}
+
+.stat-display {
+  background-color: rgba(255,255,255,0.5);
 }
 
 /* ===== Ids ===== */
@@ -186,6 +191,9 @@ button:hover {
   background-color: beige;
   max-width: 800px;
   align-self: center;
+  background-image: url("https://images.freeimages.com/images/large-previews/f7c/krzyztopor-castle-1232338.jpg?fmt=webp&h=350");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 #battle-area {
@@ -202,19 +210,25 @@ button:hover {
   width: 90%;
   height: 65%;
   gap: 5px;
+  background-color: rgba(255,255,255,0.3);
 }
 
 #battle-log {
   overflow-y: scroll;
-  background-color: rgba(255,255,255,0.5);
-  /* background-color: rgba(0,0,0,0.5); */
+  background-color: rgba(0,0,0,0.5);
+  color: white;
   text-align: left;
   width: 100%;
-  height: 65%;
+  height: 85%;
+}
+
+#battle-log p {
+  margin: 10px;
 }
 
 #battle-log p:hover {
   background-color: lightgray;
+  color: black;
 }
 
 #body-sub {
@@ -228,6 +242,7 @@ button:hover {
   margin-top: 20px;
   justify-items: end;
   align-items: end;
+  background-color: rgba(255,255,255,0.5);
   /* align-self: flex-end; */
 }
 
