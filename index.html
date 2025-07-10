@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <script defer type="module" src="./js/app.js"></script>
   <title>Red's Dungeon Crawler</title>
 </head>
+
 <body class="flex-column">
   <div class="flex-column center" id="body-sub">
     <h1 class="center">Red's Dungeon Crawler</h1>
@@ -87,73 +89,31 @@
       <div class="flex-column">
         <div class="sqr25 center" id="25">Start</div>
       </div>
-      <section class="flex-row" id="battle-area">
+      <div class="flex-row" id="battle-area">
         <div class="statbox flex-column center-items">
           <h3>Player</h3>
-          <!-- <div class="flex-column stats player-stats">
-            <div class="flex-row center gap10">
-              <div class="flex-row center gap5">
-                <h4>Lv:</h4>
-                <p id="player-level">1</p>
-              </div>
-              <div class="flex-row center gap5">
-                <h4>XP:</h4>
-                <p class="center gap5" id="player-xp">0/100</p>
-              </div>
-            </div>
-            <div class="flex-row gap5">
-              <div class="flex-row center">
-                <h4>🟥HP:</h4>
-                <p id="player-hp">100</p>
-              </div>
-              <div class="flex-row center">
-                <h4>🔵MP:</h4>
-                <p class="bold" id="player-mp">100</p>
-              </div>
-            </div>
-          </div> -->
-          <!------------------------------ player stats ------------------------------>
-          <!-- <div class="">
-            <div class="">
-              <div class="flex-line">
-                <h4>Lv:</h4>
-                <h4 id="player-lv">1</h4>
-              </div>
-              <div class="flex-line">
-                <h4>XP:</h4>
-                <h4 id="player-xp">0/100</h4>
-              </div>
-            <div class="">
-              <div class="flex-line">
-                <h4>🟥HP:</h4>
-                <h4 id="player-hp">100/100</h4>
-              </div>
-              <div class="flex-line">
-                <h4>🔵MP:</h4>
-                <h4 id="player-mp">100/100</h4>
-              </div>
-            </div>
-          </div> -->
-          <!------------------------------ player stats ------------------------------>
           <div class="center-items flex-column stat-display">
             <div class="flex-line bold" style="margin-top: 0px;">
-              <p>Lv:</p><p id="player-lv">1</p>
+              <p>Lv:</p>
+              <p id="player-lv">1</p>
             </div>
             <div class="flex-line bold">
-              <p>XP:</p><p id="player-xp">0/100</p>
+              <p>XP:</p>
+              <p id="player-xp">0/100</p>
             </div>
             <div class="flex-line bold">
-              <p>🟥HP:</p><p id="player-hp">100/100</p>
+              <p>🟥HP:</p>
+              <p class="hp-stat" id="player-hp">100/100</p>
             </div>
           </div>
-            <div class="flex-line bold">
-              <p>🔵MP:</p><p id="player-mp">100/100</p>
-            </div>
+          <div class="flex-line bold">
+            <p>🔵MP:</p>
+            <p class="mp-stat" id="player-mp">100/100</p>
           </div>
           <div class="flex-column command-box">
-            <button type="button" class="inv-btn">button1</button>
-            <button type="button" class="inv-btn">button2</button>
-            <button type="button" class="inv-btn">button3</button>
+            <button type="button" class="battle-btn">button1</button>
+            <button type="button" class="battle-btn">button2</button>
+            <button type="button" class="battle-btn">button3</button>
           </div>
         </div>
         <div class="statbox flex-column center-items">
@@ -173,18 +133,37 @@
         </div>
         <div class="statbox flex-column center-items">
           <h3>Cpu</h3>
+          <div class="center-items flex-column stat-display">
+            <div class="flex-line bold">
+              <p>🟥HP:</p>
+              <p class="hp-stat" id="player-hp">100/100</p>
+            </div>
+          </div>
+          <div class="flex-line bold">
+            <p>🔵MP:</p>
+            <p class="mp-stat" id="player-mp">100/100</p>
+          </div>
+            <div class="flex-line bold" style="margin-top: 0px;">
+              <!-- this flex line serves as a spacer -->
+            </div>
+            <div class="flex-line bold">
+              <!-- this flex line serves as a spacer -->
+            </div>
           <div class="flex-column command-box">
-            <button type="button" class="inv-btn">button1</button>
-            <button type="button" class="inv-btn">button2</button>
-            <button type="button" class="inv-btn">button3</button>
+            <button type="button" class="battle-btn">button1</button>
+            <button type="button" class="battle-btn">button2</button>
+            <button type="button" class="battle-btn">button3</button>
           </div>
         </div>
-      </section>
-    </section>
-    <section class="flex-column center-items" id="instructions">
-      <h1>Instructions</h1>
-      <p>ptag</p>
-    </section>
+      </div>
+  </div>
+  </section>
+  <!-- end game area -->
+  <section class="flex-column center-items" id="instructions">
+    <h1>How to play!</h1>
+    <p>ptag</p>
+  </section>
   </div>
 </body>
+
 </html>

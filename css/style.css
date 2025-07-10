@@ -20,6 +20,12 @@ h4 {
   margin-bottom: 20px;
 }
 
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 button:hover {
   background-color: lightgray;
 }
@@ -78,7 +84,7 @@ button:hover {
 
 .statbox {
   width: 33%;
-  height: 300px;
+  /* height: 300px; */
 }
 
 /* .stats {
@@ -144,6 +150,27 @@ button:hover {
   background-color: lightgray;
 }
 
+.battle-btn {
+  aspect-ratio: 5/1;
+  width: 70%;
+}
+
+.command-box {
+  margin-top: 10px;
+  gap: 5px;
+  overflow-y: scroll;
+  align-items: center;
+  width: 90%;
+  height: 50%;
+}
+
+.hp-stat {
+  color: green;
+}
+
+.mp-stat {
+  color: blue
+}
 
 /* ===== Ids ===== */
 #map {
@@ -215,12 +242,4 @@ button:hover {
   height: 80%;
   gap: 5px;
   align-items: center;
-}
-
-#player-hp {
-  color: green;
-}
-
-#player-mp {
-  color: blue
 }
