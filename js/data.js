@@ -346,7 +346,7 @@ export const inventory = {
         break;
       };
       default: {
-        console.log(`invSwitcher: No case for ${e.target.textContent}`);
+        console.log(`invSwitcher: No case for ${evt.target.textContent}`);
         return; // leave function
       };
     };
