@@ -42,18 +42,24 @@ export const floors = {
   */
   f1: {
     name:"1F",
-    bossLocation: 19,
-    guaranteedEncounters: [9,],
+    bossRoom: 19,
+    encounterRooms: [9,],
+    healRooms: [],
+    treasureRooms: [],
   },
   f2: {
     name:"2F",
     bossLocation: 16,
-    guaranteedEncounters: [14,],
+    encounterRooms: [14,],
+    healRooms: [],
+    treasureRooms: [],
   },
   f3: {
     name:"3F",
     bossLocation: 0,
-    guaranteedEncounters: [16, 3],
+    encounterRooms: [16, 3],
+    healRooms: [],
+    treasureRooms: [],
   },
 };
 
@@ -150,8 +156,8 @@ export const player = {
   },
 
   addEquipment: function(name) {
-    let e = equipment[name]
-    if(e) this.equipment.push(e);
+    let selction = equipment[name]
+    if(selction) this.equipment.push(selction);
   },
 
   sortArrayByNameProperty: function(arr){
@@ -288,14 +294,64 @@ export const elem = {
   startSquare: document.querySelector(".sqr25"),
 };
 
-export const invBtns = {
-  skillsBtnEl: document.querySelector('#inv-skills-btn'),
-  itemsBtnEl: document.querySelector('#inv-items-btn'),
-  equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
-  refresh: function (){
-    this.skillsBtnEl = document.querySelector('#inv-skills-btn');
-    this.itemsBtnEl = document.querySelector('#inv-items-btn');
-    this.equipmentBtnEl = document.querySelector('#inv-equipment-btn');
+export const inventory = {
+  commandBtnEls: document.querySelectorAll('#inventory button'),
+  invEl: document.querySelector('#inventory'),
+
+  init: function(){
+    this.clearCommandBtns();
+    this.invEl.addEventListener("click", this.swapInventory);
+  },
+
+  clearCommandBtns: function(){ this.commandBtnEls.forEach( el => el.remove() ); },
+
+  menuBtnEls: {
+    skillsBtnEl: document.querySelector('#inv-skills-btn'),
+    itemsBtnEl: document.querySelector('#inv-items-btn'),
+    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
+  },
+
+  loadNewCommandBtns: function(){
+    this.commandBtnEls = document.querySelectorAll('#inventory button')
+  },
+
+  addCommandBtn: function (text){
+    let nBtn = document.createElement('button');
+    nBtn.type = 'button';
+    nBtn.classList.add( 'inv-btn' );
+    nBtn.textContent = text;
+    this.invEl.appendChild(nBtn);
+  },
+
+  swapInventory: function(evt) {
+    const btnNames = ['Skills', 'Items', 'Equipment'];
+    if( !(btnNames.includes(evt.target.textContent)) ) return; // Exit if button is not in the list
+    // Button Highlights
+    document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
+    evt.target.classList.add( "highlight-btn" ) // highlight selected button
+    // Determine list
+    let list;
+    this.clearCommandBtns(); // clear old buttons
+    switch( evt.target.textContent ) {
+      case btnNames[0]: {
+        list = player.skillList;
+        break;
+      };
+      case btnNames[1]: {
+        list = player.items;
+        break;
+      };
+      case btnNames[2]: {
+        list = player.equipment;
+        break;
+      };
+      default: {
+        console.log(`invSwitcher: No case for ${e.target.textContent}`);
+        return; // leave function
+      };
+    };
+    // add buttons to inventory
+    list.forEach( (i) => { this.addCommandBtn(i.name); })
   },
 };
 

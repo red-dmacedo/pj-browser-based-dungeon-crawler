@@ -15,8 +15,7 @@ map
 // initialize game object
 // const game = {};
 const player = data.player;
-let invBtnEls = document.querySelectorAll('#inventory button'); // refreshable
-let invEl = document.querySelector('#inventory');
+const inventory = data.inventory;
 const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Functions / Methods =====
@@ -24,26 +23,35 @@ const game = {
   startRoom: 25,
   firstEnterableRoom: 22,
   room: 25,
+  currentFloor: 1,
+
   init: function () {
-    game.setMap(3);
+    game.setMap(game.currentFloor);
     player.init();
     game.toggleMapElEventListener();
     game.renderMap();
-    invMenuEl.addEventListener("click", invSwitcher);
+    inventory.init();
+    inventory.addCommandBtn('temp1');
+    // invMenuEl.addEventListener("click", invSwitcher);
     document.addEventListener("DOMContentLoaded", game.onPageLoad)
   },
 
+  nextFloor: function(){
+    if( game.currentFloor <= 3 ) {
+      game.currentFloor += 1;
+      game.setMap(game.currentFloor);
+    }
+  },
+
   onPageLoad: function(){
-    data.invBtns.skillsBtnEl.click(); // Click skill button
+    data.inventory.menuBtnEls.skillsBtnEl.click(); // Click skill button
   },
 
   setMap: function(floorNum){
     let newMap = data.floors[`f${floorNum}`];
     game.clearMap(); // Clear old map data
     game.map[newMap.bossLocation] = data.icons.boss; // Set boss location
-    newMap.guaranteedEncounters.forEach( (idx) => {
-      game.map[idx] = data.icons.battle // Set guaranteed encounters
-    });
+    newMap.encounterRooms.forEach( (idx) => { game.map[idx] = data.icons.battle }); // Set guaranteed encounters
   },
 
   clearMap: function () {
@@ -71,13 +79,13 @@ const game = {
     game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
   },
 
-  movePlayer: function (e) { // <= player movement and map updates
+  movePlayer: function (evt) { // <= player movement and map updates
     if (
-      !e.target.classList.contains("sqr") || // Leave if target was not a square on the map
-      !(game.validateMovement(e.target.id)) // do nothing if move is not valid
+      !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
+      !(game.validateMovement(evt.target.id)) // do nothing if move is not valid
     ) return;
 
-    game.room = Number(e.target.id); // update current room
+    game.room = Number(evt.target.id); // update current room
 
     // Hide the start square if it is visible
     if(data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
@@ -113,61 +121,52 @@ const game = {
     );
   },
 
-  battleStart(e){},
+  battleStart(evt){},
 }
 
-function newInvBtn(text){
-  let nBtn = document.createElement('button');
-  nBtn.type = 'button';
-  nBtn.classList.add( 'inv-btn' );
-  nBtn.textContent = text;
-  // nBtn.item = item;
-  invEl.appendChild(nBtn);
-};
+// function clearInvBtns(){
+//   fetchInvBtnEls();
+//   invBtnEls.forEach( (el) => { el.remove(); });
+//   fetchInvBtnEls();
+// };
 
-function clearInvBtns(){
-  fetchInvBtnEls();
-  invBtnEls.forEach( (el) => { el.remove(); });
-  fetchInvBtnEls();
-};
+// function fetchInvBtnEls(){
+//   invBtnEls = document.querySelectorAll('#inventory button'); // global variable
+// };
 
-function fetchInvBtnEls(){
-  invBtnEls = document.querySelectorAll('#inventory button'); // global variable
-};
+// function invSwitcher(evt){
+//   const btnNames = ['Skills', 'Items', 'Equipment'];
+//   if( !(btnNames.includes(v.target.textContent)) ) return; // Exit if button is not in the list
 
-function invSwitcher(e){
-  const btnNames = ['Skills', 'Items', 'Equipment'];
-  if( !(btnNames.includes(e.target.textContent)) ) return; // Exit if button is not in the list
+//   document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
 
-  document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
+//   evt.target.classList.add( "highlight-btn" ) // highlight selected button
 
-  e.target.classList.add( "highlight-btn" ) // highlight selected button
+//   let useList;
+//   inventory.clearCommandBtns();
+//   switch( evt.target.textContent ) {
+//     case btnNames[0]: {
+//       useList = player.skillList;
+//       break;
+//     };
+//     case btnNames[1]: {
+//       useList = player.items;
+//       break;
+//     };
+//     case btnNames[2]: {
+//       useList = player.equipment;
+//       break;
+//     };
+//     default: {
+//       console.log(`invSwitcher: No case for ${evt.target.textContent}`);
+//       return; // leave function
+//     };
+//   };
+//   useList.forEach( (i) => { inventory.addCommandBtn(i.name); })
+// };
 
-  let useList;
-  clearInvBtns();
-  switch( e.target.textContent ) {
-    case btnNames[0]: {
-      useList = player.skillList;
-      break;
-    };
-    case btnNames[1]: {
-      useList = player.items;
-      break;
-    };
-    case btnNames[2]: {
-      useList = player.equipment;
-      break;
-    };
-    default: {
-      console.log(`invSwitcher: No case for ${e.target.textContent}`);
-      return; // leave function
-    };
-  };
-  useList.forEach( (i) => { newInvBtn(i.name); })
-};
-
-function useItems(e){
-  item = data.allItems[e.target.textContent]
+function useItems(evt){
+  item = data.allItems[evt.target.textContent]
   if( !item ) return; // return if selection is NOT an item
 
   switch(item.type){
@@ -182,27 +181,19 @@ game.init();
 
 player.addItems("sword_I","hp_potion_I","mp_potion_I");
 
-clearInvBtns();
-player.setXp(302);
-player.setXp(300);
+// clearInvBtns();
+// player.setXp(302);
+// player.setXp(300);
 
-data.enemy.setEnemy("minotaur")
+data.enemy.setEnemy("slime");
 // player.setLv(5);
 // player.lvUpCheck();
 
-
-// player.setHp(50);
-
-// data.battleLog.clear();
-// data.battleLog.newLogItem('silly t ext');
-
-
-// console.dir(iplayer.skillList);
 /*
   ===== GRAVEYARD =====
 
-function paction1(e){                                                    //  <| - Created to test the
-  if(e) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
+function paction1(evt){                                                    //  <| - Created to test the
+  if(evt) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
 };                                                                       //  <|   function
 document.querySelector("#paction1").addEventListener("click", paction1); //  <|
 
