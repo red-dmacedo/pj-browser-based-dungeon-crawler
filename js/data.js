@@ -298,7 +298,8 @@ export const inventory = {
   commandBtnEls: document.querySelectorAll('#inventory button'),
   invEl: document.querySelector('#inventory'),
 
-  init: function(){
+  init: function(playerObj){
+    this.player = playerObj;
     this.clearCommandBtns();
     this.invEl.addEventListener("click", this.swapInventory);
   },
@@ -334,15 +335,16 @@ export const inventory = {
     this.clearCommandBtns(); // clear old buttons
     switch( evt.target.textContent ) {
       case btnNames[0]: {
-        list = player.skillList;
+        console.dir(this.player.skillList);
+        list = this.player.skillList;
         break;
       };
       case btnNames[1]: {
-        list = player.items;
+        list = this.player.items;
         break;
       };
       case btnNames[2]: {
-        list = player.equipment;
+        list = this.player.equipment;
         break;
       };
       default: {

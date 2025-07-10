@@ -30,8 +30,9 @@ const game = {
     player.init();
     game.toggleMapElEventListener();
     game.renderMap();
-    inventory.init();
-    inventory.addCommandBtn('temp1');
+    inventory.init(player);
+    // inventory.invEl.addEventListener("click", inventory.swapInventory);
+    // inventory.addCommandBtn('temp1');
     // invMenuEl.addEventListener("click", invSwitcher);
     document.addEventListener("DOMContentLoaded", game.onPageLoad)
   },
@@ -185,7 +186,7 @@ player.addItems("sword_I","hp_potion_I","mp_potion_I");
 // player.setXp(302);
 // player.setXp(300);
 
-data.enemy.setEnemy("slime");
+// data.enemy.setEnemy("slime");
 // player.setLv(5);
 // player.lvUpCheck();
 
