@@ -218,8 +218,8 @@ button:hover {
   background-color: rgba(0,0,0,0.5);
   color: white;
   text-align: left;
-  width: 100%;
-  height: 85%;
+  width: 230px;
+  height: 230px;
 }
 
 #battle-log p {
@@ -248,7 +248,8 @@ button:hover {
 
 #inv-menu {
   margin-bottom: 10px;
-  /* overflow-x: scroll; */ /* Only neccessary if more inventory categories are needed */
+  /* Next line is only neccessary if more inventory categories are needed */
+  /* overflow-x: scroll; */
 }
 
 #equipment {

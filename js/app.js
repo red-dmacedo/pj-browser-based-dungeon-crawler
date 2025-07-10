@@ -138,7 +138,7 @@ function fetchInvBtnEls(){
 function invSwitcher(e){
   const btnNames = ['Skills', 'Items', 'Equipment'];
   if( !(btnNames.includes(e.target.textContent)) ) return; // Exit if button is not in the list
-  
+
   document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
 
   e.target.classList.add( "highlight-btn" ) // highlight selected button
@@ -165,21 +165,35 @@ function invSwitcher(e){
   };
   useList.forEach( (i) => { newInvBtn(i.name); })
 };
+
+function useItems(e){
+  item = data.allItems[e.target.textContent]
+  if( !item ) return; // return if selection is NOT an item
+
+  switch(item.type){
+    case "consumable": {};
+    case "equipment": {
+      // player.
+    };
+  };
+};
 // ===== Script =====
 game.init();
 
+player.addItems("sword_I","hp_potion_I","mp_potion_I");
 
 clearInvBtns();
-player.setPlayerLv(3);
-player.addItems("sword_I","hp_potion_I");
-// player.addItems("sword_I","hp_potion_II");
+player.setXp(302);
+player.setXp(300);
+// player.setLv(5);
+// player.lvUpCheck();
 
-// player.skillList.forEach( (skill) => { newInvBtn(skill.name); });
 
-// clearInvBtns();
+// player.setHp(50);
 
-// console.dir(player.items);
-console.dir(player.items);
+// data.battleLog.clear();
+// data.battleLog.newLogItem('silly t ext');
+
 
 // console.dir(iplayer.skillList);
 /*
@@ -189,5 +203,10 @@ function paction1(e){                                                    //  <| 
   if(e) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
 };                                                                       //  <|   function
 document.querySelector("#paction1").addEventListener("click", paction1); //  <|
+
+
+for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
+
+// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
 
 */

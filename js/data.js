@@ -1,18 +1,19 @@
 export const skills = {
-  fire:       { name: "fire",       Multiplier: 1.5, mpCost: 50, helpText: "Highest Atk damage" },
-  lightning:  { name: "lightning",  Multiplier: 0.5, mpCost: 20, helpText: "Chance to stun enemy; Deals mid-range damage" },
-  nudge:      { name: "nudge",      Multiplier: 0.2, mpCost: 0,  helpText: "Minimum damage" },
-  slash_I:    { name: "slash_I",    Multiplier: 1,   mpCost: 0,  helpText: "A slash that will get the job done" },
-  slash_II:   { name: "slash_II",   Multiplier: 1.3, mpCost: 0,  helpText: "Lesser slashing technique" },
-  slash_III:  { name: "slash_III",  Multiplier: 2,   mpCost: 0,  helpText: "Greater slashing techniques" },
-  slash_IV:   { name: "slash_IV",   Multiplier: 3,   mpCost: 0,  helpText: "The pinnacle of slashing techniques" },
-  water:      { name: "water",      Multiplier: 0.1, mpCost: 10, helpText: "Low damage; Kill enemies below x% HP" },
+  fire:       { name: "fire",       Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk" },
+  lightning:  { name: "lightning",  Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy" },
+  nudge:      { name: "nudge",      Multiplier: 0.2, mpCost: 0,  helpText: "0.2x Atk" },
+  slash_I:    { name: "slash_I",    Multiplier: 1,   mpCost: 0,  helpText: "1x Atk" },
+  slash_II:   { name: "slash_II",   Multiplier: 1.3, mpCost: 0,  helpText: "1.3x Atk" },
+  slash_III:  { name: "slash_III",  Multiplier: 2,   mpCost: 0,  helpText: "2x Atk" },
+  slash_IV:   { name: "slash_IV",   Multiplier: 3,   mpCost: 0,  helpText: "3x Atk" },
+  tackle:     { name: "tackle",     Multiplier: 1.5, mpCost: 0,  helpText: "1.5x Atk" },
+  water:      { name: "water",      Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP" },
 };
 
 export const enemies = {
-  slime:    { name: "Slime",    type: "🌊", attacks: ["water", "nudge"],    difficultyRating: 1,  killXp: 10, },
-  fairy:    { name: "Fairy",    type: "⚡", attacks: ["lightning"],         difficultyRating: 1,  killXp: 30, },
-  minotaur: { name: "Minotaur", type: "🪓", attacks: ["tackle", "slash_II"], difficultyRating: 2, killXp: 50, },
+  slime:    { name: "slime",    type: "🌊", skillList: ["water", "nudge"],     difficultyRating: 1, killXp: 10, },
+  fairy:    { name: "fairy",    type: "⚡", skillList: ["lightning"],          difficultyRating: 1, killXp: 30, },
+  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_II"], difficultyRating: 2, killXp: 50, },
 };
 
 export const allItems = {
@@ -64,37 +65,11 @@ export const icons = {
   hp: "🟥",
 };
 
+// const playerObj = player;
 export const player = {
-  init: function(){
-    this.setPlayerLv(1);
-  },
-  setPlayerLv: function(lv){
-    if( !(this.levels[`lv${lv}`]) ) return; // exit if level is not found
-    this.level = lv;
-    let newLevel = this.levels[`lv${this.level}`];
-    // Xp
-    let excessXp = this.maxXp - this.xp;
-    this.xp = newLevel.startingXp;
-    if ( excessXp > 0 ) this.xp += excessXp;
-    this.maxXp = newLevel.maxXp;
-    // HP
-    this.maxHp = newLevel.maxHp;
-    this.hp = this.maxHp;
-    // MP
-    this.maxMp = newLevel.maxMp;
-    this.mp = this.maxMp;
-    // new skills
-    for(let i=1;i<=lv;i++){ // <= protect against leveling up more than once
-      let lvObj = this.levels[`lv${i}`];
-      lvObj.newSkills.forEach( skillname => { this.addSkill(skillname) });
-    };
-    this.removeSkillDuplicates();
-    this.sortSkills();
-  },
-  removeSkillDuplicates: function(){ this.skillList = [...new Set(this.skillList)]; },
   firstLv: 1,
   lastLv: 5,
-  level: 1,
+  lv: 1,
   baseAtk: 100,
   hp: 100,
   mp: 100,
@@ -106,6 +81,8 @@ export const player = {
   equipment: [],
   skillList: [],
   items: [],
+  parent: this,
+
   levels: {
     lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water", ], },
     lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning", ], },
@@ -113,23 +90,84 @@ export const player = {
     lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III", ], },
     lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV", ], },
   },
+
+  playerEls: {
+    hpEl: document.querySelector('#player-hp'),
+    mpEl: document.querySelector('#player-mp'),
+    xpEl: document.querySelector('#player-xp'),
+    lvEl: document.querySelector('#player-lv'),
+  },
+
+  displayHp: function(){ this.playerEls.hpEl.textContent = `${this.hp}/${this.maxHp}`; },
+  displayMp: function(){ this.playerEls.mpEl.textContent = `${this.mp}/${this.maxMp}`; },
+  displayXp: function(){ this.playerEls.xpEl.textContent = `${this.xp}/${this.maxXp}`; },
+  displayLv: function(){ this.playerEls.lvEl.textContent = this.lv; },
+  displayStats: function(){
+    this.displayHp();
+    this.displayMp();
+    this.displayXp();
+    this.displayLv();
+  },
+
+  init: function(){
+    this.setLv(1);
+  },
+
+  setLv: function(num){
+    if ( num > 5 ) num = 5; // fix outrageous numbers
+    if ( num < 1 ) num = 1; // fix outrageous numbers
+    if( !(this.levels[`lv${num}`]) ) return; // exit if level is not found
+    this.lv = num;
+    let newLevel = this.levels[`lv${this.lv}`];
+    this.displayLv();
+    // Xp
+    this.maxXp = newLevel.maxXp;
+    let excessXp = this.xp - this.maxXp;
+    ( excessXp > 0 ) ?
+      this.setXp(excessXp) :
+      this.setXp(newLevel.startingXp);
+    // HP
+    this.maxHp = newLevel.maxHp;
+    this.setHp(this.maxHp);
+    // MP
+    this.maxMp = newLevel.maxMp;
+    this.setMp(this.maxMp);
+    // new skills
+    for(let i=1;i<=num;i++){ // <= protect against leveling up more than once
+      let lvObj = this.levels[`lv${i}`];
+      lvObj.newSkills.forEach( skillname => { this.addSkill(skillname) });
+    };
+    this.removeSkillDuplicates();
+    this.sortSkills();
+  },
+
+  removeSkillDuplicates: function(){ this.skillList = [...new Set(this.skillList)]; },
   addSkill: function (name) {
     let skill = skills[name];
     if(skill) this.skillList.push(skill);
   },
+
   addEquipment: function(name) {
     let e = equipment[name]
     if(e) this.equipment.push(e);
   },
+
+  sortArrayByNameProperty: function(arr){
+    arr.sort( (a, b) => a.name.localeCompare(b.name) );
+  },
+
   sortEquipment: function(){
-    this.equipment.sort( (a, b) => a.name.localeCompare(b.name) );
+    this.sortArrayByNameProperty(this.equipment);
   },
+
   sortItems: function(){
-    this.item.sort( (a, b) => a.name.localeCompare(b.name) );
+    this.sortArrayByNameProperty(this.items);
   },
+
   sortSkills: function(){
-    this.skillList.sort( (a, b) => a.name.localeCompare(b.name) );
+    this.sortArrayByNameProperty(this.skillList);
   },
+
   addItems: function(...names){
     for(let i of names){
       let item = allItems[i];
@@ -138,10 +176,94 @@ export const player = {
         this.equipment.push(item);
     };
   },
+
   lvUpCheck: function(){
     if (this.xp < this.maxXp) return; // leave if xp is not sufficient
-    this.setPlayerLv(this.level+1)
+    this.setLv(this.lv+1)
   },
+
+  setHp: function(num) {
+    this.hp = num;
+    if(this.hp > this.maxHp) this.hp = this.maxHp; // prevent going over the cap
+    this.displayHp();
+  },
+
+  setMp: function(num) {
+    this.mp = num;
+    if(this.mp > this.maxMp) this.mp = this.maxMp; // prevent going over the cap
+    this.displayMp();
+  },
+
+  setXp: function(num) {
+    this.xp = num;
+    this.lvUpCheck();
+    this.displayXp();
+  },
+
+  addHp: function(num) {
+    this.hp += num;
+    if(this.hp > this.maxHp) this.hp = this.maxHp; // prevent going over the cap
+    this.displayHp();
+  },
+
+  addMp: function(num) {
+    this.mp += num;
+    if(this.mp > this.maxMp) this.mp = this.maxMp; // prevent going over the cap
+    this.displayMp();
+  },
+
+  addXp: function(num) {
+    this.xp += num;
+    this.lvUpCheck();
+    this.displayXp();
+  },
+
+  useSkill: function(name){
+    let skill = skills[name];
+    this.mp = this.mp - skill.mpCost
+  },
+};
+
+export const enemy = {
+  name: "Cpu",
+  hp: 0,
+  mp: 0,
+  maxHp: 10,
+  maxMp: 10,
+  killXp: 0,
+  skillList: [],
+
+  enemyEls: {
+    hpEl: document.querySelector('#enemy-hp'),
+    mpEl: document.querySelector('#enemy-mp'),
+  },
+
+  displayHp: function() { this.enemyEls.hpEl.textContent = `${this.hp}/${this.maxHp}`; },
+  displayMp: function() { this.enemyEls.mpEl.textContent = `${this.mp}/${this.maxMp}`; },
+  displayStats: function() {
+    this.
+      displayHp();
+      displayMp();
+  },
+
+  init: function(){
+    this.name = "Cpu";
+    this.hp = 0;
+    this.mp = 0;
+  },
+
+  setEnemy: function(name) {
+    newEnemy = enemies[name];
+    this.name = newEnemy.name;
+    this.hp = newEnemy.hp;
+    this.killXp = newEnemy.killXp;
+  },
+
+  useSkill: function(name){
+    let skill = skills[name];
+    this.mp = this.mp - skill.mpCost
+  },
+
 };
 
 // ===== Elements =====
@@ -155,4 +277,30 @@ export const invBtns = {
   skillsBtnEl: document.querySelector('#inv-skills-btn'),
   itemsBtnEl: document.querySelector('#inv-items-btn'),
   equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
+  refresh: function (){
+    this.skillsBtnEl = document.querySelector('#inv-skills-btn');
+    this.itemsBtnEl = document.querySelector('#inv-items-btn');
+    this.equipmentBtnEl = document.querySelector('#inv-equipment-btn');
+  },
 };
+
+export const battleLog = {
+  element: document.querySelector('#battle-log'),
+  logItems: document.querySelectorAll('#battle-log p'),
+
+  init: function(){
+    this.clear();
+  },
+
+  newLogItem: function(pText){
+    if( !pText ) { console.log('No text was passed to battleLog.newLogItem') };
+    let logItem = document.createElement('p'); // new paragraph tag
+    logItem.textContent = pText;
+    this.element.appendChild( logItem );
+  },
+
+  clear: function(){
+    this.logItems.forEach( tag => tag.remove() );
+    this.logItems = document.querySelectorAll('#battle-log p');
+  },
+}
