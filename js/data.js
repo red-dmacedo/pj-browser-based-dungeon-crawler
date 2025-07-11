@@ -73,7 +73,6 @@ export const icons = {
   hp: "🟥",
 };
 
-// const playerObj = player;
 export const player = {
   firstLv: 1,
   lastLv: 5,
@@ -298,18 +297,19 @@ export const inventory = {
   commandBtnEls: document.querySelectorAll('#inventory button'),
   invEl: document.querySelector('#inventory'),
 
-  init: function(playerObj){
-    this.player = playerObj;
+  init: function(){
+    // this.player = playerObj;
     this.clearCommandBtns();
-    this.invEl.addEventListener("click", this.swapInventory);
+    this.menu.invMenuEl.addEventListener("click", this.swapInventory);
   },
 
   clearCommandBtns: function(){ this.commandBtnEls.forEach( el => el.remove() ); },
 
-  menuBtnEls: {
-    skillsBtnEl: document.querySelector('#inv-skills-btn'),
-    itemsBtnEl: document.querySelector('#inv-items-btn'),
-    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
+  menu: {
+      invMenuEl: document.querySelector('#inv-menu'),
+      skillsBtnEl: document.querySelector('#inv-skills-btn'),
+      itemsBtnEl: document.querySelector('#inv-items-btn'),
+      equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
   },
 
   loadNewCommandBtns: function(){
@@ -335,20 +335,20 @@ export const inventory = {
     this.clearCommandBtns(); // clear old buttons
     switch( evt.target.textContent ) {
       case btnNames[0]: {
-        console.dir(this.player.skillList);
-        list = this.player.skillList;
+        console.dir(player.skillList);
+        list = player.skillList;
         break;
       };
       case btnNames[1]: {
-        list = this.player.items;
+        list = player.items;
         break;
       };
       case btnNames[2]: {
-        list = this.player.equipment;
+        list = player.equipment;
         break;
       };
       default: {
-        console.log(`invSwitcher: No case for ${evt.target.textContent}`);
+        console.log(`swapInventory: No case for ${evt.target.textContent}`);
         return; // leave function
       };
     };

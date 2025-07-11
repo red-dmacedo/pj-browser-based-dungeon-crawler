@@ -16,9 +16,12 @@ map
 // const game = {};
 const player = data.player;
 const inventory = data.inventory;
-const invMenuEl = document.querySelector('#inv-menu');
+// const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Functions / Methods =====
+
+game.init();
+
 const game = {
   startRoom: 25,
   firstEnterableRoom: 22,
@@ -34,7 +37,7 @@ const game = {
     // inventory.invEl.addEventListener("click", inventory.swapInventory);
     // inventory.addCommandBtn('temp1');
     // invMenuEl.addEventListener("click", invSwitcher);
-    document.addEventListener("DOMContentLoaded", game.onPageLoad)
+    document.addEventListener("DOMContentLoaded", game.onPageLoad);
   },
 
   nextFloor: function(){
@@ -45,7 +48,7 @@ const game = {
   },
 
   onPageLoad: function(){
-    data.inventory.menuBtnEls.skillsBtnEl.click(); // Click skill button
+    data.inventory.menu.skillsBtnEl.click(); // Click skill button
   },
 
   setMap: function(floorNum){
