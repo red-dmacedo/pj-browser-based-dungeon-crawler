@@ -130,6 +130,152 @@ const enemy = {
 
 // player and player and inventory objects are better defined as classes.
 const player = {
+  stats: {
+    atk: 50,
+    icon: icons.player,
+    lv: 1,
+    // Hp
+    hp: 1,
+    maxHp: 10,
+    // Mp
+    mp: 1,
+    maxMp: 10,
+    // Xp
+    xp: 0,
+    maxXp: 100,
+    totalXp: 0,
+    addHp: function(num){
+      player.hp += num;
+      if(player.hp > player.maxHp) player.hp = player.maxHp;
+      player.stats.updateHp();
+    },
+    addMp: function(num){
+      player.mp += num;
+      player.stats.updateMp();
+    },
+    addXp: function(num){
+      player.totalXp += num;
+      player.xp += num;
+      player.stats.updateXp();
+    },
+    lvUpCheck: function(){},
+    updateHp: function(){
+      player.htmlElements.hpEl.textContent = `${player.stats.hp}/${player.stats.maxHp}`;
+    },
+    updateMp: function(){
+      player.htmlElements.mpEl.textContent = `${player.stats.mp}/${player.stats.maxMp}`;
+    },
+  },
+
+  htmlElements: {
+    hpEl: document.querySelector('#player-hp'),
+    mpEl: document.querySelector('#player-mp'),
+    xpEl: document.querySelector('#player-xp'),
+    lvEl: document.querySelector('#player-lv'),
+  },
+
+  levels: {
+    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+  },
+
+  init: function(){},
+
+  displayHp: function () {
+    player.playerEls.hpEl.textContent = `${player.hp}/${player.maxHp}`;
+  },
+
+  displayMp: function () {
+    player.playerEls.mpEl.textContent = `${player.mp}/${player.maxMp}`;
+  },
+
+  displayXp: function () {
+    player.playerEls.xpEl.textContent = `${player.xp}/${player.maxXp}`;
+  },
+
+  displayLv: function () {
+    player.playerEls.lvEl.textContent = player.lv;
+  },
+
+  displayStats: function () {
+    player.displayHp();
+    player.displayMp();
+    player.displayXp();
+    player.displayLv();
+  },
+
+  sortArrayByNameProperty: function (arr) {
+    arr.sort((a, b) => a.name.localeCompare(b.name));
+  },
+
+  removeItemFromArray: function(arr, item){
+    arr.splice(arr.indexOf(item),1);
+  },
+
+  inventory: {
+    elements: {},
+    equipment: {
+      list: [],
+    },
+    items: {
+      list: [],
+      add: function(item){
+        if( !(item.name) ) item = allItems[item]; // allow item to be object or name
+        player.inventory.items.list.push(item);
+      },
+      remove: function(){
+        if( !(item.name) ) item = allItems[item]; // allow item to be object or name
+        player.removeItemFromArray(player.items.list, item);
+      },
+      sort: function(){
+        player.sortArrayByNameProperty(player.items.list);
+      },
+      use: function(item){
+        if( !(item.name) ) item = allItems[item]; // allow item to be object or name
+        if(item.type !== "consumable") return; // only consumables can be used
+        switch(item.stat){
+          case "hp":
+            player.stats.addHp(item.value);
+            break;
+          case "mp":
+            player.stats.addMp(item.value);
+            break;
+          default:
+            console.log(`[player.inventory.items.use()]no case statement for item stat: ${item.stat}`);
+        };
+      },
+    },
+
+    skills: {
+      list: [],
+      add: function(skill){
+        if( !(skill.name) ) skill = skills[skill];
+        player.skills.list.push(skill);
+      },
+      remove: function(skill){
+        if( !(skill.name) ) skill = skills[skill];
+        player.removeItemFromArray(player.skills.list, skill);
+      },
+      removeDuplicates: function () {
+        player.skills.list = [...new Set(player.skills.list)];
+      },
+      sort: function(){
+        player.sortArrayByNameProperty(player.skills.list);
+      },
+      use: function(skill, enemyObj){
+        if( !(skill.name) ) skill = skills[skill]; // allow skill name or object to be passed in
+        enemyObj.addHp( -(skill.Multiplier * player.atk) );
+        player.stats.addMp( -(skill.mpCost) );
+        player.stats.update();
+      },
+    },
+  },
+};
+
+const playerX = {
   firstLv: 1,
   lastLv: 5,
   lv: 1,
