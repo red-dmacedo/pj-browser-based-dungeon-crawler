@@ -15,7 +15,7 @@ map
 // initialize game object
 // const game = {};
 const player = data.player;
-const inventory = data.inventory;
+const inventory = data.player.inventory;
 // const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Objects =====
@@ -42,7 +42,7 @@ const game = {
   },
 
   onPageLoad: function () {
-    inventory.menu.skillsBtnEl.click(); // Click skill button
+    inventory.menu.elements.skillsBtnEl.click(); // Click skill button
   },
 
   setMap: function (floorNum) {
@@ -180,7 +180,9 @@ const game = {
 // ===== Script =====
 game.init();
 
-console.dir(player);
+inventory.clear();
+
+// console.dir(player);
 // let tmp = data.tempObj;
 // tmp.init();
 // tmp.method3();
