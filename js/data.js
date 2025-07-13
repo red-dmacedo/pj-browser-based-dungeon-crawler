@@ -237,7 +237,9 @@ const player = {
     lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
   },
 
-  init: function () { },
+  init: function () {
+    player.inventory.init();
+  },
 
   setLv: function (num) {
     if (num > player.stats.maxLv) num = player.stats.maxLv; // fix outrageous numbers
@@ -283,10 +285,11 @@ const player = {
   },
 
   inventory: {
-    currentTab: '',
+    currentTab: 'Skills',
     init: function () {
       player.inventory.addStartingItems();
       player.inventory.menu.elements.refresh();
+      player.inventory.menu.elements.invMenuEl.addEventListener("click", player.inventory.menu.changeTab);
     },
 
     menu: {
@@ -297,6 +300,7 @@ const player = {
         equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
         commandBtnEls: document.querySelectorAll('#inventory button'),
         invEl: document.querySelector('#inventory'),
+
         refresh: function () {
           const elements = player.inventory.menu.elements;
           elements.invMenuEl = document.querySelector('#inv-menu');
@@ -307,7 +311,14 @@ const player = {
           elements.invEl = document.querySelector('#inventory');
         },
       },
-      addButton: function (text) {
+
+      clearCommandBtns: function(){
+        let menu = player.inventory.menu;
+        menu.elements.refresh();
+        menu.elements.commandBtnEls.forEach(el => el.remove());
+      },
+
+      addCommandButton: function (text) {
         let el = player.inventory.menu.elements.invEl;
         let nBtn = document.createElement('button');
         nBtn.type = 'button';
@@ -316,6 +327,34 @@ const player = {
         el.appendChild(nBtn);
         player.inventory.menu.elements.refresh();
       },
+
+      changeTab: function(evt){
+        // const tabNames = ['Skills','Items','Equipment'];
+        if( !(evt.target.classList.contains('inv-menu-btn')) ) return; // only allow class of 'inv-menu-btn'
+        let menu = player.inventory.menu;
+        menu.clearCommandBtns();
+        let list;
+        switch(evt.target.textContent){
+          case 'Skills':
+            list = player.inventory.skills.list;
+            break;
+          case 'Items':
+            list = player.inventory.items.list;
+            break;
+          case 'Equipment':
+            list = player.inventory.equipment.list;
+            break;
+          default:
+            console.log('[player.inventory.menu.changeTab()] No case for:', evt.target.textContent);
+            return;
+        };
+
+        console.dir(list);
+        list.forEach( item => menu.addCommandButton(item.name) );
+        menu.elements.refresh();
+      },
+
+      setTab: function(){},
     },
 
     equipment: {

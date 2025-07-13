@@ -30,7 +30,6 @@ const game = {
     player.init();
     game.toggleMapElEventListener();
     game.renderMap();
-    inventory.init();
     document.addEventListener("DOMContentLoaded", game.onPageLoad);
   },
 
