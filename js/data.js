@@ -125,7 +125,7 @@ const enemy = {
     enemy.clearSkillList();
     enemy.isDead = false;
     let newEnemy;
-    (typeof (enemy) === 'string') ? newEnemy = allEnemies[char] : newEnemy = char; // get enemy by name or allow object to pass
+    (typeof (char) === 'string') ? newEnemy = allEnemies[char] : newEnemy = char; // get enemy by name or allow object to pass
     enemy.name = `${newEnemy.name}${newEnemy.type}`;
     // hp
     enemy.maxHp = newEnemy.hp;
@@ -144,7 +144,7 @@ const enemy = {
   commandBox: {
     init: function () {
       enemy.commandBox.clear();
-      enemy.commandBox.displayList(enemy.skillList.map(i => i.name));
+      enemy.commandBox.displayList(enemy.skillList);
     },
     el: document.querySelector('#enemy-command-box'),
     addButton: function (text) {
@@ -160,9 +160,12 @@ const enemy = {
       for (let el of Array.from(commandBoxEl.children)) { el.remove(); }; // convert children object to array for use in loop
     },
     displayList: function (list) {
+      if(!list) return;
+      if(list.length === 0) return;
       const commandBox = enemy.commandBox;
       commandBox.clear();
-      list.forEach(i => commandBox.addButton(i.name));
+      console.dir(list);
+      list.forEach(i => commandBox.addButton(i));
       // commandBox.addButton('Return'); // do not add to startItems
     },
 
@@ -212,7 +215,7 @@ const player = {
       stats.hp += num;
       if (stats.hp > stats.maxHp) stats.hp = stats.maxHp;
       if (stats.hp <= 0) {
-        player.isDead;
+        player.isDead = true;
         battleLog.newLine('Player has been slain!');
       };
       stats.updateHp();
@@ -409,6 +412,7 @@ const player = {
       },
 
       evtCommandBtnHandler: function (evt) {
+        if(player.isDead) return;
         const item = allItems[evt.target.textContent];
         if (!item) return; // item not found
         switch (item.type) {
@@ -461,7 +465,10 @@ const player = {
       },
 
       evtChangeTab: function (evt) {
-        if (!(evt.target.classList.contains('inv-menu-btn'))) return; // only allow class of 'inv-menu-btn'
+        if (
+          !(evt.target.classList.contains('inv-menu-btn')) ||
+          player.encounterActive
+        ) return; // only allow class of 'inv-menu-btn'
         player.inventory.menu.setTab(evt.target.textContent.toLowerCase());
       },
 
@@ -575,13 +582,15 @@ const player = {
       },
       use: function (skill) {
         const enemy = player.enemy;
-
+        const stats = player.stats;
         if (!(skill.name)) skill = allSkills[skill]; // allow skill name or object to be passed in
+        battleLog.newLine(`Player used ${skill.name}`);
+        if(skill.mpCost){battleLog.newLine(` Player lost (${skill.mpCost}) MP`)};
         let hitDmg = -(Math.floor(skill.Multiplier * player.stats.atk));
         battleLog.newLine(`${enemy.name.toUpperCase()} took (${hitDmg}) damage.`);
         enemy.addHp(hitDmg);
-        player.stats.addMp(-(skill.mpCost));
-        player.stats.update();
+        stats.addMp(-(skill.mpCost));
+        stats.update();
       },
       clear: function () {
         player.inventory.skills.list.length = 0;
@@ -642,6 +651,10 @@ const player = {
           commandBox.displayList(commandBox.startItems);
         },
         evtHandleCommand: function (evt) {
+          if(!player.encounterActive){
+            battleLog.newLine('No enemy to fight.')
+            return;
+          };
           const commandBox = player.battle.display.commandBox;
           const inventory = player.inventory;
           if ([...commandBox.startItems, 'Return'].includes(evt.target.textContent)) {
@@ -727,7 +740,7 @@ const battleLog = {
 
 export {
   allSkills,
-  allEnemies as enemies,
+  allEnemies,
   allItems,
   floors,
   icons,
@@ -735,6 +748,7 @@ export {
   elem,
   battleLog,
   player,
+  bossEnemies,
   // inventory,
 }
 

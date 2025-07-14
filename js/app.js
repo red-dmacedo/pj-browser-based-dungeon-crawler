@@ -28,23 +28,31 @@ const game = {
   currentFloor: 1,
   enemyList: [],
   encounterActive: false,
+  gameOver: false,
 
   init: function () {
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
     game.renderMap();
+    game.updateEnemies();
     enemy.init();
-    enemy.setEnemy('fairy');
+    // enemy.setEnemy('fairy');
     player.init(enemy); // passing enemy object is not ideal, but is used due to deadline approaching
-    player.encounterActive = game.encounterActive; // tie these two variables together (when one changes, so does the other);
+    game.updateEncounterActive(false); // activate or de-activate encounter
     battleLog.clear();
     // player.battle.takeAttack(50, 'fire'); 
   },
 
+  updateEncounterActive: function(active=false){
+    game.encounterActive = active;
+    player.encounterActive = active;
+    enemy.encounterActive = active;
+  },
+
   updateEnemies: function () {
-    data.allEnemies.forEach((char) => {
-      if (char.difficultyRating <= game.currentFloor) { game.enemyList.push(char); }; // add enemies from this floor and below
-    });
+    for(let i of Object.values(data.allEnemies)){ // get array of values from data.allEnemies
+      if(i.difficultyRating <= game.currentFloor){ game.enemyList.push(i); } // add enemies from the current floor and below
+    };
     game.enemyList = [...new Set(game.enemyList)]; // filter out duplicates
   },
 
@@ -97,11 +105,28 @@ const game = {
     if (
       !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
       !(game.validateMovement(evt.target.id)) ||
-      game.encounterActive // do nothing if move is not valid
+      game.encounterActive ||
+      player.isDead // do nothing if move is not valid
     ) return;
 
-    game.chanceEncounter();
     game.room = Number(evt.target.id); // update current room
+    
+    switch(game.map[game.room]){
+      case data.icons.battle:
+        game.forceEncounter();
+        break;
+      case data.icons.boss:
+        game.bossBattle();
+        break;
+      case data.icons.healing:
+        game.fullHeal();
+        break;
+      case data.icons.treasure:
+        game.getTreasure();
+        break;
+      default:
+        // game.chanceEncounter();
+    };
 
     // Hide the start square if it is visible
     if (data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
@@ -110,18 +135,41 @@ const game = {
     game.renderMap();
   },
 
+  fullHeal: function(){
+    player.stats.addHp(10000);
+    battleLog.newLine('Player has recovered full HP');
+  },
+
+  getTreasure: function(){
+    let idx = game.randomNumGen(0, Object.keys(data.allItems).length-1);
+    let itemName = Object.keys(data.allItems)[idx];
+    player.inventory.items.add(itemName);
+  },
+
+  forceEncounter: function(){
+    let idx = game.randomNumGen(0, game.enemyList.length-1);
+    enemy.setEnemy(game.enemyList[idx]);
+    game.updateEncounterActive(true);
+  },
+
+  bossBattle: function(){
+    enemy.setEnemy(data.bossEnemies[game.currentFloor-1]);
+    game.updateEncounterActive(true);
+  },
+
   chanceEncounter: function () {
     let num = game.randomNumGen(1,10);
-    if(num <= 6) return; // no encounter
-    game.encounterActive = true;
-    num = game.randomNumGen(0, game.enemyList.length);
-    const selectedEnemy = game.enemyList[num]
-    enemy.setEnemy();
+    if(num <= 6) return; // 50% encounter rate
+    game.updateEncounterActive(true);
+    num = game.randomNumGen(0, game.enemyList.length-1);
+    let selectedEnemy = game.enemyList[num];
+    console.log(num);
     battleLog.newLine(`${selectedEnemy.name.toUpperCase()} has been encountered. Fight!`);
+    enemy.setEnemy(selectedEnemy);
   },
 
   randomNumGen: function(start, end) {
-    return Math.floor(Math.random() * (end-start) + start);
+    return Math.floor(Math.random() * (end-start+1)) + start;
   },
 
   highlightSquare: function (squareEl, unHighlight = false) {
@@ -151,62 +199,19 @@ const game = {
     );
   },
 
-  battleStart(evt) { },
-}
-
-// function clearInvBtns(){
-//   fetchInvBtnEls();
-//   invBtnEls.forEach( (el) => { el.remove(); });
-//   fetchInvBtnEls();
-// };
-
-// function fetchInvBtnEls(){
-//   invBtnEls = document.querySelectorAll('#inventory button'); // global variable
-// };
-
-// function swapInventory(evt){
-//   const btnNames = ['Skills', 'Items', 'Equipment'];
-//   if( !(btnNames.includes(evt.target.textContent)) ) return; // Exit if button is not in the list
-
-//   document.querySelectorAll('.inv-menu-btn').forEach( (el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
-
-//   evt.target.classList.add( "highlight-btn" ) // highlight selected button
-
-//   let useList;
-//   inventory.loadNewCommandBtns();
-//   inventory.commandBtnEls.forEach(el => el.remove());
-//   switch( evt.target.textContent ) {
-//     case btnNames[0]: {
-//       useList = player.skillList;
-//       break;
-//     };
-//     case btnNames[1]: {
-//       useList = player.items;
-//       break;
-//     };
-//     case btnNames[2]: {
-//       useList = player.equipment;
-//       break;
-//     };
-//     default: {
-//       console.log(`swapInventory: No case for ${evt.target.textContent}`);
-//       return; // leave function
-//     };
-//   };
-//   useList.forEach( (i) => { inventory.addCommandBtn(i.name); })
-// };
-
-// function useItems(evt){
-//   item = data.allItems[evt.target.textContent]
-//   if( !item ) return; // return if selection is NOT an item
-
-//   switch(item.type){
-//     case "consumable": {};
-//     case "equipment": {
-//       // player.
-//     };
-//   };
-// };
+  battleStart(){
+    while(
+      (!player.isDead) &&
+      (!enemy.isDead) &&
+      game.encounterActive
+    ){ game.sleep(5); };
+    if(player.isDead) game.gameOver = true;
+  },
+  sleep: function(seconds){
+    seconds = seconds*1000;
+    setTimeout(resolve, seconds);
+  },
+};
 
 
 // ===== Script =====
