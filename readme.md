@@ -29,6 +29,8 @@ I chose to make a dungeon crawler because I personally enjoy playing them. There
     - New equipment can be obtained by entering a treasure room.
     - Equipment is not currently implemented.
     - Hover your mouse over a piece of equipment for a short description.
+- Goal
+  - Reach the boss room and defeat whoever resides within.
 
 # Attributions
 - Images used came from: [images.freeimages.com](https://images.freeimages.com).
