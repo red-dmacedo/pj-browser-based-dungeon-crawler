@@ -60,7 +60,7 @@ const floors = {
     bossRoom: 19,
     encounterRooms: [9,],
     healRooms: [0],
-    treasureRooms: [10],
+    treasureRooms: [10, 4, 13],
   },
   f2: {
     name: "2F",
@@ -187,7 +187,7 @@ const enemy = {
     enemy.enemyEls.hpEl.textContent = enemy.hp;
     if (enemy.hp <= 0) {
       enemy.isDead = true;
-      battleLog.newLine(`${enemy.name.toUpperCase()} has been slain`);
+      battleLog.newLine(`${enemy.name.toUpperCase()} has been slain`, 'red');
     };
   },
 };
@@ -216,7 +216,7 @@ const player = {
       if (stats.hp > stats.maxHp) stats.hp = stats.maxHp;
       if (stats.hp <= 0) {
         player.isDead = true;
-        battleLog.newLine('Player has been slain!');
+        battleLog.newLine('Player has been slain!', 'red');
       };
       stats.updateHp();
     },
@@ -409,7 +409,7 @@ const player = {
         nBtn.addEventListener("click", player.inventory.menu.evtCommandBtnHandler);
         let btnItem = allItems[text];
         if(!btnItem) btnItem = allSkills[text];
-        nBtn.title = btnItem.helpText;
+        if(btnItem) nBtn.title = btnItem.helpText;
         el.appendChild(nBtn);
         player.inventory.menu.elements.refresh();
       },
@@ -637,6 +637,9 @@ const player = {
           nBtn.type = 'button';
           nBtn.classList.add('battle-btn');
           nBtn.textContent = text;
+          let btnItem = allItems[text];
+          if(!btnItem) btnItem = allSkills[text];
+          if(btnItem) nBtn.title = btnItem.helpText;
           cmdEl.appendChild(nBtn);
         },
         clear() {
@@ -683,6 +686,7 @@ const player = {
           let skill = player.filterArrayByName(inventory.skills.list, evt.target.textContent)[0]
           if (skill) {
             inventory.skills.use(skill);
+            if(player.enemy.isDead){ player.encounterActive = false };
             commandBox.currentList = 'startItems';
             commandBox.addStartCommands();
           };
@@ -726,12 +730,13 @@ const battleLog = {
     battleLog.lines = 0;
   },
 
-  newLine: function (pText) {
+  newLine: function (pText, color) {
     battleLog.lines++;
     if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; };
     let logItem = document.createElement('p'); // new paragraph tag
     logItem.textContent = `[${battleLog.lines}] ${pText}`;
     if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
+    if(color) logItem.style.color = color;
     battleLog.element.prepend(logItem);
     // battleLog.element.appendChild(logItem); // swapped to prepend
   },

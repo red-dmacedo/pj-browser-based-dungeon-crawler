@@ -31,6 +31,12 @@ const game = {
   gameOver: false,
 
   init: function () {
+    game.currentFloor = 1;
+    game.encounterActive = false;
+    game.gameOver = false;
+    game.room = 25;
+    data.elem.startSquare.style.opacity = 1;
+    game.clearHighlightedSquares();
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
     game.renderMap();
@@ -40,7 +46,7 @@ const game = {
     player.init(enemy); // passing enemy object is not ideal, but is used due to deadline approaching
     game.encounterActive = false; // activate or de-activate encounter
     battleLog.clear();
-    // player.battle.takeAttack(50, 'fire'); 
+    // player.battle.takeAttack(50, 'fire');
   },
 
   updateEnemies: function () {
@@ -55,6 +61,10 @@ const game = {
       game.currentFloor += 1;
       game.setMap(game.currentFloor);
     }
+  },
+
+  clearHighlightedSquares: function(){
+    Array.from(data.elem.mapSquares).forEach(el => game.highlightSquare(el, true));
   },
 
   setMap: function (floorNum) {
@@ -97,6 +107,7 @@ const game = {
       !(game.validateMovement(evt.target.id)) || // do nothing if move is not valid
       game.encounterActive || // disallow movement during encounters
       player.isDead || // player has died
+      player.encounterActive ||
       game.gameOver // game is over
     ) return;
 
@@ -135,12 +146,14 @@ const game = {
     let idx = game.randomNumGen(0, Object.keys(data.allItems).length-1);
     let itemName = Object.keys(data.allItems)[idx];
     player.inventory.items.add(itemName);
+    battleLog.newLine(`Player recieved ${itemName}`);
   },
 
   forceEncounter: function(){
     let idx = game.randomNumGen(0, game.enemyList.length-1);
     enemy.setEnemy(game.enemyList[idx]);
     game.encounterActive = true;
+    player.encounterActive = true;
   },
 
   bossBattle: function(){
@@ -158,6 +171,7 @@ const game = {
     };
     enemy.setEnemy(selection);
     game.encounterActive = true;
+    player.encounterActive = true;
   },
 
   chanceEncounter: function () {
@@ -206,6 +220,7 @@ const game = {
 
 // ===== Script =====
 game.init();
+document.querySelector('#reset').addEventListener("click", game.init());
 
 // inventory.clear();
 

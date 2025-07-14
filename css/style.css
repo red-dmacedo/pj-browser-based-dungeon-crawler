@@ -192,6 +192,7 @@ button:hover {
   max-width: 800px;
   align-self: center;
   background-image: url("https://images.freeimages.com/images/large-previews/f7c/krzyztopor-castle-1232338.jpg?fmt=webp&h=350");
+  alt: 'dungeon corridor';
   background-repeat: no-repeat;
   background-size: cover;
 }
