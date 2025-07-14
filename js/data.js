@@ -426,7 +426,7 @@ const player = {
             // player.inventory.equipment.equip(item); // must implement
             break;
           default:
-            console.log("[player.inventory.menu.elements.evtCommandBtnHandler()] No case for item.type:", item.type);
+            console.log("[player.inventory.menu.elements.evtCommandBtnHandler()] No case for item.type:", item.type); // left in because only changing the code will allow execution
             return; // exit if item was not found
         };
       },
@@ -458,7 +458,7 @@ const player = {
             menu.highlightBtn(menu.elements.equipmentBtnEl);
             break;
           default:
-            console.log('[player.inventory.menu.setTab()] No case for:', tabName);
+            console.log('[player.inventory.menu.setTab()] No case for:', tabName); // left in because only changing the code will allow execution
             return;
         };
         menu.currentTab = tabName;
@@ -497,7 +497,7 @@ const player = {
               break;
             };
             default: {
-              console.log("[player.inventory.items.add()] No case for item.type:", item.type);
+              console.log("[player.inventory.items.add()] No case for item.type:", item.type); // left in because only changing the code will allow execution
               continue;
             };
           };
@@ -521,7 +521,7 @@ const player = {
               break;
             };
             default: {
-              console.log("[player.inventory.items.add()] No case for item.type:", item.type);
+              console.log("[player.inventory.items.add()] No case for item.type:", item.type); // left in because only changing the code will allow execution
               continue;
             };
           };
@@ -547,7 +547,7 @@ const player = {
             battleLog.newLine(`player has recovered ${item.value} MP.`);
             break;
           default:
-            console.log(`[player.inventory.items.use()]no case statement for item stat: ${item.stat}`);
+            console.log(`[player.inventory.items.use()]no case statement for item stat: ${item.stat}`); // left in because only changing the code will allow execution
         };
         player.inventory.items.remove(item);
         player.inventory.menu.setTab(player.inventory.menu.currentTab);
@@ -693,7 +693,6 @@ const player = {
           // use item
           let item = player.filterArrayByName(inventory.items.list, evt.target.textContent)[0]
           if (item) {
-            console.log(item)
             inventory.items.use(item);
             commandBox.currentList = 'startItems';
             commandBox.addStartCommands();
@@ -732,7 +731,7 @@ const battleLog = {
 
   newLine: function (pText, color) {
     battleLog.lines++;
-    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; };
+    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
     let logItem = document.createElement('p'); // new paragraph tag
     logItem.textContent = `[${battleLog.lines}] ${pText}`;
     if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';

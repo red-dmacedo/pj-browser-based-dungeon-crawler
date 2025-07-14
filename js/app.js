@@ -180,7 +180,6 @@ const game = {
     game.encounterActive = true;
     num = game.randomNumGen(0, game.enemyList.length-1);
     let selectedEnemy = game.enemyList[num];
-    console.log(num);
     battleLog.newLine(`${selectedEnemy.name.toUpperCase()} has been encountered. Fight!`);
     enemy.setEnemy(selectedEnemy);
   },
