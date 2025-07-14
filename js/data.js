@@ -20,9 +20,15 @@ const allSkills = {
 };
 
 const allEnemies = {
-  slime: { name: "slime", type: "🌊", skillList: ["water", "nudge"], difficultyRating: 1, killXp: 10, hp: 50, mp: 100, },
-  fairy: { name: "fairy", type: "⚡", skillList: ["lightning"], difficultyRating: 1, killXp: 30, hp: 100, mp: 100, },
-  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+  slime: { name: "slime", type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
+  goblin: { name: "goblin", type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
+  fairy: { name: "fairy", type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
+  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+};
+
+const bossEnemies = {
+  bigSlime: { name: "bigSlime", type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
+  frenziedMinotaur: { name: "frenziedMinotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
 };
 
 const allItems = {
@@ -90,6 +96,7 @@ const enemy = {
   maxMp: 10,
   killXp: 0,
   skillList: [],
+  isDead: false,
 
   enemyEls: {
     hpEl: document.querySelector('#enemy-hp'),
@@ -111,12 +118,15 @@ const enemy = {
     enemy.clearSkillList();
     enemy.hp = 0;
     enemy.mp = 0;
+    enemy.commandBox.init();
   },
 
-  setEnemy: function (name) {
+  setEnemy: function (char) {
     enemy.clearSkillList();
-    const newEnemy = allEnemies[name]; // get enemy by name
-    enemy.name = newEnemy.name;
+    enemy.isDead = false;
+    let newEnemy;
+    (typeof (enemy) === 'string') ? newEnemy = allEnemies[char] : newEnemy = char; // get enemy by name or allow object to pass
+    enemy.name = `${newEnemy.name}${newEnemy.type}`;
     // hp
     enemy.maxHp = newEnemy.hp;
     enemy.hp = enemy.maxHp;
@@ -126,6 +136,36 @@ const enemy = {
     // xp
     enemy.killXp = newEnemy.killXp;
     enemy.displayStats();
+    // skills
+    enemy.skillList = newEnemy.skillList //.forEach((skil) => {enemy.skillList.push(skil)})
+    enemy.commandBox.init();
+  },
+
+  commandBox: {
+    init: function () {
+      enemy.commandBox.clear();
+      enemy.commandBox.displayList(enemy.skillList.map(i => i.name));
+    },
+    el: document.querySelector('#enemy-command-box'),
+    addButton: function (text) {
+      const cmdEl = enemy.commandBox.el;
+      let nBtn = document.createElement('button');
+      nBtn.type = 'button';
+      nBtn.classList.add('battle-btn');
+      nBtn.textContent = text;
+      cmdEl.appendChild(nBtn);
+    },
+    clear() {
+      const commandBoxEl = enemy.commandBox.el;
+      for (let el of Array.from(commandBoxEl.children)) { el.remove(); }; // convert children object to array for use in loop
+    },
+    displayList: function (list) {
+      const commandBox = enemy.commandBox;
+      commandBox.clear();
+      list.forEach(i => commandBox.addButton(i.name));
+      // commandBox.addButton('Return'); // do not add to startItems
+    },
+
   },
 
   useSkill: function (name) {
@@ -135,11 +175,25 @@ const enemy = {
 
   clearSkillList: function () { enemy.skillList.length = 0; },
 
+  addHp: function (num) {
+    if (enemy.isDead) {
+      battleLog.newLine(`${enemy.name} is already dead. Move on!`);
+      return;
+    };
+    enemy.hp += num;
+    enemy.enemyEls.hpEl.textContent = enemy.hp;
+    if (enemy.hp <= 0) {
+      enemy.isDead = true;
+      battleLog.newLine(`${enemy.name.toUpperCase()} has been slain`);
+    };
+  },
 };
 
 const player = {
+  isDead: false,
+  encounterActive: false,
   stats: {
-    atk: 50,
+    atk: 20,
     icon: icons.player,
     lv: 1,
     maxLv: 5,
@@ -157,6 +211,10 @@ const player = {
       const stats = player.stats;
       stats.hp += num;
       if (stats.hp > stats.maxHp) stats.hp = stats.maxHp;
+      if (stats.hp <= 0) {
+        player.isDead;
+        battleLog.newLine('Player has been slain!');
+      };
       stats.updateHp();
     },
     addMp: function (num) {
@@ -196,7 +254,7 @@ const player = {
       if (stats.xp >= stats.maxXp) { stats.lvUp(); };
     },
     updateHp: function () {
-      function changeElColor(el, color){ el.style.color = color; };
+      function changeElColor(el, color) { el.style.color = color; };
       const stats = player.stats;
       const hpEl = player.htmlElements.hpEl;
       hpEl.textContent = `${player.stats.hp}/${player.stats.maxHp}`;
@@ -204,7 +262,7 @@ const player = {
         half: (stats.maxHp * 0.7),
         low: (stats.maxHp * 0.3),
       }
-      switch(true){
+      switch (true) {
         case stats.hp <= statBounds.low:
           changeElColor(hpEl, 'red');
           break;
@@ -243,11 +301,11 @@ const player = {
   },
 
   levels: {
-    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
-    lv2: { name: "Lv2", startingXp: 0, maxXp: 200, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
-    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
-    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
-    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+    lv1: { name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    lv2: { name: "Lv2", baseAtk: 70, startingXp: 0, maxXp: 200, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    lv3: { name: "Lv3", baseAtk: 80, startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    lv4: { name: "Lv4", baseAtk: 100, startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    lv5: { name: "Lv5", baseAtk: 120, startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
   },
 
   init: function (enemyObj, lv) {
@@ -265,6 +323,7 @@ const player = {
     let requiredXp = 0;
     for (let i = 0; i < num - 1; i++) { requiredXp += player.levels[`lv${i + 1}`].maxXp; };
     requiredXp = requiredXp - stats.totalXp;
+    stats.atk = player.levels[`lv${num}`].baseAtk;
     stats.addXp(requiredXp);
   },
 
@@ -514,9 +573,13 @@ const player = {
       sort: function () {
         player.sortArrayByNameProperty(player.inventory.skills.list);
       },
-      use: function (skill, enemyObj) {
+      use: function (skill) {
+        const enemy = player.enemy;
+
         if (!(skill.name)) skill = allSkills[skill]; // allow skill name or object to be passed in
-        enemyObj.addHp(-(skill.Multiplier * player.atk));
+        let hitDmg = -(Math.floor(skill.Multiplier * player.stats.atk));
+        battleLog.newLine(`${enemy.name.toUpperCase()} took (${hitDmg}) damage.`);
+        enemy.addHp(hitDmg);
         player.stats.addMp(-(skill.mpCost));
         player.stats.update();
       },
@@ -555,7 +618,7 @@ const player = {
       commandBox: {
         el: document.querySelector('#player-command-box'),
         currentList: 'startItems',
-        startItems: ['Fight','Items','Run'],
+        startItems: ['Fight', 'Items', 'Run'],
         addButton: function (text) {
           const cmdEl = player.battle.display.commandBox.el;
           let nBtn = document.createElement('button');
@@ -568,21 +631,21 @@ const player = {
           const commandBoxEl = player.battle.display.commandBox.el;
           for (let el of Array.from(commandBoxEl.children)) { el.remove(); }; // convert children object to array for use in loop
         },
-        displayList: function(list){
+        displayList: function (list) {
           const commandBox = player.battle.display.commandBox;
           commandBox.clear();
           list.forEach(i => commandBox.addButton(i));
           commandBox.addButton('Return'); // do not add to startItems
         },
-        addStartCommands: function() {
+        addStartCommands: function () {
           const commandBox = player.battle.display.commandBox;
           commandBox.displayList(commandBox.startItems);
         },
-        evtHandleCommand: function(evt){
+        evtHandleCommand: function (evt) {
           const commandBox = player.battle.display.commandBox;
           const inventory = player.inventory;
-          if([...commandBox.startItems, 'Return'].includes(evt.target.textContent)){
-            switch(evt.target.textContent){
+          if ([...commandBox.startItems, 'Return'].includes(evt.target.textContent)) {
+            switch (evt.target.textContent) {
               case 'Fight':
                 commandBox.currentList = 'skills';
                 commandBox.displayList(player.inventory.skills.list.map(i => i.name));
@@ -601,16 +664,15 @@ const player = {
             };
           };
           // use skill
-          // figure out how to get enemyObj in here
           let skill = player.filterArrayByName(inventory.skills.list, evt.target.textContent)[0]
-          if(skill){
-            inventory.skills.use(skill, enemyObj);
+          if (skill) {
+            inventory.skills.use(skill);
             commandBox.currentList = 'startItems';
             commandBox.addStartCommands();
           };
           // use item
           let item = player.filterArrayByName(inventory.items.list, evt.target.textContent)[0]
-          if(item){
+          if (item) {
             console.log(item)
             inventory.items.use(item);
             commandBox.currentList = 'startItems';
@@ -626,7 +688,7 @@ const player = {
       battleLog.newLine(`player takes (${hitDmg}) damage`);
     },
   },
-  filterArrayByName: function(arr, name){
+  filterArrayByName: function (arr, name) {
     return arr.filter(i => i.name === name);
   },
 };

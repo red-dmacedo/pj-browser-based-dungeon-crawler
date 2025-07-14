@@ -26,15 +26,26 @@ const game = {
   firstEnterableRoom: 22,
   room: 25,
   currentFloor: 1,
+  enemyList: [],
+  encounterActive: false,
 
   init: function () {
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
     game.renderMap();
     enemy.init();
-    player.init(enemy);
+    enemy.setEnemy('fairy');
+    player.init(enemy); // passing enemy object is not ideal, but is used due to deadline approaching
+    player.encounterActive = game.encounterActive; // tie these two variables together (when one changes, so does the other);
     battleLog.clear();
-    // player.battle.takeAttack(50, 'fire');
+    // player.battle.takeAttack(50, 'fire'); 
+  },
+
+  updateEnemies: function () {
+    data.allEnemies.forEach((char) => {
+      if (char.difficultyRating <= game.currentFloor) { game.enemyList.push(char); }; // add enemies from this floor and below
+    });
+    game.enemyList = [...new Set(game.enemyList)]; // filter out duplicates
   },
 
   nextFloor: function () {
@@ -85,9 +96,11 @@ const game = {
   movePlayer: function (evt) { // <= player movement and map updates
     if (
       !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
-      !(game.validateMovement(evt.target.id)) // do nothing if move is not valid
+      !(game.validateMovement(evt.target.id)) ||
+      game.encounterActive // do nothing if move is not valid
     ) return;
 
+    game.chanceEncounter();
     game.room = Number(evt.target.id); // update current room
 
     // Hide the start square if it is visible
@@ -95,6 +108,20 @@ const game = {
 
     game.updateMap();
     game.renderMap();
+  },
+
+  chanceEncounter: function () {
+    let num = game.randomNumGen(1,10);
+    if(num <= 6) return; // no encounter
+    game.encounterActive = true;
+    num = game.randomNumGen(0, game.enemyList.length);
+    const selectedEnemy = game.enemyList[num]
+    enemy.setEnemy();
+    battleLog.newLine(`${selectedEnemy.name.toUpperCase()} has been encountered. Fight!`);
+  },
+
+  randomNumGen: function(start, end) {
+    return Math.floor(Math.random() * (end-start) + start);
   },
 
   highlightSquare: function (squareEl, unHighlight = false) {
