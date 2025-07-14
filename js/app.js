@@ -38,15 +38,9 @@ const game = {
     enemy.init();
     // enemy.setEnemy('fairy');
     player.init(enemy); // passing enemy object is not ideal, but is used due to deadline approaching
-    game.updateEncounterActive(false); // activate or de-activate encounter
+    game.encounterActive = false; // activate or de-activate encounter
     battleLog.clear();
     // player.battle.takeAttack(50, 'fire'); 
-  },
-
-  updateEncounterActive: function(active=false){
-    game.encounterActive = active;
-    player.encounterActive = active;
-    enemy.encounterActive = active;
   },
 
   updateEnemies: function () {
@@ -62,10 +56,6 @@ const game = {
       game.setMap(game.currentFloor);
     }
   },
-
-  // onPageLoad: function () {
-  //   inventory.menu.elements.skillsBtnEl.click(); // Click skill button
-  // },
 
   setMap: function (floorNum) {
     let newMap = data.floors[`f${floorNum}`];
@@ -104,9 +94,10 @@ const game = {
   movePlayer: function (evt) { // <= player movement and map updates
     if (
       !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
-      !(game.validateMovement(evt.target.id)) ||
-      game.encounterActive ||
-      player.isDead // do nothing if move is not valid
+      !(game.validateMovement(evt.target.id)) || // do nothing if move is not valid
+      game.encounterActive || // disallow movement during encounters
+      player.isDead || // player has died
+      game.gameOver // game is over
     ) return;
 
     game.room = Number(evt.target.id); // update current room
@@ -149,18 +140,30 @@ const game = {
   forceEncounter: function(){
     let idx = game.randomNumGen(0, game.enemyList.length-1);
     enemy.setEnemy(game.enemyList[idx]);
-    game.updateEncounterActive(true);
+    game.encounterActive = true;
   },
 
   bossBattle: function(){
-    enemy.setEnemy(data.bossEnemies[game.currentFloor-1]);
-    game.updateEncounterActive(true);
+    let selection;
+    switch(game.currentFloor){
+      case 1:
+        selection = data.bossEnemies.bigSlime;
+        break;
+      case 2:
+        selection = data.bossEnemies.frenziedMinotaur;
+        break;
+      case 3:
+        selection = data.bossEnemies.bigSlime;
+        break;
+    };
+    enemy.setEnemy(selection);
+    game.encounterActive = true;
   },
 
   chanceEncounter: function () {
     let num = game.randomNumGen(1,10);
     if(num <= 6) return; // 50% encounter rate
-    game.updateEncounterActive(true);
+    game.encounterActive = true;
     num = game.randomNumGen(0, game.enemyList.length-1);
     let selectedEnemy = game.enemyList[num];
     console.log(num);
@@ -197,19 +200,6 @@ const game = {
       testValue === 5 ||                      // upwards movement | wall detection is unnecessary
       testValue === -5                        // downwards movement | wall detection is unnecessary
     );
-  },
-
-  battleStart(){
-    while(
-      (!player.isDead) &&
-      (!enemy.isDead) &&
-      game.encounterActive
-    ){ game.sleep(5); };
-    if(player.isDead) game.gameOver = true;
-  },
-  sleep: function(seconds){
-    seconds = seconds*1000;
-    setTimeout(resolve, seconds);
   },
 };
 

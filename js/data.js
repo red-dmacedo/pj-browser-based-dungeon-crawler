@@ -125,7 +125,9 @@ const enemy = {
     enemy.clearSkillList();
     enemy.isDead = false;
     let newEnemy;
+
     (typeof (char) === 'string') ? newEnemy = allEnemies[char] : newEnemy = char; // get enemy by name or allow object to pass
+    if(!newEnemy) newEnemy = bossEnemies[char];
     enemy.name = `${newEnemy.name}${newEnemy.type}`;
     // hp
     enemy.maxHp = newEnemy.hp;
@@ -164,9 +166,7 @@ const enemy = {
       if(list.length === 0) return;
       const commandBox = enemy.commandBox;
       commandBox.clear();
-      console.dir(list);
       list.forEach(i => commandBox.addButton(i));
-      // commandBox.addButton('Return'); // do not add to startItems
     },
 
   },
@@ -407,6 +407,9 @@ const player = {
         nBtn.classList.add('inv-btn');
         nBtn.textContent = text;
         nBtn.addEventListener("click", player.inventory.menu.evtCommandBtnHandler);
+        let btnItem = allItems[text];
+        if(!btnItem) btnItem = allSkills[text];
+        nBtn.title = btnItem.helpText;
         el.appendChild(nBtn);
         player.inventory.menu.elements.refresh();
       },
@@ -651,10 +654,10 @@ const player = {
           commandBox.displayList(commandBox.startItems);
         },
         evtHandleCommand: function (evt) {
-          if(!player.encounterActive){
-            battleLog.newLine('No enemy to fight.')
-            return;
-          };
+          // if(!player.encounterActive){
+          //   battleLog.newLine('No enemy to fight.')
+          //   return;
+          // };
           const commandBox = player.battle.display.commandBox;
           const inventory = player.inventory;
           if ([...commandBox.startItems, 'Return'].includes(evt.target.textContent)) {
@@ -728,8 +731,9 @@ const battleLog = {
     if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; };
     let logItem = document.createElement('p'); // new paragraph tag
     logItem.textContent = `[${battleLog.lines}] ${pText}`;
+    if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
     battleLog.element.prepend(logItem);
-    // battleLog.element.appendChild(logItem);
+    // battleLog.element.appendChild(logItem); // swapped to prepend
   },
 
   clear: function () {
@@ -749,7 +753,6 @@ export {
   battleLog,
   player,
   bossEnemies,
-  // inventory,
 }
 
 /* ===== Graveyard =====
