@@ -154,14 +154,16 @@ const player = {
     maxXp: 10,
     totalXp: 0,
     addHp: function (num) {
-      player.hp += num;
-      if (player.hp > player.maxHp) player.hp = player.maxHp;
-      player.stats.updateHp();
+      const stats = player.stats;
+      stats.hp += num;
+      if (stats.hp > stats.maxHp) stats.hp = stats.maxHp;
+      stats.updateHp();
     },
     addMp: function (num) {
-      player.mp += num;
-      if(player.mp > player.maxMp) player.mp = player.maxMp;
-      player.stats.updateMp();
+      const stats = player.stats;
+      stats.mp += num;
+      if (stats.mp > stats.maxMp) stats.mp = stats.maxMp;
+      stats.updateMp();
     },
     addXp: function (num) {
       const stats = player.stats;
@@ -172,7 +174,7 @@ const player = {
     },
     lvUp: function () {
       const stats = player.stats;
-      if(stats.xp < stats.maxXp) return; // not enough xp
+      if (stats.xp < stats.maxXp) return; // not enough xp
       (stats.xp > stats.maxXp) ?
         stats.xp = stats.xp - stats.maxXp : // keep excess xp for later lvUp();
         stats.xp = 0;
@@ -191,10 +193,29 @@ const player = {
     },
     lvUpCheck: function () {
       const stats = player.stats;
-      if(stats.xp >= stats.maxXp){ stats.lvUp(); };
+      if (stats.xp >= stats.maxXp) { stats.lvUp(); };
     },
     updateHp: function () {
-      player.htmlElements.hpEl.textContent = `${player.stats.hp}/${player.stats.maxHp}`;
+      function changeElColor(el, color){ el.style.color = color; };
+      const stats = player.stats;
+      const hpEl = player.htmlElements.hpEl;
+      hpEl.textContent = `${player.stats.hp}/${player.stats.maxHp}`;
+      const statBounds = {
+        half: (stats.maxHp * 0.7),
+        low: (stats.maxHp * 0.3),
+      }
+      switch(true){
+        case stats.hp <= statBounds.low:
+          changeElColor(hpEl, 'red');
+          break;
+        case stats.hp <= statBounds.half:
+          changeElColor(hpEl, 'orange');
+          break;
+        case stats.hp > statBounds.half:
+          changeElColor(hpEl, 'green');
+          break;
+      };
+
     },
     updateMp: function () {
       player.htmlElements.mpEl.textContent = `${player.stats.mp}/${player.stats.maxMp}`;
@@ -229,23 +250,25 @@ const player = {
     lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
   },
 
-  init: function (lv) {
+  init: function (enemyObj, lv) {
     player.setFirstLv();
-    if(lv) player.setLv(lv);
+    if (lv) player.setLv(lv);
     player.inventory.init();
+    player.battle.display.init();
+    player.enemy = enemyObj;
   },
 
-  setLv: function(num){ // Currently only allows adding xp, future updates can change this behavior
+  setLv: function (num) { // Currently only allows adding xp, future updates can change this behavior
     const stats = player.stats;
     if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
     if (num < 1) num = 1; // fix outrageous numbers
     let requiredXp = 0;
-    for(let i = 0; i < num-1; i++){ requiredXp += player.levels[`lv${i+1}`].maxXp; };
+    for (let i = 0; i < num - 1; i++) { requiredXp += player.levels[`lv${i + 1}`].maxXp; };
     requiredXp = requiredXp - stats.totalXp;
     stats.addXp(requiredXp);
   },
 
-  setFirstLv: function(){ // run in init() as FIRST statement
+  setFirstLv: function () { // run in init() as FIRST statement
     const stats = player.stats;
     const cLv = player.levels['lv1'];
     // hp
@@ -300,11 +323,11 @@ const player = {
           elements.invEl = document.querySelector('#inventory');
         },
       },
-      highlightBtn: function(btn){
+      highlightBtn: function (btn) {
         const menuEls = player.inventory.menu.elements;
         const cssHighlightClass = 'highlight-btn';
-        for(let el of [menuEls.skillsBtnEl, menuEls.itemsBtnEl, menuEls.equipmentBtnEl]){
-          if( el.classList.contains(cssHighlightClass) ){ el.classList.remove(cssHighlightClass) };
+        for (let el of [menuEls.skillsBtnEl, menuEls.itemsBtnEl, menuEls.equipmentBtnEl]) {
+          if (el.classList.contains(cssHighlightClass)) { el.classList.remove(cssHighlightClass) };
         };
         btn.classList.add(cssHighlightClass);
       },
@@ -326,10 +349,10 @@ const player = {
         player.inventory.menu.elements.refresh();
       },
 
-      evtCommandBtnHandler: function(evt){
+      evtCommandBtnHandler: function (evt) {
         const item = allItems[evt.target.textContent];
-        if(!item) return; // item not found
-        switch(item.type){
+        if (!item) return; // item not found
+        switch (item.type) {
           case "consumable":
             player.inventory.items.use(item)
             break;
@@ -337,7 +360,7 @@ const player = {
             // player.inventory.equipment.equip(item); // must implement
             break;
           default:
-            console.log( "[player.inventory.menu.elements.evtCommandBtnHandler()] No case for item.type:", item.type );
+            console.log("[player.inventory.menu.elements.evtCommandBtnHandler()] No case for item.type:", item.type);
             return; // exit if item was not found
         };
       },
@@ -472,7 +495,6 @@ const player = {
         skills.list.length = 0;
         for (let i = 0; i < player.stats.lv; i++) {
           let lvObj = player.levels[`lv${i + 1}`];
-          console.dir(lvObj);
           lvObj.newSkills.forEach(skil => skills.add(skil));
         };
       },
@@ -521,6 +543,92 @@ const player = {
     },
 
   },
+
+  battle: {
+    display: {
+      init: function () {
+        const display = player.battle.display;
+        display.commandBox.clear();
+        display.commandBox.addStartCommands();
+        display.commandBox.el.addEventListener("click", display.commandBox.evtHandleCommand);
+      },
+      commandBox: {
+        el: document.querySelector('#player-command-box'),
+        currentList: 'startItems',
+        startItems: ['Fight','Items','Run'],
+        addButton: function (text) {
+          const cmdEl = player.battle.display.commandBox.el;
+          let nBtn = document.createElement('button');
+          nBtn.type = 'button';
+          nBtn.classList.add('battle-btn');
+          nBtn.textContent = text;
+          cmdEl.appendChild(nBtn);
+        },
+        clear() {
+          const commandBoxEl = player.battle.display.commandBox.el;
+          for (let el of Array.from(commandBoxEl.children)) { el.remove(); }; // convert children object to array for use in loop
+        },
+        displayList: function(list){
+          const commandBox = player.battle.display.commandBox;
+          commandBox.clear();
+          list.forEach(i => commandBox.addButton(i));
+          commandBox.addButton('Return'); // do not add to startItems
+        },
+        addStartCommands: function() {
+          const commandBox = player.battle.display.commandBox;
+          commandBox.displayList(commandBox.startItems);
+        },
+        evtHandleCommand: function(evt){
+          const commandBox = player.battle.display.commandBox;
+          const inventory = player.inventory;
+          if([...commandBox.startItems, 'Return'].includes(evt.target.textContent)){
+            switch(evt.target.textContent){
+              case 'Fight':
+                commandBox.currentList = 'skills';
+                commandBox.displayList(player.inventory.skills.list.map(i => i.name));
+                break;
+              case 'Items':
+                commandBox.currentList = 'items';
+                commandBox.displayList(player.inventory.items.list.map(i => i.name));
+                break;
+              case 'Run':
+                // add run attempt logic
+                break;
+              case 'Return':
+                commandBox.currentList = 'startItems';
+                commandBox.addStartCommands();
+                break;
+            };
+          };
+          // use skill
+          // figure out how to get enemyObj in here
+          let skill = player.filterArrayByName(inventory.skills.list, evt.target.textContent)[0]
+          if(skill){
+            inventory.skills.use(skill, enemyObj);
+            commandBox.currentList = 'startItems';
+            commandBox.addStartCommands();
+          };
+          // use item
+          let item = player.filterArrayByName(inventory.items.list, evt.target.textContent)[0]
+          if(item){
+            console.log(item)
+            inventory.items.use(item);
+            commandBox.currentList = 'startItems';
+            commandBox.addStartCommands();
+          };
+        },
+      },
+    },
+    takeAttack: function (enemyAtk, skill) {
+      if (typeof (skill) === "string") skill = allSkills[skill];
+      const hitDmg = (enemyAtk * skill.Multiplier);
+      player.stats.addHp(-hitDmg);
+      battleLog.newLine(`player takes (${hitDmg}) damage`);
+    },
+  },
+  filterArrayByName: function(arr, name){
+    return arr.filter(i => i.name === name);
+  },
 };
 
 // ===== Elements =====
@@ -544,7 +652,7 @@ const battleLog = {
     battleLog.lines++;
     if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; };
     let logItem = document.createElement('p'); // new paragraph tag
-    logItem.textContent = `(${battleLog.lines}) ${pText}`;
+    logItem.textContent = `[${battleLog.lines}] ${pText}`;
     battleLog.element.prepend(logItem);
     // battleLog.element.appendChild(logItem);
   },

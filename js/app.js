@@ -17,6 +17,7 @@ map
 const player = data.player;
 const inventory = data.player.inventory;
 const battleLog = data.battleLog;
+const enemy = data.enemy;
 // const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Objects =====
@@ -30,9 +31,10 @@ const game = {
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
     game.renderMap();
+    enemy.init();
+    player.init(enemy);
     battleLog.clear();
-    player.init();
-    // player.stats.addHp(-80);
+    // player.battle.takeAttack(50, 'fire');
   },
 
   nextFloor: function () {
