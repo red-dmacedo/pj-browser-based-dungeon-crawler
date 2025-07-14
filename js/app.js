@@ -12,13 +12,9 @@ map
 */
 
 // ===== Variables =====
-// initialize game object
-// const game = {};
 const player = data.player;
-const inventory = data.player.inventory;
 const battleLog = data.battleLog;
 const enemy = data.enemy;
-// const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Objects =====
 const game = {
@@ -221,6 +217,18 @@ const game = {
 game.init();
 document.querySelector('#reset').addEventListener("click", game.init());
 
+/* ===== GRAVEYARD =====
+
+function paction1(evt){                                                  //  <| - Created to test the
+  if(evt) toggleMapElEventListener(false);                               //  <|   toggleMapElEventListener
+};                                                                       //  <|   function
+document.querySelector("#paction1").addEventListener("click", paction1); //  <|
+
+
+for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
+
+// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
+
 // inventory.clear();
 
 // console.dir(player);
@@ -236,18 +244,4 @@ document.querySelector('#reset').addEventListener("click", game.init());
 // data.enemy.setEnemy("slime");
 // player.setLv(5);
 // player.lvUpCheck();
-
-/*
-  ===== GRAVEYARD =====
-
-function paction1(evt){                                                    //  <| - Created to test the
-  if(evt) toggleMapElEventListener(false);                                 //  <|   toggleMapElEventListener
-};                                                                       //  <|   function
-document.querySelector("#paction1").addEventListener("click", paction1); //  <|
-
-
-for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
-
-// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
-
 */
