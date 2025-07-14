@@ -16,6 +16,7 @@ map
 // const game = {};
 const player = data.player;
 const inventory = data.player.inventory;
+const battleLog = data.battleLog;
 // const invMenuEl = document.querySelector('#inv-menu');
 
 // ===== Objects =====
@@ -27,10 +28,11 @@ const game = {
 
   init: function () {
     game.setMap(game.currentFloor);
-    player.init();
     game.toggleMapElEventListener();
     game.renderMap();
-    document.addEventListener("DOMContentLoaded", game.onPageLoad);
+    battleLog.clear();
+    player.init();
+    // player.stats.addHp(-80);
   },
 
   nextFloor: function () {
@@ -40,15 +42,17 @@ const game = {
     }
   },
 
-  onPageLoad: function () {
-    inventory.menu.elements.skillsBtnEl.click(); // Click skill button
-  },
+  // onPageLoad: function () {
+  //   inventory.menu.elements.skillsBtnEl.click(); // Click skill button
+  // },
 
   setMap: function (floorNum) {
     let newMap = data.floors[`f${floorNum}`];
     game.clearMap(); // Clear old map data
-    game.map[newMap.bossLocation] = data.icons.boss; // Set boss location
+    game.map[newMap.bossRoom] = data.icons.boss; // Set boss location
     newMap.encounterRooms.forEach((idx) => { game.map[idx] = data.icons.battle }); // Set guaranteed encounters
+    newMap.healRooms.forEach((idx) => { game.map[idx] = data.icons.healing }); // Set healing rooms
+    newMap.treasureRooms.forEach((idx) => { game.map[idx] = data.icons.treasure }); // Set treasure rooms
   },
 
   clearMap: function () {
@@ -179,7 +183,7 @@ const game = {
 // ===== Script =====
 game.init();
 
-inventory.clear();
+// inventory.clear();
 
 // console.dir(player);
 // let tmp = data.tempObj;
