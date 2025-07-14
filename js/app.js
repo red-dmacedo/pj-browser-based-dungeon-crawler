@@ -1,6 +1,6 @@
 import * as data from "./data.js"
 
-/*
+/* Map representation
 map
 [
   0,  1,  2,  3,  4,
