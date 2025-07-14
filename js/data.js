@@ -115,7 +115,7 @@ const enemy = {
 
   setEnemy: function (name) {
     enemy.clearSkillList();
-    let newEnemy = allEnemies[name]; // get enemy by name
+    const newEnemy = allEnemies[name]; // get enemy by name
     enemy.name = newEnemy.name;
     // hp
     enemy.maxHp = newEnemy.hp;
@@ -129,7 +129,7 @@ const enemy = {
   },
 
   useSkill: function (name) {
-    let skill = allSkills[name];
+    const skill = allSkills[name];
     enemy.mp = enemy.mp - skill.mpCost
   },
 
@@ -172,12 +172,13 @@ const player = {
     },
     lvUp: function () {
       const stats = player.stats;
-      if(stats.xp < stats.maxXp) return;
+      if(stats.xp < stats.maxXp) return; // not enough xp
       (stats.xp > stats.maxXp) ?
-        stats.xp = stats.xp - stats.maxXp :
+        stats.xp = stats.xp - stats.maxXp : // keep excess xp for later lvUp();
         stats.xp = 0;
+      const nextLv = player.levels[`lv${stats.lv}`]; // get lv object
+      // edit stats
       stats.lv++; // next level
-      let nextLv = player.levels[`lv${stats.lv}`]; // get lv object
       stats.maxHp = nextLv.maxHp;
       stats.maxMp = nextLv.maxMp;
       stats.maxXp = nextLv.maxXp;
@@ -189,7 +190,7 @@ const player = {
       stats.update();
     },
     lvUpCheck: function () {
-      let stats = player.stats;
+      const stats = player.stats;
       if(stats.xp >= stats.maxXp){ stats.lvUp(); };
     },
     updateHp: function () {
@@ -205,7 +206,7 @@ const player = {
       player.htmlElements.lvEl.textContent = player.stats.lv;
     },
     update: function () {
-      let stats = player.stats
+      const stats = player.stats
       stats.updateHp();
       stats.updateMp();
       stats.updateXp();
@@ -235,7 +236,7 @@ const player = {
   },
 
   setLv: function(num){ // Currently only allows adding xp, future updates can change this behavior
-    let stats = player.stats;
+    const stats = player.stats;
     if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
     if (num < 1) num = 1; // fix outrageous numbers
     let requiredXp = 0;
@@ -245,17 +246,17 @@ const player = {
   },
 
   setFirstLv: function(){ // run in init() as FIRST statement
-    let stats = player.stats;
-    let lv = player.levels['lv1'];
+    const stats = player.stats;
+    const cLv = player.levels['lv1'];
     // hp
-    stats.maxHp = lv.maxHp;
-    stats.hp = lv.maxHp;
+    stats.maxHp = cLv.maxHp;
+    stats.hp = cLv.maxHp;
     // mp
-    stats.maxMp = lv.maxMp;
-    stats.mp = lv.maxMp;
+    stats.maxMp = cLv.maxMp;
+    stats.mp = cLv.maxMp;
     // xp
     stats.xp = 0;
-    stats.maxXp = lv.maxXp;
+    stats.maxXp = cLv.maxXp;
     // skills
     player.inventory.skills.updateToCurrentLv();
     stats.update();
@@ -271,12 +272,12 @@ const player = {
 
   inventory: {
     init: function () {
-      let inv = player.inventory;
-      let menuEls = inv.menu.elements;
-      inv.skills.updateToCurrentLv();
-      inv.addStartingItems();
-      inv.menu.setTab('skills');
-      menuEls.invMenuEl.addEventListener("click", inv.menu.evtChangeTab);
+      const inv = player.inventory; // easy reference
+      const menuEls = inv.menu.elements; // easy reference
+      inv.addStartingItems(); // add basic items to inventory
+      inv.skills.updateToCurrentLv(); // add skills to inventory
+      inv.menu.setTab('skills'); // set first tab for inventory
+      menuEls.invMenuEl.addEventListener("click", inv.menu.evtChangeTab); // swap inventory tabs
     },
 
     menu: {
@@ -290,7 +291,7 @@ const player = {
         invEl: document.querySelector('#inventory'),
 
         refresh: function () {
-          let elements = player.inventory.menu.elements;
+          const elements = player.inventory.menu.elements;
           elements.invMenuEl = document.querySelector('#inv-menu');
           elements.skillsBtnEl = document.querySelector('#inv-skills-btn');
           elements.itemsBtnEl = document.querySelector('#inv-items-btn');
@@ -309,13 +310,13 @@ const player = {
       },
 
       clearCommandBtns: function () {
-        let menu = player.inventory.menu;
+        const menu = player.inventory.menu;
         menu.elements.refresh();
         menu.elements.commandBtnEls.forEach(el => el.remove());
       },
 
       addCommandButton: function (text) {
-        let el = player.inventory.menu.elements.invEl;
+        const el = player.inventory.menu.elements.invEl;
         let nBtn = document.createElement('button');
         nBtn.type = 'button';
         nBtn.classList.add('inv-btn');
@@ -326,7 +327,7 @@ const player = {
       },
 
       evtCommandBtnHandler: function(evt){
-        let item = allItems[evt.target.textContent];
+        const item = allItems[evt.target.textContent];
         if(!item) return; // item not found
         switch(item.type){
           case "consumable":
@@ -467,19 +468,19 @@ const player = {
     skills: {
       list: [],
       updateToCurrentLv: function () {
-        for (let i = 0; i < player.lv; i++) {
-          player.skills.list.length = 0;
-          for(let i = 0; i < player.lv; i++){
-            let lvObj = player.levels[`lv${i + 1}`];
-            lvObj.newSkills.forEach(skil => player.inventory.skills.add(skil));
-          };
+        const skills = player.inventory.skills;
+        skills.list.length = 0;
+        for (let i = 0; i < player.stats.lv; i++) {
+          let lvObj = player.levels[`lv${i + 1}`];
+          console.dir(lvObj);
+          lvObj.newSkills.forEach(skil => skills.add(skil));
         };
-        player.inventory.skills.removeDuplicates();
       },
       add: function (skil) {
+        const skills = player.inventory.skills;
         if (!(skil.name)) skil = allSkills[skil];
-        player.inventory.skills.list.push(skil);
-        player.inventory.skills.removeDuplicates();
+        skills.list.push(skil);
+        skills.removeDuplicates();
       },
       remove: function (skill) {
         if (!(skill.name)) skill = allSkills[skill];
