@@ -197,7 +197,7 @@ const game = {
   },
 
   validateMovement: function (idx) {
-    if (typeof (idx) !== "Number") { idx = Number(idx) };
+    if (typeof (idx) !== "number") { idx = Number(idx) };
 
     if (game.room === game.startRoom && idx === game.firstEnterableRoom) return true; // first move on the map
 

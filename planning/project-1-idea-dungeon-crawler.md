@@ -1,0 +1,48 @@
+# Dungeon-Crawler
+- A combat tracker will be placed at the bottom of the page
+- Choices will be placed at the bottom of the page and will appear/disappear based on whether a battle is taking place.
+- There will be 3 floors (3 maps)
+- Each map will be a 5x5 flexbox grid and will:
+  - track player position
+  - track treasure chests
+  - Gray out in-accessible rooms with the HTML attribute: class="disabled"
+- Each time a player moves to a new room, they will recover 10MP
+- Each time a player moves between floors, they will start at the bottom square
+  - The bottom square will not initially be a part of the 5x5 grid, and will disappear upon leaving it.
+- Player
+  - will have an inventory with some starting items.
+  - Starts with 100 HP
+  - Starts with 100 MP
+  - Starting Items include:
+    - 3 basic healing potions
+    - 2 mana potions
+    - 1 basic sword
+    - No starting enhancement items
+  - Spells include:
+    - Lightning
+      - Cost: 10MP
+      - Low to Mid-range damage
+      - has 50% chance to stun on each cast
+        - subsequent applications refresh the duration
+    - Water
+      - Cost: 5MP
+      - Low damage
+      - Can kill the enemy if they are below 30% HP
+        - this check comes before applying any damage
+    - Fire
+      - Cost 30MP
+      - Highest attack damage
+  - Enhancement items include:
+    - 20% magic buff
+- Treasure Items Include:
+  - Magic Amulet
+    - 20% Magic buff
+  - Mana potion
+    - recover 50% MP
+  - Iron sword
+    - 20% more damage than basic sword
+  - Mythril sword
+    - 50% more damage than basic sword
+- No more or less than 12 enemies
+  - 3 basic enemies per floor
+  - 1 boss enemy per floor
