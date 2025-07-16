@@ -1,3 +1,5 @@
+// sample comment
+
 import * as data from "./data.js"
 
 /* Map representation
