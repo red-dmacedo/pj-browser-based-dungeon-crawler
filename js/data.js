@@ -7,75 +7,76 @@
     floors,
   } and most sub-objects are better defined as classes.
 */
-const allSkills = {
-  fire: { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
-  lightning: { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", },
-  nudge: { name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", },
-  slash_I: { name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", },
-  slash_II: { name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", },
-  slash_III: { name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", },
-  slash_IV: { name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", },
-  tackle: { name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", },
-  water: { name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", },
-};
+const allSkills = [
+  { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
+  { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", },
+  { name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", },
+  { name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", },
+  { name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", },
+  { name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", },
+  { name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", },
+  { name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", },
+  { name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", },
+];
 
-const allEnemies = {
-  slime: { name: "slime", type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
-  goblin: { name: "goblin", type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
-  fairy: { name: "fairy", type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
-  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-};
+const allEnemies = [
+  { name: "slime", type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
+  { name: "goblin", type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
+  { name: "fairy", type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
+  { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+];
 
-const bossEnemies = {
-  bigSlime: { name: "bigSlime", type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
-  frenziedMinotaur: { name: "frenziedMinotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-};
+const allBossEnemies = [
+  { name: "bigSlime", type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
+  { name: "frenziedMinotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+];
 
-const allItems = {
-  hp_potion_I: { name: "hp_potion_I", type: "consumable", stat: "hp", value: 50, helpText: "Recover 50% hp", },
-  hp_potion_II: { name: "hp_potion_II", type: "consumable", stat: "hp", value: 80, helpText: "Recover 80% hp", },
-  hp_potion_III: { name: "hp_potion_III", type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
-  mp_potion_I: { name: "mp_potion_I", type: "consumable", stat: "mp", value: 50, helpText: "Recover 50% mp", },
-  mp_potion_II: { name: "mp_potion_II", type: "consumable", stat: "mp", value: 80, helpText: "Recover 80% mp", },
-  mp_potion_III: { name: "mp_potion_III", type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
-  ruby_amulet: { name: "ruby_amulet", type: "equipment", stat: "matk", value: 40, helpText: "A valuable necklace - +40 matk", },
-  sword_I: { name: "sword_I", type: "equipment", stat: "atk", value: 10, helpText: "A rusted sword - +10 atk", },
-  sword_II: { name: "sword_II", type: "equipment", stat: "atk", value: 30, helpText: "A decorative sword - +30 atk", },
-  sword_III: { name: "sword_III", type: "equipment", stat: "atk", value: 60, helpText: "A masterfully crafted sword - +60 atk", },
-  wizard_cap: { name: "wizard_cap", type: "equipment", stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
-};
+const allItems = [
+  { name: "HP Potion I", type: "consumable", stat: "hp", value: 50, helpText: "Recover 50% hp", },
+  { name: "HP Potion II", type: "consumable", stat: "hp", value: 80, helpText: "Recover 80% hp", },
+  { name: "HP Potion III", type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
+  { name: "MP Potion I", type: "consumable", stat: "mp", value: 50, helpText: "Recover 50% mp", },
+  { name: "MP Potion II", type: "consumable", stat: "mp", value: 80, helpText: "Recover 80% mp", },
+  { name: "MP Potion III", type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
+  { name: "Ruby Amulet", type: "equipment", stat: "matk", value: 40, helpText: "A valuable necklace - +40 matk", },
+  { name: "Sword I", type: "equipment", stat: "atk", value: 10, helpText: "A rusted sword - +10 atk", },
+  { name: "Sword II", type: "equipment", stat: "atk", value: 30, helpText: "A decorative sword - +30 atk", },
+  { name: "Sword III", type: "equipment", stat: "atk", value: 60, helpText: "A masterfully crafted sword - +60 atk", },
+  { name: "Wizard Cap", type: "equipment", stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
+];
 
-const floors = {
-  /* this map is kept here as a reference
-  map:[
-    "0",   "1",  "2",  "3",  "4",
-    "5",   "6",  "7",  "8",  "9",
-    "10",  "11", "12", "13", "14",
-    "15",  "16", "17", "18", "19",
-    "20",  "21", "22", "23", "24"
-  ]
-  */
-  f1: {
-    name: "1F",
-    bossRoom: 19,
-    encounterRooms: [9,],
-    healRooms: [0],
-    treasureRooms: [10, 4, 13],
+const map = {
+  floor: 1,
+  playerLocation: 25,
+
+  validateMovement: function (idx) {
+    if (typeof (idx) !== "number") { idx = Number(idx) };
+
+    if (game.room === game.startRoom && idx === game.firstEnterableRoom) return true; // first move on the map
+
+    let testValue = game.room - idx;
+
+    return (
+      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
+      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
+      testValue === -5                        // downwards movement | wall detection is unnecessary
+    );
   },
-  f2: {
-    name: "2F",
-    bossLocation: 16,
-    encounterRooms: [14,],
-    healRooms: [],
-    treasureRooms: [],
-  },
-  f3: {
-    name: "3F",
-    bossLocation: 0,
-    encounterRooms: [16, 3],
-    healRooms: [],
-    treasureRooms: [],
-  },
+  floors: [
+    /* this map is kept here as a reference
+    map:[
+      "0",   "1",  "2",  "3",  "4",
+      "5",   "6",  "7",  "8",  "9",
+      "10",  "11", "12", "13", "14",
+      "15",  "16", "17", "18", "19",
+      "20",  "21", "22", "23", "24"
+    ]
+    */
+    { name: "1F", bossRoom: 19, encounterRooms: [9,], healRooms: [0], treasureRooms: [10, 4, 13], },
+    { name: "2F", bossLocation: 16, encounterRooms: [14,], healRooms: [], treasureRooms: [], },
+    { name: "3F", bossLocation: 0, encounterRooms: [16, 3], healRooms: [], treasureRooms: [], },
+  ],
 };
 
 const icons = {
@@ -88,6 +89,7 @@ const icons = {
   hp: "🟥",
 };
 
+/*
 const enemy = {
   name: "Cpu",
   hp: 0,
@@ -191,7 +193,6 @@ const enemy = {
     };
   },
 };
-
 const player = {
   isDead: false,
   encounterActive: false,
@@ -711,7 +712,7 @@ const player = {
     return arr.filter(i => i.name === name);
   },
 };
-
+*/
 // ===== Elements =====
 const elem = {
   mapEl: document.querySelector("#map"),
