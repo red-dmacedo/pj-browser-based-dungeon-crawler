@@ -1,6 +1,4 @@
-const data = require('./js/data.js');
-
-// import * as data from "./data.js"
+import * as data from "./data.js"
 
 /* Map representation
 map
@@ -21,8 +19,8 @@ const rollNum = data.rollNum; // function
 const enemy = data.enemy; // object
 
 // ===== Script =====
-game.init();
-document.querySelector('#reset').addEventListener("click", game.init());
+// game.init();
+// document.querySelector('#reset').addEventListener("click", game.init());
 
 /* ===== GRAVEYARD =====
 
