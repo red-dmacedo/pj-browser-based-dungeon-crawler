@@ -1,12 +1,3 @@
-/*
-  {
-    player,
-    enemy,
-    allSkills,
-    allEnemies,
-    floors,
-  } and most sub-objects are better defined as classes.
-*/
 const allSkills = [
   { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
   { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", },
@@ -45,40 +36,6 @@ const allItems = [
   { name: "Wizard Cap", type: "equipment", stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
 ];
 
-const map = {
-  floor: 1,
-  playerLocation: 25,
-
-  validateMovement: function (idx) {
-    if (typeof (idx) !== "number") { idx = Number(idx) };
-
-    if (game.room === game.startRoom && idx === game.firstEnterableRoom) return true; // first move on the map
-
-    let testValue = game.room - idx;
-
-    return (
-      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
-      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
-      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
-      testValue === -5                        // downwards movement | wall detection is unnecessary
-    );
-  },
-  floors: [
-    /* this map is kept here as a reference
-    map:[
-      "0",   "1",  "2",  "3",  "4",
-      "5",   "6",  "7",  "8",  "9",
-      "10",  "11", "12", "13", "14",
-      "15",  "16", "17", "18", "19",
-      "20",  "21", "22", "23", "24"
-    ]
-    */
-    { name: "1F", bossRoom: 19, encounterRooms: [9,], healRooms: [0], treasureRooms: [10, 4, 13], },
-    { name: "2F", bossLocation: 16, encounterRooms: [14,], healRooms: [], treasureRooms: [], },
-    { name: "3F", bossLocation: 0, encounterRooms: [16, 3], healRooms: [], treasureRooms: [], },
-  ],
-};
-
 const icons = {
   player: "👣",
   boss: "☠️",
@@ -89,7 +46,500 @@ const icons = {
   hp: "🟥",
 };
 
-/*
+const map = {
+  el: document.querySelector("#map"),
+  startSqrEl: document.querySelector(".sqr25"),
+  sqrEls: document.querySelectorAll(".sqr"),
+  startRoom: 25,
+  firstDungeonRoom: 22,
+  playerLocation: 25,
+  floor: 1,
+  rooms: [ '','','','','','','','','','','','','','','','','','','','','','','','','', ],
+  disabled: false,
+
+  floors: [
+    /* this map is kept here as a reference
+      map: [
+        "0",   "1",  "2",  "3",  "4",
+        "5",   "6",  "7",  "8",  "9",
+        "10",  "11", "12", "13", "14",
+        "15",  "16", "17", "18", "19",
+        "20",  "21", "22", "23", "24"
+      ]
+    */
+    { name: "1F", bossRoom: 19, encounterRooms: [9,], healRooms: [0], treasureRooms: [10, 4, 13], },
+    { name: "2F", bossLocation: 16, encounterRooms: [14,], healRooms: [], treasureRooms: [], },
+    { name: "3F", bossLocation: 0, encounterRooms: [16, 3], healRooms: [], treasureRooms: [], },
+  ],
+
+  init: function(floorNum){
+    map.floor = 1;
+    map.playerLocation = 25;
+    map.clear(); // clear map.rooms
+    map.sqrEls.forEach((el) => { map.highlightSquare(el, true) }); // Remove square highlights (reset)
+    (floorNum) ? map.setMapFloor(floorNum) : map.setMapFloor(1); // start on a specific floor or floor 1
+    map.disabled = false; // clear if set
+  },
+
+  clear: function(){
+    map.rooms = [ '','','','','','','','','','','','','','','','','','','','','','','','','', ];
+  },
+
+  validateMovement: function (idx) {
+    if (typeof (idx) !== "number") { idx = Number(idx) };
+    if (map.playerLocation === map.startRoom && idx === map.firstDungeonRoom) return true; // first move on the map
+    let testValue = map.playerLocation - idx;
+
+    return ( // return true or false
+      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
+      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
+      testValue === -5                        // downwards movement | wall detection is unnecessary
+    );
+  },
+
+  nextFloor: function(){
+    if(map.floor === map.floors.length) return;
+    map.floor++;
+    map.setMapFloor(map.floor);
+  },
+
+  setMapFloor: function (floorNum) {
+    let newMap = map.floors[floorNum-1];
+    map.clear(); // Clear old map data
+    map.rooms[newMap.bossRoom] = icons.boss; // Set boss location
+    newMap.encounterRooms.forEach((idx) => { map.rooms[idx] = icons.battle }); // Set guaranteed encounters
+    newMap.healRooms.forEach((idx) => { map.rooms[idx] = icons.healing }); // Set healing rooms
+    newMap.treasureRooms.forEach((idx) => { map.rooms[idx] = icons.treasure }); // Set treasure rooms
+  },
+
+  updateRooms: function () { // move player icon
+    map.rooms.forEach((rm) => { if(rm === icons.player) {rm = ''; return}; });
+    map.rooms[map.playerLocation] = data.icons.player;
+  },
+
+  renderMap: function () { // render map.rooms to user
+    map.sqrEls.forEach((el, idx) => { el.textContent = map.rooms[idx]; });
+    if (map.playerLocation === map.startRoom) return; // prevent highlight when player is in start room
+    map.highlightSquare(map.sqrEls[map.playerLocation]); // show where the player has been
+  },
+
+  highlightSquare: function (squareEl, disable = false, color = 'beige') { // highlight rooms the player has passed through
+    if(!disable && squareEl.hasAttribute('style')) return; // exit if square is already highlighted
+    (disable) ? squareEl.removeAttribute("style") : squareEl.style.backgroundColor = color; // remove highlight or set highlight
+  },
+  
+  evtPlayerMove: function (evt) { // <= player movement and map updates
+    if (
+      !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
+      !(game.validateMovement(evt.target.id)) || // do nothing if move is not valid
+      game.encounterActive || // disallow movement during encounters
+      player.isDead || // player has died
+      player.encounterActive ||
+      game.gameOver // game is over
+    ) return;
+
+    game.room = Number(evt.target.id); // update current room
+    
+    switch(game.map[game.room]){
+      case data.icons.battle:
+        game.forceEncounter();
+        break;
+      case data.icons.boss:
+        game.bossBattle();
+        break;
+      case data.icons.healing:
+        game.fullHeal();
+        break;
+      case data.icons.treasure:
+        game.getTreasure();
+        break;
+      default:
+        // game.chanceEncounter();
+    };
+
+    // Hide the start square if it is visible
+    if (data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
+
+    game.updateMap();
+    game.renderMap();
+  },
+};
+
+const battleLog = {
+  element: document.querySelector('#battle-log'),
+  logItems: document.querySelectorAll('#battle-log p'),
+  lines: 0,
+
+  init: function () {
+    battleLog.clear();
+    battleLog.lines = 0;
+  },
+
+  newLine: function (pText, color) {
+    battleLog.lines++;
+    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
+    let logItem = document.createElement('p'); // new paragraph tag
+    logItem.textContent = `[${battleLog.lines}] ${pText}`;
+    if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
+    if(color) logItem.style.color = color;
+    battleLog.element.prepend(logItem);
+    // battleLog.element.appendChild(logItem); // swapped to prepend
+  },
+
+  clear: function () {
+    battleLog.logItems.forEach(ptag => ptag.remove());
+    battleLog.logItems = document.querySelectorAll('#battle-log p');
+  },
+};
+/* ===== Functions ===== */
+function rollNum(start, end) {
+  return Math.floor(Math.random() * (end-start+1)) + start;
+};
+
+export {
+  allSkills,
+  allEnemies,
+  allItems,
+  allBossEnemies,
+  icons,
+  map,
+  battleLog,
+  rollNum,
+}
+
+/* ===== Graveyard =====
+
+===== Object Behavior when using the object name vs 'this' keyword =====
+export const tempObj = {
+  prop1: 'one',
+  init: function () {
+    tempObj.prop1 = 'three';
+    tempObj.method1();
+  },
+  method1: function (){
+    console.dir(tempObj);
+  },
+  method2: () => { // working
+    tempObj.method1();
+  },
+  method3: function() { // working
+    console.log('prop1:', tempObj.prop1);
+    tempObj.method1();
+  },
+};
+export const tempObj2 = {
+  prop1: 'one',
+  init: function () {
+    this.prop1 = 'three';
+    this.method1();
+  },
+  method1: function (){
+    console.dir(this);
+  },
+  method2: () => { // Error message: Uncaught TypeError: Cannot read properties of undefined (reading 'method1')
+    this.method1();
+  },
+  method3: function() { // working
+    console.log('prop1:', this.prop1);
+    this.method1();
+  },
+};
+
+
+  ===== player.setLv =====
+  // replaced for modularity: player.stats.lvUp(), player.stats.lvUpCheck(), player.setFirstLv(), player.setLv()
+  setLv: function (num) {
+    let stats = player.stats;
+    if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
+    if (num < 1) num = 1; // fix outrageous numbers
+
+    let newLevel = player.levels[`lv${num}`];
+    if (!newLevel) return; // exit if level is not found
+
+    let skills = player.inventory.skills;
+
+    stats.lv = num;
+    // Xp
+    stats.maxXp = newLevel.maxXp;
+    let excessXp = stats.xp - stats.maxXp;
+    (excessXp > 0) ?
+      stats.xp = excessXp :
+      stats.xp = newLevel.startingXp;
+    // HP
+    stats.maxHp = newLevel.maxHp;
+    stats.hp = stats.maxHp;
+    // MP
+    stats.maxMp = newLevel.maxMp;
+    stats.mp = stats.maxMp;
+    // new skills
+    for (let i = 1; i <= stats.lv; i++) { // <= add skills from previous levels
+      let lvObj = player.levels[`lv${i}`];
+      lvObj.newSkills.forEach(skillname => { skills.add(skillname) });
+    };
+    skills.removeDuplicates();
+    skills.sort();
+    stats.update();
+  },
+
+===== old player object =====
+const player = {
+  firstLv: 1,
+  lastLv: 5,
+  lv: 1,
+  baseAtk: 100,
+  hp: 5,
+  mp: 5,
+  xp: 0,
+  maxHp: 10,
+  maxMp: 10,
+  maxXp: 10,
+  icon: icons.player,
+  equipment: [],
+  skillList: [],
+  items: [],
+
+  levels: {
+    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+  },
+
+  playerEls: {
+    hpEl: document.querySelector('#player-hp'),
+    mpEl: document.querySelector('#player-mp'),
+    xpEl: document.querySelector('#player-xp'),
+    lvEl: document.querySelector('#player-lv'),
+  },
+
+  displayHp: function () {
+    player.playerEls.hpEl.textContent = `${player.hp}/${player.maxHp}`;
+  },
+
+  displayMp: function () {
+    player.playerEls.mpEl.textContent = `${player.mp}/${player.maxMp}`;
+  },
+
+  displayXp: function () {
+    player.playerEls.xpEl.textContent = `${player.xp}/${player.maxXp}`;
+  },
+
+  displayLv: function () {
+    player.playerEls.lvEl.textContent = player.lv;
+  },
+
+  displayStats: function () {
+    player.displayHp();
+    player.displayMp();
+    player.displayXp();
+    player.displayLv();
+  },
+
+  init: function (lv = 1) {
+    player.setLv(lv);
+    player.addStartingItems();
+  },
+
+  setLv: function (num) {
+    if (num > 5) num = 5; // fix outrageous numbers
+    if (num < 1) num = 1; // fix outrageous numbers
+    if (!(player.levels[`lv${num}`])) return; // exit if level is not found
+    player.lv = num;
+    let newLevel = player.levels[`lv${player.lv}`];
+    player.displayLv();
+    // Xp
+    player.maxXp = newLevel.maxXp;
+    let excessXp = player.xp - player.maxXp;
+    (excessXp > 0) ?
+      player.setXp(excessXp) :
+      player.setXp(newLevel.startingXp);
+    // HP
+    player.maxHp = newLevel.maxHp;
+    player.setHp(player.maxHp);
+    // MP
+    player.maxMp = newLevel.maxMp;
+    player.setMp(player.maxMp);
+    // new skills
+    for (let i = 1; i <= num; i++) { // <= add skills from previous levels
+      let lvObj = player.levels[`lv${i}`];
+      lvObj.newSkills.forEach(skillname => { player.addSkill(skillname) });
+    };
+    player.removeSkillDuplicates();
+    player.sortSkills();
+  },
+
+  removeSkillDuplicates: function () {
+    player.skillList = [...new Set(player.skillList)];
+  },
+
+  addSkill: function (name) {
+    let skill = skills[name];
+    if (skill) player.skillList.push(skill);
+  },
+
+  sortArrayByNameProperty: function (arr) {
+    arr.sort((a, b) => a.name.localeCompare(b.name));
+  },
+
+  sortEquipment: function () {
+    player.sortArrayByNameProperty(player.equipment);
+  },
+
+  sortItems: function () {
+    player.sortArrayByNameProperty(player.items);
+  },
+
+  sortSkills: function () {
+    player.sortArrayByNameProperty(player.skillList);
+  },
+
+  addItems: function (...names) {
+    for (let i of names) {
+      let item = allItems[i];
+      if(!item) console.log(`Invalid item: ${i}`);
+      switch (item.type) {
+        case "consumable":
+          player.items.push(item);
+          break;
+        case "equipment":
+          player.equipment.push(item);
+          break;
+      };
+    };
+    player.sortItems();
+    player.sortEquipment();
+  },
+
+  lvUpCheck: function () {
+    if (player.xp < player.maxXp) return; // leave if xp is not sufficient
+    player.setLv(player.lv + 1)
+  },
+
+  setHp: function (num) {
+    player.hp = num;
+    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
+    player.displayHp();
+  },
+
+  setMp: function (num) {
+    player.mp = num;
+    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
+    player.displayMp();
+  },
+
+  setXp: function (num) {
+    player.xp = num;
+    player.lvUpCheck();
+    player.displayXp();
+  },
+
+  addHp: function (num) {
+    player.hp += num;
+    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
+    player.displayHp();
+  },
+
+  addMp: function (num) {
+    player.mp += num;
+    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
+    player.displayMp();
+  },
+
+  addXp: function (num) {
+    player.xp += num; // add xp
+    player.lvUpCheck(); // check for level up
+    player.displayXp(); // display result to html
+  },
+
+  useSkill: function (name) {
+    let skill = skills[name];
+    player.mp = player.mp - skill.mpCost
+  },
+
+  addStartingItems: function () {
+    player.addItems(
+      'sword_I',
+      'hp_potion_I',
+      'hp_potion_I',
+      'hp_potion_I',
+      'mp_potion_I',
+      'mp_potion_I'
+    );
+  },
+};
+
+===== old inventory object =====
+const inventory = {
+  commandBtnEls: document.querySelectorAll('#inventory button'),
+  invEl: document.querySelector('#inventory'),
+
+  menu: {
+    invMenuEl: document.querySelector('#inv-menu'),
+    skillsBtnEl: document.querySelector('#inv-skills-btn'),
+    itemsBtnEl: document.querySelector('#inv-items-btn'),
+    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
+  },
+
+  init: function () {
+    inventory.clearCommandBtns();
+    inventory.menu.invMenuEl.addEventListener("click", inventory.swapInventory);
+  },
+
+  clearCommandBtns: function () {
+    inventory.commandBtnEls.forEach(el => el.remove());
+  },
+
+  clearItems: function () {
+    player.items.length = 0;
+    player.equipment.length = 0;
+    player.addStartingItems()
+  },
+
+  loadNewCommandBtns: function () {
+    inventory.commandBtnEls = document.querySelectorAll('#inventory button')
+  },
+
+  addCommandBtn: function (text) {
+    let nBtn = document.createElement('button');
+    nBtn.type = 'button';
+    nBtn.classList.add('inv-btn');
+    nBtn.textContent = text;
+    inventory.invEl.appendChild(nBtn);
+  },
+
+  swapInventory: function (evt) {
+    const btnNames = ['Skills', 'Items', 'Equipment'];
+    if (!(btnNames.includes(evt.target.textContent))) return; // Exit if button is not in the list
+    // Button Highlights
+    document.querySelectorAll('.inv-menu-btn').forEach((el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
+    evt.target.classList.add("highlight-btn") // highlight selected button
+    // Determine list
+    inventory.loadNewCommandBtns();
+    inventory.clearCommandBtns(); // clear old buttons
+    let list;
+    switch (evt.target.textContent) {
+      case btnNames[0]:
+        list = player.skillList;
+        break;
+      case btnNames[1]:
+        list = player.items;
+        break;
+      case btnNames[2]:
+        list = player.equipment;
+        break;
+      default:
+        console.log(`swapInventory: No case for ${evt.target.textContent}`);
+        return; // leave function
+    };
+    // add buttons to inventory
+    for (let i of list){ inventory.addCommandBtn(i.name); };
+  },
+};
+*/
+
+/* ===== Graveyard 2 ===
 const enemy = {
   name: "Cpu",
   hp: 0,
@@ -713,380 +1163,5 @@ const player = {
   },
 };
 */
-// ===== Elements =====
-const elem = {
-  mapEl: document.querySelector("#map"),
-  mapSquares: document.querySelectorAll(".sqr"),
-  startSquare: document.querySelector(".sqr25"),
-};
 
-const battleLog = {
-  element: document.querySelector('#battle-log'),
-  logItems: document.querySelectorAll('#battle-log p'),
-  lines: 0,
-
-  init: function () {
-    battleLog.clear();
-    battleLog.lines = 0;
-  },
-
-  newLine: function (pText, color) {
-    battleLog.lines++;
-    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
-    let logItem = document.createElement('p'); // new paragraph tag
-    logItem.textContent = `[${battleLog.lines}] ${pText}`;
-    if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
-    if(color) logItem.style.color = color;
-    battleLog.element.prepend(logItem);
-    // battleLog.element.appendChild(logItem); // swapped to prepend
-  },
-
-  clear: function () {
-    battleLog.logItems.forEach(ptag => ptag.remove());
-    battleLog.logItems = document.querySelectorAll('#battle-log p');
-  },
-};
-
-export {
-  allSkills,
-  allEnemies,
-  allItems,
-  floors,
-  icons,
-  enemy,
-  elem,
-  battleLog,
-  player,
-  bossEnemies,
-}
-
-/* ===== Graveyard =====
-
-===== Object Behavior when using the object name vs 'this' keyword =====
-export const tempObj = {
-  prop1: 'one',
-  init: function () {
-    tempObj.prop1 = 'three';
-    tempObj.method1();
-  },
-  method1: function (){
-    console.dir(tempObj);
-  },
-  method2: () => { // working
-    tempObj.method1();
-  },
-  method3: function() { // working
-    console.log('prop1:', tempObj.prop1);
-    tempObj.method1();
-  },
-};
-export const tempObj2 = {
-  prop1: 'one',
-  init: function () {
-    this.prop1 = 'three';
-    this.method1();
-  },
-  method1: function (){
-    console.dir(this);
-  },
-  method2: () => { // Error message: Uncaught TypeError: Cannot read properties of undefined (reading 'method1')
-    this.method1();
-  },
-  method3: function() { // working
-    console.log('prop1:', this.prop1);
-    this.method1();
-  },
-};
-
-
-  ===== player.setLv =====
-  // replaced for modularity: player.stats.lvUp(), player.stats.lvUpCheck(), player.setFirstLv(), player.setLv()
-  setLv: function (num) {
-    let stats = player.stats;
-    if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
-    if (num < 1) num = 1; // fix outrageous numbers
-
-    let newLevel = player.levels[`lv${num}`];
-    if (!newLevel) return; // exit if level is not found
-
-    let skills = player.inventory.skills;
-
-    stats.lv = num;
-    // Xp
-    stats.maxXp = newLevel.maxXp;
-    let excessXp = stats.xp - stats.maxXp;
-    (excessXp > 0) ?
-      stats.xp = excessXp :
-      stats.xp = newLevel.startingXp;
-    // HP
-    stats.maxHp = newLevel.maxHp;
-    stats.hp = stats.maxHp;
-    // MP
-    stats.maxMp = newLevel.maxMp;
-    stats.mp = stats.maxMp;
-    // new skills
-    for (let i = 1; i <= stats.lv; i++) { // <= add skills from previous levels
-      let lvObj = player.levels[`lv${i}`];
-      lvObj.newSkills.forEach(skillname => { skills.add(skillname) });
-    };
-    skills.removeDuplicates();
-    skills.sort();
-    stats.update();
-  },
-
-===== old player object =====
-const player = {
-  firstLv: 1,
-  lastLv: 5,
-  lv: 1,
-  baseAtk: 100,
-  hp: 5,
-  mp: 5,
-  xp: 0,
-  maxHp: 10,
-  maxMp: 10,
-  maxXp: 10,
-  icon: icons.player,
-  equipment: [],
-  skillList: [],
-  items: [],
-
-  levels: {
-    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
-    lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
-    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
-    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
-    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
-  },
-
-  playerEls: {
-    hpEl: document.querySelector('#player-hp'),
-    mpEl: document.querySelector('#player-mp'),
-    xpEl: document.querySelector('#player-xp'),
-    lvEl: document.querySelector('#player-lv'),
-  },
-
-  displayHp: function () {
-    player.playerEls.hpEl.textContent = `${player.hp}/${player.maxHp}`;
-  },
-
-  displayMp: function () {
-    player.playerEls.mpEl.textContent = `${player.mp}/${player.maxMp}`;
-  },
-
-  displayXp: function () {
-    player.playerEls.xpEl.textContent = `${player.xp}/${player.maxXp}`;
-  },
-
-  displayLv: function () {
-    player.playerEls.lvEl.textContent = player.lv;
-  },
-
-  displayStats: function () {
-    player.displayHp();
-    player.displayMp();
-    player.displayXp();
-    player.displayLv();
-  },
-
-  init: function (lv = 1) {
-    player.setLv(lv);
-    player.addStartingItems();
-  },
-
-  setLv: function (num) {
-    if (num > 5) num = 5; // fix outrageous numbers
-    if (num < 1) num = 1; // fix outrageous numbers
-    if (!(player.levels[`lv${num}`])) return; // exit if level is not found
-    player.lv = num;
-    let newLevel = player.levels[`lv${player.lv}`];
-    player.displayLv();
-    // Xp
-    player.maxXp = newLevel.maxXp;
-    let excessXp = player.xp - player.maxXp;
-    (excessXp > 0) ?
-      player.setXp(excessXp) :
-      player.setXp(newLevel.startingXp);
-    // HP
-    player.maxHp = newLevel.maxHp;
-    player.setHp(player.maxHp);
-    // MP
-    player.maxMp = newLevel.maxMp;
-    player.setMp(player.maxMp);
-    // new skills
-    for (let i = 1; i <= num; i++) { // <= add skills from previous levels
-      let lvObj = player.levels[`lv${i}`];
-      lvObj.newSkills.forEach(skillname => { player.addSkill(skillname) });
-    };
-    player.removeSkillDuplicates();
-    player.sortSkills();
-  },
-
-  removeSkillDuplicates: function () {
-    player.skillList = [...new Set(player.skillList)];
-  },
-
-  addSkill: function (name) {
-    let skill = skills[name];
-    if (skill) player.skillList.push(skill);
-  },
-
-  sortArrayByNameProperty: function (arr) {
-    arr.sort((a, b) => a.name.localeCompare(b.name));
-  },
-
-  sortEquipment: function () {
-    player.sortArrayByNameProperty(player.equipment);
-  },
-
-  sortItems: function () {
-    player.sortArrayByNameProperty(player.items);
-  },
-
-  sortSkills: function () {
-    player.sortArrayByNameProperty(player.skillList);
-  },
-
-  addItems: function (...names) {
-    for (let i of names) {
-      let item = allItems[i];
-      if(!item) console.log(`Invalid item: ${i}`);
-      switch (item.type) {
-        case "consumable":
-          player.items.push(item);
-          break;
-        case "equipment":
-          player.equipment.push(item);
-          break;
-      };
-    };
-    player.sortItems();
-    player.sortEquipment();
-  },
-
-  lvUpCheck: function () {
-    if (player.xp < player.maxXp) return; // leave if xp is not sufficient
-    player.setLv(player.lv + 1)
-  },
-
-  setHp: function (num) {
-    player.hp = num;
-    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
-    player.displayHp();
-  },
-
-  setMp: function (num) {
-    player.mp = num;
-    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
-    player.displayMp();
-  },
-
-  setXp: function (num) {
-    player.xp = num;
-    player.lvUpCheck();
-    player.displayXp();
-  },
-
-  addHp: function (num) {
-    player.hp += num;
-    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
-    player.displayHp();
-  },
-
-  addMp: function (num) {
-    player.mp += num;
-    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
-    player.displayMp();
-  },
-
-  addXp: function (num) {
-    player.xp += num; // add xp
-    player.lvUpCheck(); // check for level up
-    player.displayXp(); // display result to html
-  },
-
-  useSkill: function (name) {
-    let skill = skills[name];
-    player.mp = player.mp - skill.mpCost
-  },
-
-  addStartingItems: function () {
-    player.addItems(
-      'sword_I',
-      'hp_potion_I',
-      'hp_potion_I',
-      'hp_potion_I',
-      'mp_potion_I',
-      'mp_potion_I'
-    );
-  },
-};
-
-===== old inventory object =====
-const inventory = {
-  commandBtnEls: document.querySelectorAll('#inventory button'),
-  invEl: document.querySelector('#inventory'),
-
-  menu: {
-    invMenuEl: document.querySelector('#inv-menu'),
-    skillsBtnEl: document.querySelector('#inv-skills-btn'),
-    itemsBtnEl: document.querySelector('#inv-items-btn'),
-    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
-  },
-
-  init: function () {
-    inventory.clearCommandBtns();
-    inventory.menu.invMenuEl.addEventListener("click", inventory.swapInventory);
-  },
-
-  clearCommandBtns: function () {
-    inventory.commandBtnEls.forEach(el => el.remove());
-  },
-
-  clearItems: function () {
-    player.items.length = 0;
-    player.equipment.length = 0;
-    player.addStartingItems()
-  },
-
-  loadNewCommandBtns: function () {
-    inventory.commandBtnEls = document.querySelectorAll('#inventory button')
-  },
-
-  addCommandBtn: function (text) {
-    let nBtn = document.createElement('button');
-    nBtn.type = 'button';
-    nBtn.classList.add('inv-btn');
-    nBtn.textContent = text;
-    inventory.invEl.appendChild(nBtn);
-  },
-
-  swapInventory: function (evt) {
-    const btnNames = ['Skills', 'Items', 'Equipment'];
-    if (!(btnNames.includes(evt.target.textContent))) return; // Exit if button is not in the list
-    // Button Highlights
-    document.querySelectorAll('.inv-menu-btn').forEach((el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
-    evt.target.classList.add("highlight-btn") // highlight selected button
-    // Determine list
-    inventory.loadNewCommandBtns();
-    inventory.clearCommandBtns(); // clear old buttons
-    let list;
-    switch (evt.target.textContent) {
-      case btnNames[0]:
-        list = player.skillList;
-        break;
-      case btnNames[1]:
-        list = player.items;
-        break;
-      case btnNames[2]:
-        list = player.equipment;
-        break;
-      default:
-        console.log(`swapInventory: No case for ${evt.target.textContent}`);
-        return; // leave function
-    };
-    // add buttons to inventory
-    for (let i of list){ inventory.addCommandBtn(i.name); };
-  },
-};
-*/
+// Final Line
