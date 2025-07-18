@@ -1,7 +1,6 @@
-// sample comment
-// sample comment2
+const data = require('./js/data.js');
 
-import * as data from "./data.js"
+// import * as data from "./data.js"
 
 /* Map representation
 map
@@ -15,10 +14,47 @@ map
 */
 
 // ===== Variables =====
-const player = data.player;
-const battleLog = data.battleLog;
-const enemy = data.enemy;
+const player = data.player; // object
+const battleLog = data.battleLog; // object
+const map = data.map; // object
+const rollNum = data.rollNum; // function
+const enemy = data.enemy; // object
 
+// ===== Script =====
+game.init();
+document.querySelector('#reset').addEventListener("click", game.init());
+
+/* ===== GRAVEYARD =====
+
+function paction1(evt){                                                  //  <| - Created to test the
+  if(evt) toggleMapElEventListener(false);                               //  <|   toggleMapElEventListener
+};                                                                       //  <|   function
+document.querySelector("#paction1").addEventListener("click", paction1); //  <|
+
+
+for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
+
+// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
+
+// inventory.clear();
+
+// console.dir(player);
+// let tmp = data.tempObj;
+// tmp.init();
+// tmp.method3();
+// tmp.method2();
+
+// clearInvBtns();
+// player.setXp(302);
+// player.setXp(300);
+
+// data.enemy.setEnemy("slime");
+// player.setLv(5);
+// player.lvUpCheck();
+*/
+
+
+/* game object
 // ===== Objects =====
 const game = {
   startRoom: 25,
@@ -34,7 +70,6 @@ const game = {
     game.encounterActive = false;
     game.gameOver = false;
     game.room = 25;
-    data.elem.startSquare.style.opacity = 1;
     game.clearHighlightedSquares();
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
@@ -108,37 +143,4 @@ const game = {
       data.elem.mapEl.removeEventListener("click", game.movePlayer); // <= else statement
   },
 };
-
-
-// ===== Script =====
-game.init();
-document.querySelector('#reset').addEventListener("click", game.init());
-
-/* ===== GRAVEYARD =====
-
-function paction1(evt){                                                  //  <| - Created to test the
-  if(evt) toggleMapElEventListener(false);                               //  <|   toggleMapElEventListener
-};                                                                       //  <|   function
-document.querySelector("#paction1").addEventListener("click", paction1); //  <|
-
-
-for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
-
-// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
-
-// inventory.clear();
-
-// console.dir(player);
-// let tmp = data.tempObj;
-// tmp.init();
-// tmp.method3();
-// tmp.method2();
-
-// clearInvBtns();
-// player.setXp(302);
-// player.setXp(300);
-
-// data.enemy.setEnemy("slime");
-// player.setLv(5);
-// player.lvUpCheck();
 */

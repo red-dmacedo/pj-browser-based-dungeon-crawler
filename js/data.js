@@ -77,6 +77,7 @@ const map = {
   ],
 
   init: function(floorNum){
+    map.showStartSqr();
     map.floor = 1;
     map.playerLocation = 25;
     map.clear(); // clear map.rooms
@@ -168,6 +169,14 @@ const map = {
     game.updateMap();
     game.renderMap();
   },
+
+  showStartSqr: function(){
+    map.startSqrEl.style.opacity = 1;
+  },
+
+  hideStartSqr: function(){
+    map.startSqrEl.style.opacity = 0;
+  },
 };
 
 const player = {
@@ -201,6 +210,8 @@ const player = {
   ],
 
   init: function(lv){
+    player.clearSkills();
+    player.clearItems();
     player.initStats(lv);
   },
 
@@ -227,6 +238,10 @@ const player = {
 
   sortSkills: function(){
     sortArr(player.skills, 'name');
+  },
+
+  clearItems: function(){
+    player.items.length = 0;
   },
 
   sortItems: function(){
