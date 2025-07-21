@@ -1,4 +1,4 @@
-class PointsObj {
+class charPointsObj {
   constructor(value) {
     this.value = value;
     this.maxValue = value;
@@ -19,7 +19,7 @@ class PointsObj {
   };
 };
 
-class status {
+class charStatusObj {
   constructor() {
     this.list = [];
   };
@@ -38,7 +38,7 @@ class status {
 
 };
 
-class skills {
+class charSkillsObj {
   constructor() {
     this.list = [];
   };
