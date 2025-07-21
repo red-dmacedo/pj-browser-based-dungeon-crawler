@@ -221,6 +221,8 @@ const player = {
       return false;
     },
   },
+  // LV
+  lv: 1,
   // etc
   levels: [
     { lv: 1, name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
@@ -232,10 +234,21 @@ const player = {
 
   skills: {
     list: [],
-    add: function () { },
+    add: function (skil) {
+      const skills = player.skills
+      if (typeof (skil) === 'string') skil = allSkills.filter(el => el.name === skil.toLowerCase())[0];
+      if (typeof (skil) !== 'object') { console.log('[player.skills.add()] Item is not an object:', skil); return; };
+      if (!allSkills.includes(skil)) console.log('[player.skills.add()] Item does not exist:', skil);
+      skills.list.push(skil);
+      skills.sortList();
+    },
 
     sortList: function () {
       sortArr(player.skills.list, 'name');
+    },
+
+    clearList: function () {
+      player.skills.list.length = 0;
     },
   },
 
@@ -243,7 +256,7 @@ const player = {
     list: [],
 
     add: function (item) {
-      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase())[0];
       if (typeof (item) !== 'object') { console.log('[player.item.add()] Item is not an object:', item); return; };
       if (!allItems.includes(item)) console.log('[player.item.add()] Item does not exist:', item);
       player.items.list.push(item);
@@ -273,31 +286,46 @@ const player = {
     handR: {},
     handL: {},
     legs: {},
+    emptyItem: allEquipment.filter(el => el.name === 'empty')[0],
 
     add: function (item) {
-      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      const equipment = player.equipment;
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase())[0];
       if (typeof (item) !== 'object') { console.log('[player.equipment.add()] Item is not an object:', item); return; };
-      if (!allEquipment.includes(item)) console.log('[player.equipment.add()] Item does not exist:', item);
-      player.equipment.list.push(item);
+      if (!allEquipment.includes(item)) { console.log('[player.equipment.add()] Item does not exist:', item); return; };
+      equipment.list.push(item);
+      equipment.sortList();
     },
 
     equip: function (item) {
-      if (typeof (item) === 'string') item = player.equipment.list.filter(el => el.name === item.toLowerCase());
-      if (item.length === 0) { console.log('Item not found:', item); return; };
-      if (item.length > 1) item = item[0];
-      player.equipment[item.position] = item;
+      const equipment = player.equipment;
+      if (typeof (item) === 'string') item = equipment.list.filter(el => el.name === item.toLowerCase())[0];
+      if (!item) { console.log('[player.equipment.equip()] Item not found:', item); return; };
+      equipment[item.position] = item;
+    },
+
+    unEquip: function (item) {
+      const equipment = player.equipment;
+      const emptyItem = equipment.emptyItem;
+      if (typeof (item) === 'string') item = equipment.list.filter(el => el.name === item.toLowerCase())[0];
+      if (!item) { console.log('[player.equipment.unEquip()] Item not found:', item); return; };
+      equipment[item.position] = emptyItem;
     },
     
     clearAll: function(){
-      equipment = player.equipment;
-      equipment.list.length = 0;
-      emptyEquipment = allEquipment.filter(el => el.name === 'empty')[0];
-      equipment.head = emptyEquipment;
-      equipment.neck = emptyEquipment;
-      equipment.torso = emptyEquipment;
-      equipment.handR = emptyEquipment;
-      equipment.handL = emptyEquipment;
-      equipment.legs = emptyEquipment;
+      const equipment = player.equipment;
+      const emptyItem = equipment.emptyItem;
+      equipment.list.length = 0; // clear equipment list
+      equipment.head = emptyItem; // clear position
+      equipment.neck = emptyItem; // clear position
+      equipment.torso = emptyItem; // clear position
+      equipment.handR = emptyItem; // clear position
+      equipment.handL = emptyItem; // clear position
+      equipment.legs = emptyItem; // clear position
+    },
+
+    sortList: function () {
+      sortArr(player.equipment.list, 'name');
     },
   },
 
@@ -309,24 +337,21 @@ const player = {
   },
 
   initStats: function (lv) {
-    if (!lv) lv = 1;
-    if (lv > player.levels.length) lv = player.levels.length;
-    newLv = player.levels[lv - 1];
+    if(typeof(lv) === 'string') lv = Number(lv); // convert to number
+    if (!lv) lv = 1; // set default level
+    if (lv > player.levels.length) lv = player.levels.length; // prevent setting a level higher than max lv
+    newLv = player.levels[lv - 1]; // get level object
     // HP
-    player.maxHp = newLv.maxHp;
-    player.hp = player.maxHp;
+    player.hp.maxValue = newLv.maxHp;
+    player.hp.value = player.hp.maxValue;
     // MP
-    player.maxMp = newLv.maxMp;
-    player.mp = player.maxMp;
+    player.mp.maxValue = newLv.maxMp;
+    player.mp.value = player.mp.maxValue;
     // XP
-    player.maxXp = newLv.maxXp;
-    player.xp = 0;
+    player.xp.maxValue = newLv.maxXp;
+    player.xp.value = 0;
     player.lv = newLv.lv;
-    newLv.newSkills.forEach((skil) => { skil = allSkills.filter(s => s.name === skil); player.skills.push(skil) });
-  },
-
-  clearSkills: function () {
-    player.skills.length = 0;
+    newLv.newSkills.forEach((skil) => { skil = allSkills.filter(s => s.name === skil); player.skills.add(skil) });
   },
 };
 
@@ -362,33 +387,51 @@ function rollNum(start, end) {
 };
 
 function sortArr(arr, prop) {
-  let propType;
-  // switch(typeof(arr[0].property));
-  if (prop) {
-    propType = typeof (arr[0].prop)
-    switch (propType) {
-      case "string":
-        arr.sort((a, b) => a.prop.localeCompare(b.prop));
-        break;
-      case "number":
-        arr.sort((a, b) => a - b);
-        break;
-      default:
-        console.log(`Cannot sort property type: ${propType}`);
-    };
-  };
+  let propType, arrowFunc;
+  if(prop){ propType = typeof(arr[0].prop) }
+  else { propType = typeof(arr[0]) };
 
-  propType = typeof (arr[0]);
-  switch (propType) {
-    case "string":
-      arr.sort((a, b) => a.localeCompare(b));
+  switch(propType){
+    case 'string':
+      if(prop){ arrowFunc = (a, b) => a.prop.localeCompare(b.prop); }
+      else { arrowFunc = (a,b) => a.localeCompare(b) };
       break;
-    case "number":
-      arr.sort((a, b) => a - b);
+    case 'number':
+      if(prop) { arrowFunc = (a, b) => a.prop - b.prop }
+      else { arrowFunc = (a, b) => a - b; };
       break;
     default:
       console.log(`Cannot sort property type: ${propType}`);
+      return;
   };
+
+  arr.sort( arrowFunc );
+
+  // if (prop) {
+  //   propType = typeof (arr[0].prop)
+  //   switch (propType) {
+  //     case "string":
+  //       arr.sort((a, b) => a.prop.localeCompare(b.prop));
+  //       break;
+  //     case "number":
+  //       arr.sort((a, b) => a - b);
+  //       break;
+  //     default:
+  //       console.log(`Cannot sort property type: ${propType}`);
+  //   };
+  // };
+
+  // propType = typeof (arr[0]);
+  // switch (propType) {
+  //   case "string":
+  //     arr.sort((a, b) => a.localeCompare(b));
+  //     break;
+  //   case "number":
+  //     arr.sort((a, b) => a - b);
+  //     break;
+  //   default:
+  //     console.log(`Cannot sort property type: ${propType}`);
+  // };
 };
 
 function removeItemFromArray(arr, item) {
