@@ -58,7 +58,7 @@ const map = {
   firstDungeonRoom: 22,
   playerLocation: 25,
   floor: 1,
-  rooms: [ '','','','','','','','','','','','','','','','','','','','','','','','','', ],
+  rooms: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],
   disabled: false,
 
   floors: [
@@ -76,7 +76,7 @@ const map = {
     { name: "3F", bossLocation: 0, encounterRooms: [16, 3], healRooms: [], treasureRooms: [], },
   ],
 
-  init: function(floorNum){
+  init: function (floorNum) {
     map.showStartSqr();
     map.floor = 1;
     map.playerLocation = 25;
@@ -86,8 +86,8 @@ const map = {
     map.disabled = false; // clear if set
   },
 
-  clear: function(){
-    map.rooms = [ '','','','','','','','','','','','','','','','','','','','','','','','','', ];
+  clear: function () {
+    map.rooms = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',];
   },
 
   validateMovement: function (idx) {
@@ -103,14 +103,14 @@ const map = {
     );
   },
 
-  nextFloor: function(){
-    if(map.floor === map.floors.length) return;
+  nextFloor: function () {
+    if (map.floor === map.floors.length) return;
     map.floor++;
     map.setMapFloor(map.floor);
   },
 
   setMapFloor: function (floorNum) {
-    let newMap = map.floors[floorNum-1];
+    let newMap = map.floors[floorNum - 1];
     map.clear(); // Clear old map data
     map.rooms[newMap.bossRoom] = icons.boss; // Set boss location
     newMap.encounterRooms.forEach((idx) => { map.rooms[idx] = icons.battle }); // Set guaranteed encounters
@@ -119,7 +119,7 @@ const map = {
   },
 
   updateRooms: function () { // move player icon
-    map.rooms.forEach((rm) => { if(rm === icons.player) {rm = ''; return}; });
+    map.rooms.forEach((rm) => { if (rm === icons.player) { rm = ''; return }; });
     map.rooms[map.playerLocation] = data.icons.player;
   },
 
@@ -130,10 +130,10 @@ const map = {
   },
 
   highlightSquare: function (squareEl, disable = false, color = 'beige') { // highlight rooms the player has passed through
-    if(!disable && squareEl.hasAttribute('style')) return; // exit if square is already highlighted
+    if (!disable && squareEl.hasAttribute('style')) return; // exit if square is already highlighted
     (disable) ? squareEl.removeAttribute("style") : squareEl.style.backgroundColor = color; // remove highlight or set highlight
   },
-  
+
   evtPlayerMove: function (evt) { // <= player movement and map updates
     if (
       !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
@@ -145,8 +145,8 @@ const map = {
     ) return;
 
     game.room = Number(evt.target.id); // update current room
-    
-    switch(game.map[game.room]){
+
+    switch (game.map[game.room]) {
       case data.icons.battle:
         game.forceEncounter();
         break;
@@ -160,7 +160,7 @@ const map = {
         game.getTreasure();
         break;
       default:
-        // game.chanceEncounter();
+      // game.chanceEncounter();
     };
 
     // Hide the start square if it is visible
@@ -170,36 +170,114 @@ const map = {
     game.renderMap();
   },
 
-  showStartSqr: function(){
+  showStartSqr: function () {
     map.startSqrEl.style.opacity = 1;
   },
 
-  hideStartSqr: function(){
+  hideStartSqr: function () {
     map.startSqrEl.style.opacity = 0;
   },
 };
 
 const player = {
+  isDead: false,
   // HP
-  hp: 1,
-  maxHp: 10,
+  hp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.hp.value += val;
+      if (player.hp.value > player.hp.maxValue) player.hp.value = player.hp.maxValue;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+
+    subtract: function (val) {
+      player.hp.value -= val;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+  },
   // MP
-  mp: 1,
-  maxMp: 10,
+  mp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.mp.value += val;
+      if (player.mp.value > player.mp.maxValue) player.mp.value = player.mp.maxValue;
+    },
+
+    subtract: function (val) {
+      player.mp.value -= val;
+    },
+  },
   // XP
-  xp: 5,
-  maxXp: 1000,
+  xp: {
+    value: 5,
+    maxValue: 1000,
+
+    lvUpCheck: function () {
+      if (player.xp.value >= player.exp.maxValue) return true;
+      return false;
+    },
+  },
   // etc
-  skills: [],
-  items: [],
+  skills: {
+    list: [],
+    add: function () { },
+
+    sortList: function () {
+      sortArr(player.skills.list, 'name');
+    },
+  },
+  items: {
+    list: [],
+
+    add: function (item) {
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      if (typeof (item) !== 'object') { console.log('[player.item.add()] Item is not an object:', item); return; };
+      if (!allItems.includes(item)) console.log('[player.item.add()] Item does not exist:', item);
+      player.items.list.push(item);
+    },
+
+    remove: function (item) {
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      if (typeof (item) !== 'object') { console.log('[player.item.remove()] Item is not an object:', item); return; };
+      if (!player.items.list.includes(item)) console.log('[player.item.remove()] Item does not exist:', item);
+      player.items.list //.push(item);
+    },
+
+    sortList: function () {
+      sortArr(player.items.list, 'name');
+    },
+
+    clearList: function () {
+      player.items.list.length = 0;
+    },
+  },
   equipment: {
+    list: [],
     head: {},
     neck: {},
     torso: {},
     handR: {},
     handL: {},
     legs: {},
-},
+
+    add: function (item) {
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      if (typeof (item) !== 'object') { console.log('[player.equipment.add()] Item is not an object:', item); return; };
+      if (!allEquipment.includes(item)) console.log('[player.equipment.add()] Item does not exist:', item);
+      player.equipment.list.push(item);
+    },
+
+    equip: function (item) {
+      if (typeof (item) === 'string') item = player.equipment.list.filter(el => el.name === item.toLowerCase());
+      if (item.length === 0) { console.log('Item not found:', item); return; };
+      if (item.length > 1) item = item[0];
+      player.equipment[item.position] = item;
+    },
+  },
 
   levels: [
     { lv: 1, name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
@@ -209,16 +287,16 @@ const player = {
     { lv: 5, name: "Lv5", baseAtk: 120, startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
   ],
 
-  init: function(lv){
+  init: function (lv) {
     player.clearSkills();
     player.clearItems();
     player.initStats(lv);
   },
 
-  initStats: function(lv){
-    if(!lv) lv = 1;
-    if(lv > player.levels.length) lv = player.levels.length;
-    newLv = player.levels[lv-1];
+  initStats: function (lv) {
+    if (!lv) lv = 1;
+    if (lv > player.levels.length) lv = player.levels.length;
+    newLv = player.levels[lv - 1];
     // HP
     player.maxHp = newLv.maxHp;
     player.hp = player.maxHp;
@@ -232,20 +310,8 @@ const player = {
     newLv.newSkills.forEach((skil) => { skil = allSkills.filter(s => s.name === skil); player.skills.push(skil) });
   },
 
-  clearSkills: function(){
+  clearSkills: function () {
     player.skills.length = 0;
-  },
-
-  sortSkills: function(){
-    sortArr(player.skills, 'name');
-  },
-
-  clearItems: function(){
-    player.items.length = 0;
-  },
-
-  sortItems: function(){
-    sortArr(player.items, 'name');
   },
 };
 
@@ -264,8 +330,8 @@ const battleLog = {
     if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
     let logItem = document.createElement('p'); // new paragraph tag
     logItem.textContent = `[${battleLog.lines}] ${pText}`;
-    if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
-    if(color) logItem.style.color = color;
+    if (battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
+    if (color) logItem.style.color = color;
     battleLog.element.prepend(logItem);
     // battleLog.element.appendChild(logItem); // swapped to prepend
   },
@@ -277,37 +343,41 @@ const battleLog = {
 };
 /* ===== Functions ===== */
 function rollNum(start, end) {
-  return Math.floor(Math.random() * (end-start+1)) + start;
+  return Math.floor(Math.random() * (end - start + 1)) + start;
 };
 
-function sortArr(arr, prop){
+function sortArr(arr, prop) {
   let propType;
   // switch(typeof(arr[0].property));
-  if(prop){
-    propType = typeof(arr[0].prop)
-    switch(propType){
+  if (prop) {
+    propType = typeof (arr[0].prop)
+    switch (propType) {
       case "string":
-        arr.sort((a, b) => a.prop.localeCompare(b.prop) );
+        arr.sort((a, b) => a.prop.localeCompare(b.prop));
         break;
       case "number":
-        arr.sort((a, b) => a - b );
+        arr.sort((a, b) => a - b);
         break;
       default:
         console.log(`Cannot sort property type: ${propType}`);
     };
   };
 
-  propType = typeof(arr[0]);
-  switch(propType){
-      case "string":
-        arr.sort((a, b) => a.localeCompare(b) );
-        break;
-      case "number":
-        arr.sort((a, b) => a - b );
-        break;
-      default:
-        console.log(`Cannot sort property type: ${propType}`);
+  propType = typeof (arr[0]);
+  switch (propType) {
+    case "string":
+      arr.sort((a, b) => a.localeCompare(b));
+      break;
+    case "number":
+      arr.sort((a, b) => a - b);
+      break;
+    default:
+      console.log(`Cannot sort property type: ${propType}`);
   };
+};
+
+function removeItemFromArray(arr, item) {
+  arr = arr.splice(arr.indexOf(item), 1);
 };
 
 export {
