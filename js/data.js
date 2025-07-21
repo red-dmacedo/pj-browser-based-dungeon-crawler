@@ -538,7 +538,6 @@ export {
   allSkills,
   allEnemies,
   allItems,
-  allBossEnemies,
   icons,
   map,
   battleLog,
