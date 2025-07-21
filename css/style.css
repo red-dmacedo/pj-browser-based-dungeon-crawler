@@ -47,14 +47,15 @@ button:hover {
 } */
 
 .sqr {
-  width: 18.5%;
+  width: 18.9%;
   aspect-ratio: 1/1;
   box-sizing: border-box;
   border: 3px solid black;
-  font-size: 18px;
-  margin: 2px;
-  border-color: black;
-  background-color:rgba(200,200,200,0.5);
+  /* font-size: 18px; */
+  /* margin-block: 2px; */
+  /* margin-: 2px; */
+  border-color: rgba(200,200,200,1);
+  background-color:rgba(50,50,50,0.8);
   align-items: center;
   justify-content: center;
   display: flex;
@@ -199,8 +200,9 @@ button:hover {
   flex-direction: row;
   box-sizing: border-box;
   aspect-ratio: 1/1;
-  min-width: 300px;
   width: 25vw;
+  gap: 3px;
+  /* min-width: 300px; */
   /* margin: 0px; */
   /* align-items: center; */
   /* justify-content: center; */

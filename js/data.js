@@ -23,21 +23,21 @@ const allBossEnemies = [
 ];
 
 const allItems = [
-  { name: "HP Potion I", stat: "hp", value: 50, helpText: "Recover 50% hp", },
-  { name: "HP Potion II", stat: "hp", value: 80, helpText: "Recover 80% hp", },
-  { name: "HP Potion III", stat: "hp", value: 100, helpText: "Recover 100% hp", },
-  { name: "MP Potion I", stat: "mp", value: 50, helpText: "Recover 50% mp", },
-  { name: "MP Potion II", stat: "mp", value: 80, helpText: "Recover 80% mp", },
-  { name: "MP Potion III", stat: "mp", value: 100, helpText: "Recover 100% mp", },
+  { name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", },
+  { name: "HP Potion II", stat: "hp", value: 80, helpText: "+80% hp", },
+  { name: "HP Potion III", stat: "hp", value: 100, helpText: "+100% hp", },
+  { name: "MP Potion I", stat: "mp", value: 50, helpText: "+50% mp", },
+  { name: "MP Potion II", stat: "mp", value: 80, helpText: "+80% mp", },
+  { name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", },
 ];
 
 const allEquipment = [
   { name: "empty", position: 'any', stat: "", value: 0, helpText: "empty", },
-  { name: "Ruby Amulet", position: 'neck', stat: "matk", value: 40, helpText: "A valuable necklace - +40 matk", },
-  { name: "Sword I", position: 'handR', stat: "atk", value: 10, helpText: "A rusted sword - +10 atk", },
-  { name: "Sword II", position: 'handR', stat: "atk", value: 30, helpText: "A decorative sword - +30 atk", },
-  { name: "Sword III", position: 'handR', stat: "atk", value: 60, helpText: "A masterfully crafted sword - +60 atk", },
-  { name: "Wizard Cap", position: 'head', stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
+  { name: "Ruby Amulet", position: 'neck', stat: "matk", value: 40, helpText: "+40 matk", },
+  { name: "Sword I", position: 'handR', stat: "atk", value: 10, helpText: "+10 atk", },
+  { name: "Sword II", position: 'handR', stat: "atk", value: 30, helpText: "+30 atk", },
+  { name: "Sword III", position: 'handR', stat: "atk", value: 60, helpText: "+60 atk", },
+  { name: "Wizard Cap", position: 'head', stat: "matk", value: 20, helpText: "+20 matk", },
 ];
 
 const icons = {
@@ -222,6 +222,14 @@ const player = {
     },
   },
   // etc
+  levels: [
+    { lv: 1, name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    { lv: 2, name: "Lv2", baseAtk: 70, startingXp: 0, maxXp: 200, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    { lv: 3, name: "Lv3", baseAtk: 80, startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    { lv: 4, name: "Lv4", baseAtk: 100, startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    { lv: 5, name: "Lv5", baseAtk: 120, startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+  ],
+
   skills: {
     list: [],
     add: function () { },
@@ -230,6 +238,7 @@ const player = {
       sortArr(player.skills.list, 'name');
     },
   },
+
   items: {
     list: [],
 
@@ -255,6 +264,7 @@ const player = {
       player.items.list.length = 0;
     },
   },
+
   equipment: {
     list: [],
     head: {},
@@ -277,19 +287,24 @@ const player = {
       if (item.length > 1) item = item[0];
       player.equipment[item.position] = item;
     },
+    
+    clearAll: function(){
+      equipment = player.equipment;
+      equipment.list.length = 0;
+      emptyEquipment = allEquipment.filter(el => el.name === 'empty')[0];
+      equipment.head = emptyEquipment;
+      equipment.neck = emptyEquipment;
+      equipment.torso = emptyEquipment;
+      equipment.handR = emptyEquipment;
+      equipment.handL = emptyEquipment;
+      equipment.legs = emptyEquipment;
+    },
   },
 
-  levels: [
-    { lv: 1, name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
-    { lv: 2, name: "Lv2", baseAtk: 70, startingXp: 0, maxXp: 200, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
-    { lv: 3, name: "Lv3", baseAtk: 80, startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
-    { lv: 4, name: "Lv4", baseAtk: 100, startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
-    { lv: 5, name: "Lv5", baseAtk: 120, startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
-  ],
-
+  // Methods
   init: function (lv) {
-    player.clearSkills();
-    player.clearItems();
+    player.skills.clearList();
+    player.items.clearList();
     player.initStats(lv);
   },
 
