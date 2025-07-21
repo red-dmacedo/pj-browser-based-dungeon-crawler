@@ -1,13 +1,13 @@
 // import { StatusEffect } from "./classes";
-import { Skill, StatusEffect } from './classes.js';
+import { Item, Skill, StatusEffect } from './classes.js';
 
 // Status effects:
 const stun = StatusEffect.fromObject({type: 'stun', duration: 3, description: 'Turn is skipped'});
-const fireDot = StatusEffect.fromObject({type: 'dot', duration: 1, description: 'Take 1x fire damage every turn'});
+const fireDot = StatusEffect.fromObject({type: 'dot', duration: 1, description: 'Take 1x fire damage every turn'}); // damage over time
 
 const allSkills = [
-  Skill.fromObject({name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', stun, }),
-  Skill.fromObject({name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', fireDot, }),
+  Skill.fromObject({name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', statusEffect: fireDot, }),
+  Skill.fromObject({name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', statusEffect: stun, }),
   Skill.fromObject({ name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", }),
   Skill.fromObject({ name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", }),
   Skill.fromObject({ name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", }),
@@ -28,13 +28,16 @@ const allEnemies = [
 ];
 
 const allItems = [
-  { name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", },
-  { name: "HP Potion II", stat: "hp", value: 80, helpText: "+80% hp", },
-  { name: "HP Potion III", stat: "hp", value: 100, helpText: "+100% hp", },
-  { name: "MP Potion I", stat: "mp", value: 50, helpText: "+50% mp", },
-  { name: "MP Potion II", stat: "mp", value: 80, helpText: "+80% mp", },
-  { name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", },
+  Item.fromObject({ name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", }),
+  Item.fromObject({ name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", }),
+  Item.fromObject({ name: "HP Potion II", stat: "hp", value: 80, helpText: "+80% hp", }),
+  Item.fromObject({ name: "HP Potion III", stat: "hp", value: 100, helpText: "+100% hp", }),
+  Item.fromObject({ name: "MP Potion I", stat: "mp", value: 50, helpText: "+50% mp", }),
+  Item.fromObject({ name: "MP Potion II", stat: "mp", value: 80, helpText: "+80% mp", }),
+  Item.fromObject({ name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", }),
 ];
+
+console.dir(allSkills[1].statusEffect);
 
 const allEquipment = [
   { name: "empty", position: 'any', stat: "", value: 0, helpText: "empty", },
