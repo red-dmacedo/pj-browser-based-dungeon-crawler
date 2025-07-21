@@ -1,4 +1,4 @@
-import * as data from "./data.js"
+// import * as data from "./data.js"
 
 /* Map representation
 map
@@ -12,11 +12,11 @@ map
 */
 
 // ===== Variables =====
-const player = data.player; // object
-const battleLog = data.battleLog; // object
-const map = data.map; // object
-const rollNum = data.rollNum; // function
-const enemy = data.enemy; // object
+// const player = data.player; // object
+// const battleLog = data.battleLog; // object
+// const map = data.map; // object
+// const rollNum = data.rollNum; // function
+// const enemy = data.enemy; // object
 
 // ===== Script =====
 // game.init();

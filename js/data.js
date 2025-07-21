@@ -1,14 +1,22 @@
+// import { StatusEffect } from "./classes";
+import { Skill, StatusEffect } from './classes.js';
+
+// Status effects:
+const stun = StatusEffect.fromObject({type: 'stun', duration: 3, description: 'Turn is skipped'});
+const fireDot = StatusEffect.fromObject({type: 'dot', duration: 1, description: 'Take 1x fire damage every turn'});
+
 const allSkills = [
-  { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
-  { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", status: { duration: 0, }, },
-  { name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", },
-  { name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", },
-  { name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", },
-  { name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", },
-  { name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", },
-  { name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", },
-  { name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", },
-];
+  Skill.fromObject({name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', stun, }),
+  Skill.fromObject({name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', fireDot, }),
+  Skill.fromObject({ name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", }),
+  Skill.fromObject({ name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", }),
+  Skill.fromObject({ name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", }),
+  Skill.fromObject({ name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", }),
+  Skill.fromObject({ name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", }),
+  Skill.fromObject({ name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", }),
+  Skill.fromObject({ name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", }),
+  // Skill.fromObject(),
+]
 
 const allEnemies = [
   { name: "slime", class: 'normal', type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
@@ -484,16 +492,16 @@ function rollNum(start, end) {
 
 function sortArr(arr, prop) {
   let propType, arrowFunc;
-  if (prop) { propType = typeof (arr[0].prop) }
+  if (prop) { propType = typeof (arr[0][prop]) }
   else { propType = typeof (arr[0]) };
 
   switch (propType) {
     case 'string':
-      if (prop) { arrowFunc = (a, b) => a.prop.localeCompare(b.prop); }
+      if (prop) { arrowFunc = (a, b) => a[prop].localeCompare(b[prop]); }
       else { arrowFunc = (a, b) => a.localeCompare(b) };
       break;
     case 'number':
-      if (prop) { arrowFunc = (a, b) => a.prop - b.prop }
+      if (prop) { arrowFunc = (a, b) => a[prop] - b[prop] }
       else { arrowFunc = (a, b) => a - b; };
       break;
     default:
@@ -504,10 +512,10 @@ function sortArr(arr, prop) {
   arr.sort(arrowFunc);
 
   // if (prop) {
-  //   propType = typeof (arr[0].prop)
+  //   propType = typeof (arr[0][prop])
   //   switch (propType) {
   //     case "string":
-  //       arr.sort((a, b) => a.prop.localeCompare(b.prop));
+  //       arr.sort((a, b) => a[prop].localeCompare(b[prop]));
   //       break;
   //     case "number":
   //       arr.sort((a, b) => a - b);
@@ -550,7 +558,7 @@ export {
 export const tempObj = {
   prop1: 'one',
   init: function () {
-    tempObj.prop1 = 'three';
+    tempObj[prop]1 = 'three';
     tempObj.method1();
   },
   method1: function (){
@@ -560,14 +568,14 @@ export const tempObj = {
     tempObj.method1();
   },
   method3: function() { // working
-    console.log('prop1:', tempObj.prop1);
+    console.log('prop1:', tempObj[prop]1);
     tempObj.method1();
   },
 };
 export const tempObj2 = {
   prop1: 'one',
   init: function () {
-    this.prop1 = 'three';
+    this[prop]1 = 'three';
     this.method1();
   },
   method1: function (){
@@ -577,7 +585,7 @@ export const tempObj2 = {
     this.method1();
   },
   method3: function() { // working
-    console.log('prop1:', this.prop1);
+    console.log('prop1:', this[prop]1);
     this.method1();
   },
 };

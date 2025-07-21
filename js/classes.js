@@ -1,35 +1,70 @@
-class charPointsObj {
-  constructor(value) {
+class CharacterPoints {
+  constructor(maxValue) {
+    this.value = maxValue || 10;
+    this.maxValue = maxValue || 10;
+  }
+
+  // Methods
+  add(value) {
+    if(typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value += value;
+    if (this.value > this.maxValue) this.value = this.maxValue;
+  }
+
+  subtract(value) {
+    if(typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value -= value;
+  }
+
+  setValueAndMaxValue(value){
     this.value = value;
     this.maxValue = value;
-  };
+  }
 
-  constructor(value, maxValue) {
-    this.value = value;
-    this.maxValue = maxValue;
-  };
+  // value setters / getters
+  set value(value){
+    if(typeof value !== 'number') console.error(`Value should be a number: ${value}`);
+    this._value = value;
+  }
 
-  add(val) {
-    this.value += val;
-    if (this.value > this.maxValue) this.value = this.maxValue;
-  };
+  // maxValue setters / getters
+  set maxValue(value){
+    if(typeof value !== 'number') console.error(`maxValue should be a number: ${value}`);
+    this._maxValue = value;
+  }
 
-  subtract(val) {
-    this.value -= val;
-  };
+  // setters / getters without strictly defined properties
+  get displayText(){
+    return `${this.value}/${this.maxValue}`;
+  }
 };
 
-class charStatusObj {
-  constructor() {
-    this.list = [];
-  };
+class CharacterXp extends CharacterPoints {
+  constructor(maxValue){
+    this.value = 0;
+    this.maxValue = maxValue || 10;
+  }
 
+  add(value) {
+    if(typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value += value;
+  }
+
+  canLvUp(){
+    return this.value >= this.maxValue;
+  }
+}
+
+class CharacterStatus {
   constructor(list) {
-    this.list = list;
+    if(typeof list !== 'array') console.error(`list must be an array: ${list}`);
+    this.list = list || [];
   };
 
-  add(statusObj) {
-    this.list.push(statusObj);
+  add(statusEffect) {
+    if(typeof statusEffect !== 'statuseffect')
+
+    this.list.push(statusEffect);
   };
 
   clear() {
@@ -38,13 +73,16 @@ class charStatusObj {
 
 };
 
-class charSkillsObj {
-  constructor() {
-    this.list = [];
-  };
+class CharacterSkills {
   constructor(list) {
-    this.list = list;
+    if(typeof list !== 'array') console.error(`The list passed in, was not an array: ${list}`);
+    this.list = list || [];
   };
+
+  push(item){
+    if(typeof item !== Skill) console.error(`Item was not a skill: ${item}`);
+    this.list.push(item);
+  }
 
   sort() {
     this.list.sort((a, b) => a.name.localeCompare(b.name));
@@ -59,15 +97,121 @@ class charSkillsObj {
   };
 };
 
-class skillObj {
-  constructor(){
-    this.name = '';
-    this.Multiplier = 1;
-    this.mpCost = 0;
-    this.helpText = '';
-    this.status = {type: none, duration: 0};
-  };
+class StatusEffect {
+  constructor(type, duration, description){
+    //    stun: cannot move,    dot: damage over time
+    // effect types: stun, dot, regenHp, regenMp
+    this.type = type || 'none';
+    this.duration = duration || 0;
+    this.description = description || 'none';
+  }
+
+  static fromObject(obj){
+    if(typeof obj !== 'object') console.error(`An object must contain the properties of type, duration, description: ${obj}`);
+    let type, duration, description;
+    type = obj.type || 'none'; // Default value if type is not defined
+    duration = obj.duration || 0;
+    description = obj.description || 'none';
+    return new StatusEffect(type, duration, description);
+  }
+
+  set type(value){
+    if(typeof value !== 'string') console.error(`type must be a string value: ${value}`);
+    this._type = value;
+  }
+
+  set duration(value){
+    if(typeof value !== 'number') console.error(`duration must be a number: ${value}`);
+    this._duration = value;
+  }
+
+  set description(value){
+    if(typeof value !== 'string') console.error(`description must be a string value: ${value}`);
+    this._description = value;
+  }
 };
+
+class Skill {
+  constructor(name, multiplier, mpCost, helpText, statusEffectObj){
+    this.name = name || 'none';
+    this.multiplier = multiplier || 1;
+    this.mpCost = mpCost || 0;
+    this.helpText = helpText || 'none';
+    this.statusEffect = statusEffectObj || new StatusEffect;
+  }
+
+  static fromObject(obj){
+    if(typeof obj !== 'object') console.error(`Not an object: ${obj}`);
+    let name, multiplier, mpCost, helpText, statusEffect;
+    name = obj.name || 'none';
+    multiplier = obj.multiplier || 1;
+    mpCost = obj.mpCost || 0;
+    helpText = obj.helpText || 'none';
+    statusEffect = obj.statusEffect || new StatusEffect;
+    return new Skill(name, multiplier, mpCost, helpText, statusEffect);
+  }
+
+  set name(name){
+    if(typeof name !== 'string') console.error(`name must be a string value: ${name}`);
+    this._name = name;
+  }
+
+  get name(){
+    return this._name;
+  }
+
+  set multiplier(value){
+    if(typeof value !== 'number') console.error(`multiplier must be a number or decimal: ${value}`);
+    this._multiplier = value;
+  }
+
+  get multiplier(){
+    return this._multiplier;
+  }
+
+  set mpCost(value){
+    if(typeof value !== 'number') console.error(`multiplier must be a number or decimal: ${value}`);
+    this._mpCost = value;
+  }
+
+  get mpCost(){
+    return this._mpCost;
+  }
+
+  set helpText(text){
+    if(typeof text !== 'string') console.error(`name must be a string value: ${text}`);
+    this._helpText = text;
+  }
+
+  get helpText(){
+    return this._helpText;
+  }
+
+  set statusEffect(statusEffectObj){
+    if(!(statusEffectObj instanceof StatusEffect)) console.error(`Not a StatusEffect: ${statusEffectObj}`);
+    this._statusEffect
+  }
+
+  get statusEffect(){
+    return this._statusEffect;
+  }
+
+};
+
+class Player {
+  constructor(){
+    this.hp = new CharacterPoints(50);
+    this.mp = new CharacterPoints(50);
+    this.xp = new CharacterXp(50);
+    this.status = new CharacterStatus;
+  }
+}
+
+export {
+  Player,
+  Skill,
+  StatusEffect,
+}
 
 // skills: {
 //   list: [],
