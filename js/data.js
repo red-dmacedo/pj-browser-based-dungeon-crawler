@@ -1,6 +1,6 @@
 const allSkills = [
   { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
-  { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", },
+  { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", status: { duration: 0, }, },
   { name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", },
   { name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", },
   { name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", },
@@ -11,15 +11,12 @@ const allSkills = [
 ];
 
 const allEnemies = [
-  { name: "slime", type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
-  { name: "goblin", type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
-  { name: "fairy", type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
-  { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-];
-
-const allBossEnemies = [
-  { name: "bigSlime", type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
-  { name: "frenziedMinotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+  { name: "slime", class: 'normal', type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
+  { name: "goblin", class: 'normal', type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
+  { name: "fairy", class: 'normal', type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
+  { name: "minotaur", class: 'normal', type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+  { name: "bigSlime", class: 'boss', type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
+  { name: "frenziedMinotaur", class: 'boss', type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
 ];
 
 const allItems = [
@@ -179,8 +176,102 @@ const map = {
   },
 };
 
+const enemy = {
+  isDead: false,
+  killXp: 0,
+  name: "",
+  status: {
+    list: [],
+    add: function (statusObj) {
+      const status = enemy.status;
+      status.list.push(statusObj);
+    },
+
+    clear: function () {
+      enemy.status.list.length = 0;
+    },
+  },
+  // HP
+  hp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.hp.value += val;
+      if (player.hp.value > player.hp.maxValue) player.hp.value = player.hp.maxValue;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+
+    subtract: function (val) {
+      player.hp.value -= val;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+  },
+  // MP
+  mp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      enemy.mp.value += val;
+      if (enemy.mp.value > enemy.mp.maxValue) enemy.mp.value = enemy.mp.maxValue;
+    },
+
+    subtract: function (val) {
+      enemy.mp.value -= val;
+    },
+  },
+
+  skills: {
+    list: [],
+    add: function (skil) {
+      const skills = player.skills
+      if (typeof (skil) === 'string') skil = allSkills.filter(el => el.name === skil.toLowerCase())[0];
+      if (typeof (skil) !== 'object') { console.log('[player.skills.add()] Item is not an object:', skil); return; };
+      if (!allSkills.includes(skil)) console.log('[player.skills.add()] Item does not exist:', skil);
+      skills.list.push(skil);
+      skills.removeDuplicates();
+      skills.sortList();
+    },
+
+    sortList: function () {
+      sortArr(player.skills.list, 'name');
+    },
+
+    clearList: function () {
+      player.skills.list.length = 0;
+    },
+
+    removeDuplicates: function () {
+      player.skills.list = [...new Set(player.skills.list)];
+    },
+  },
+
+  // Methods
+  init: function () {
+    enemy.setCharacter('slime');
+  },
+
+  setCharacter: function (enemyObj) {
+    if (typeof (enemyObj) === 'string') enemyObj = allEnemies.filter(el => el.name === enemyObj)[0];
+
+    // HP
+    enemy.hp.value = enemyObj.hp;
+    enemy.hp.maxValue = enemyObj.hp;
+    // MP
+    enemy.mp.value = enemyObj.mp;
+    enemy.mp.maxValue = enemyObj.mp;
+    // etc
+    enemy.name = enemyObj.name;
+    enemy.status.clear(); // clear old statuses
+    enemy.skills.clearList(); // clear skills from previous character
+    enemyObj.skillList.forEach((skil) => { enemy.skills.add(skil) });
+  },
+};
+
 const player = {
   isDead: false,
+  status: [],
   // HP
   hp: {
     value: 1,
@@ -240,6 +331,7 @@ const player = {
       if (typeof (skil) !== 'object') { console.log('[player.skills.add()] Item is not an object:', skil); return; };
       if (!allSkills.includes(skil)) console.log('[player.skills.add()] Item does not exist:', skil);
       skills.list.push(skil);
+      skills.removeDuplicates();
       skills.sortList();
     },
 
@@ -249,6 +341,10 @@ const player = {
 
     clearList: function () {
       player.skills.list.length = 0;
+    },
+
+    removeDuplicates: function () {
+      player.skills.list = [...new Set(player.skills.list)];
     },
   },
 
@@ -266,7 +362,7 @@ const player = {
       if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
       if (typeof (item) !== 'object') { console.log('[player.item.remove()] Item is not an object:', item); return; };
       if (!player.items.list.includes(item)) console.log('[player.item.remove()] Item does not exist:', item);
-      player.items.list //.push(item);
+      removeItemFromArray(player.items.list, item);
     },
 
     sortList: function () {
@@ -311,8 +407,8 @@ const player = {
       if (!item) { console.log('[player.equipment.unEquip()] Item not found:', item); return; };
       equipment[item.position] = emptyItem;
     },
-    
-    clearAll: function(){
+
+    clearAll: function () {
       const equipment = player.equipment;
       const emptyItem = equipment.emptyItem;
       equipment.list.length = 0; // clear equipment list
@@ -337,7 +433,7 @@ const player = {
   },
 
   initStats: function (lv) {
-    if(typeof(lv) === 'string') lv = Number(lv); // convert to number
+    if (typeof (lv) === 'string') lv = Number(lv); // convert to number
     if (!lv) lv = 1; // set default level
     if (lv > player.levels.length) lv = player.levels.length; // prevent setting a level higher than max lv
     newLv = player.levels[lv - 1]; // get level object
@@ -388,16 +484,16 @@ function rollNum(start, end) {
 
 function sortArr(arr, prop) {
   let propType, arrowFunc;
-  if(prop){ propType = typeof(arr[0].prop) }
-  else { propType = typeof(arr[0]) };
+  if (prop) { propType = typeof (arr[0].prop) }
+  else { propType = typeof (arr[0]) };
 
-  switch(propType){
+  switch (propType) {
     case 'string':
-      if(prop){ arrowFunc = (a, b) => a.prop.localeCompare(b.prop); }
-      else { arrowFunc = (a,b) => a.localeCompare(b) };
+      if (prop) { arrowFunc = (a, b) => a.prop.localeCompare(b.prop); }
+      else { arrowFunc = (a, b) => a.localeCompare(b) };
       break;
     case 'number':
-      if(prop) { arrowFunc = (a, b) => a.prop - b.prop }
+      if (prop) { arrowFunc = (a, b) => a.prop - b.prop }
       else { arrowFunc = (a, b) => a - b; };
       break;
     default:
@@ -405,7 +501,7 @@ function sortArr(arr, prop) {
       return;
   };
 
-  arr.sort( arrowFunc );
+  arr.sort(arrowFunc);
 
   // if (prop) {
   //   propType = typeof (arr[0].prop)
