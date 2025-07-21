@@ -2,12 +2,12 @@
 import { Item, Skill, StatusEffect } from './classes.js';
 
 // Status effects:
-const stun = StatusEffect.fromObject({type: 'stun', duration: 3, description: 'Turn is skipped'});
-const fireDot = StatusEffect.fromObject({type: 'dot', duration: 1, description: 'Take 1x fire damage every turn'}); // damage over time
+const stun = StatusEffect.fromObject({ type: 'stun', duration: 3, description: 'Turn is skipped' });
+const fireDot = StatusEffect.fromObject({ type: 'dot', duration: 1, description: 'Take 1x fire damage every turn' }); // damage over time
 
 const allSkills = [
-  Skill.fromObject({name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', statusEffect: fireDot, }),
-  Skill.fromObject({name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', statusEffect: stun, }),
+  Skill.fromObject({ name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', statusEffect: fireDot, }),
+  Skill.fromObject({ name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', statusEffect: stun, }),
   Skill.fromObject({ name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", }),
   Skill.fromObject({ name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", }),
   Skill.fromObject({ name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", }),
@@ -18,13 +18,17 @@ const allSkills = [
   // Skill.fromObject(),
 ]
 
+function getSkill(name) {
+  return allSkills.filter(el => el.name === name)[0];
+};
+
 const allEnemies = [
-  { name: "slime", class: 'normal', type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
-  { name: "goblin", class: 'normal', type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
-  { name: "fairy", class: 'normal', type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
-  { name: "minotaur", class: 'normal', type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-  { name: "bigSlime", class: 'boss', type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
-  { name: "frenziedMinotaur", class: 'boss', type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
+  { name: "slime", class: 'normal', type: "🌊", skillList: [getSkill("nudge"), getSkill("water")], difficultyRating: 1, killXp: 10, maxHp: 20, maxMp: 100, },
+  { name: "goblin", class: 'normal', type: "🪓", skillList: [getSkill("nudge"), getSkill("slash_I")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 20, },
+  { name: "fairy", class: 'normal', type: "⚡", skillList: [getSkill("nudge"), getSkill("lightning")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 100, },
+  { name: "minotaur", class: 'normal', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, },
+  { name: "bigSlime", class: 'boss', type: "🌊", skillList: [getSkill("nudge"), getSkill("water"), getSkill("tackle"), getSkill("lightning")], difficultyRating: 1, killXp: 100, maxHp: 100, maxMp: 100, },
+  { name: "frenziedMinotaur", class: 'boss', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, },
 ];
 
 const allItems = [
@@ -36,8 +40,6 @@ const allItems = [
   Item.fromObject({ name: "MP Potion II", stat: "mp", value: 80, helpText: "+80% mp", }),
   Item.fromObject({ name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", }),
 ];
-
-console.dir(allSkills[1].statusEffect);
 
 const allEquipment = [
   { name: "empty", position: 'any', stat: "", value: 0, helpText: "empty", },

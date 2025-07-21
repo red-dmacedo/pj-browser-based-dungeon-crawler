@@ -1,164 +1,3 @@
-class CharacterStatPoints {
-  constructor(maxValue) {
-    this.value = maxValue || 10;
-    this.maxValue = maxValue || 10;
-  }
-
-  // Methods
-  add(value) {
-    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
-    this.value += value;
-    if (this.value > this.maxValue) this.value = this.maxValue;
-  }
-
-  subtract(value) {
-    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
-    this.value -= value;
-  }
-
-  setValueAndMaxValue(value) {
-    this.value = value;
-    this.maxValue = value;
-  }
-
-  // value setters / getters
-  set value(value) {
-    if (typeof value !== 'number') console.error(`Value should be a number: ${value}`);
-    this._value = value;
-  }
-
-  get value() {
-    return this._value;
-  }
-
-  // maxValue setters / getters
-  set maxValue(value) {
-    if (typeof value !== 'number') console.error(`maxValue should be a number: ${value}`);
-    this._maxValue = value;
-  }
-
-  get maxValue() {
-    return this._maxValue;
-  }
-
-  // setters / getters without strictly defined properties
-  get displayText() {
-    return `${this.value}/${this.maxValue}`;
-  }
-};
-
-class CharacterXp extends CharacterStatPoints {
-  constructor(maxValue) {
-    this.value = 0;
-    this.maxValue = maxValue || 10;
-  }
-
-  add(value) {
-    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
-    this.value += value;
-  }
-
-  canLvUp() {
-    return this.value >= this.maxValue;
-  }
-}
-
-class CharacterStatus {
-  constructor(list) {
-    this.list = list || [];
-  };
-
-  // set / get list of status effects
-  set list(list) {
-    if (typeof list !== 'array') console.error(`list must be an array: ${list}`);
-    this._list = list;
-  };
-
-  get list() {
-    return this._list;
-  }
-
-  // methods
-  add(statusEffect) {
-    if (!(statusEffect instanceof StatusEffect)) console.error(`Not a StatusEffect: ${statusEffect}`);
-    this.list.push(statusEffect);
-  };
-
-  clear() {
-    this.list.length = 0;
-  };
-
-};
-
-class CharacterSkills {
-  constructor(list) {
-    this.list = list || [];
-  };
-
-  // set / get list of status effects
-  set list(list) {
-    if (typeof list !== 'array') console.error(`list must be an array: ${list}`);
-    this._list = list;
-  };
-
-  get list() {
-    return this._list;
-  }
-
-  // Methods
-  push(item) {
-    if (!(item instanceof Skill)) console.error(`Item was not a skill: ${item}`);
-    this.list.push(item);
-    this.removeDuplicates();
-  }
-
-  sort() {
-    this.list.sort((a, b) => a.name.localeCompare(b.name));
-  };
-
-  clear() {
-    this.list.length = 0;
-  };
-
-  removeDuplicates() {
-    this.list = [...new Set(this.list)];
-  };
-};
-
-class StatusEffect {
-  constructor(type, duration, description) {
-    //    stun: cannot move,    dot: damage over time
-    // effect types: stun, dot, regenHp, regenMp
-    this.type = type || 'none';
-    this.duration = duration || 0;
-    this.description = description || 'none';
-  }
-
-  static fromObject(obj) {
-    if (typeof obj !== 'object') console.error(`An object must contain the properties of type, duration, description: ${obj}`);
-    let type, duration, description;
-    type = obj.type || 'none'; // Default value if type is not defined
-    duration = obj.duration || 0;
-    description = obj.description || 'none';
-    return new StatusEffect(type, duration, description);
-  }
-
-  set type(value) {
-    if (typeof value !== 'string') console.error(`type must be a string value: ${value}`);
-    this._type = value;
-  }
-
-  set duration(value) {
-    if (typeof value !== 'number') console.error(`duration must be a number: ${value}`);
-    this._duration = value;
-  }
-
-  set description(value) {
-    if (typeof value !== 'string') console.error(`description must be a string value: ${value}`);
-    this._description = value;
-  }
-};
-
 class Skill {
   constructor(name, multiplier, mpCost, helpText, statusEffectObj) {
     this.name = name || 'none';
@@ -275,9 +114,306 @@ class Item {
   get value() {
     return this._value;
   }
+
+  set helpText(text) {
+    if (typeof text !== 'string') console.error(`name must be a string value: ${text}`);
+    this._helpText = text;
+  }
+
+  get helpText() {
+    return this._helpText;
+  }
 };
 
-class Player {
+class StatusEffect {
+  constructor(type, duration, description) {
+    //    stun: cannot move,    dot: damage over time
+    // effect types: stun, dot, regenHp, regenMp
+    this.type = type || 'none';
+    this.duration = duration || 0;
+    this.description = description || 'none';
+  }
+
+  static fromObject(obj) {
+    if (typeof obj !== 'object') console.error(`An object must contain the properties of type, duration, description: ${obj}`);
+    let type, duration, description;
+    type = obj.type || 'none'; // Default value if type is not defined
+    duration = obj.duration || 0;
+    description = obj.description || 'none';
+    return new StatusEffect(type, duration, description);
+  }
+
+  set type(value) {
+    if (typeof value !== 'string') console.error(`type must be a string value: ${value}`);
+    this._type = value;
+  }
+
+  set duration(value) {
+    if (typeof value !== 'number') console.error(`duration must be a number: ${value}`);
+    this._duration = value;
+  }
+
+  set description(value) {
+    if (typeof value !== 'string') console.error(`description must be a string value: ${value}`);
+    this._description = value;
+  }
+};
+
+class CharacterStatPoints {
+  constructor(maxValue) {
+    this.value = maxValue || 10;
+    this.maxValue = maxValue || 10;
+  }
+
+  // Methods
+  add(value) {
+    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value += value;
+    if (this.value > this.maxValue) this.value = this.maxValue;
+  }
+
+  subtract(value) {
+    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value -= value;
+  }
+
+  setValueAndMaxValue(value) {
+    this.value = value;
+    this.maxValue = value;
+  }
+
+  // value setters / getters
+  set value(value) {
+    if (typeof value !== 'number') console.error(`Value should be a number: ${value}`);
+    this._value = value;
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  // maxValue setters / getters
+  set maxValue(value) {
+    if (typeof value !== 'number') console.error(`maxValue should be a number: ${value}`);
+    this._maxValue = value;
+  }
+
+  get maxValue() {
+    return this._maxValue;
+  }
+
+  // setters / getters without strictly defined properties
+  get displayText() {
+    return `${this.value}/${this.maxValue}`;
+  }
+};
+
+class CharacterXp extends CharacterStatPoints {
+  constructor(maxValue) {
+    this.value = 0;
+    this.maxValue = maxValue || 10;
+  }
+
+  add(value) {
+    if (typeof value !== 'number') console.error(`Cannot add: ${value}`);
+    this.value += value;
+  }
+
+  canLvUp() {
+    return this.value >= this.maxValue;
+  }
+};
+
+class CharacterStatus {
+  constructor(list) {
+    this.list = list || [];
+  };
+
+  // set / get list of status effects
+  set list(list) {
+    if (typeof list !== 'array') console.error(`list must be an array: ${list}`);
+    this._list = list;
+  };
+
+  get list() {
+    return this._list;
+  }
+
+  // methods
+  add(statusEffect) {
+    if (!(statusEffect instanceof StatusEffect)) console.error(`Not a StatusEffect: ${statusEffect}`);
+    this.list.push(statusEffect);
+  };
+
+  clear() {
+    this.list.length = 0;
+  };
+
+};
+
+class CharacterSkills {
+  constructor(list) {
+    this.list = list || [];
+  };
+
+  // set / get list of skills
+  set list(list) {
+    if (typeof list !== 'array') console.error(`list must be an array: ${list}`);
+    list.forEach((item) => {if( !(item instanceof Skill) ){ console.error(`Object is not a Skill: ${item}`); } });
+    this._list = list;
+  };
+
+  get list() {
+    return this._list;
+  }
+
+  // Methods
+  push(item) {
+    if (!(item instanceof Skill)) console.error(`Item was not a skill: ${item}`);
+    this.list.push(item);
+    this.removeDuplicates();
+  }
+
+  sort() {
+    this.list.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  clear() {
+    this.list.length = 0;
+  };
+
+  removeDuplicates() {
+    this.list = [...new Set(this.list)];
+  };
+};
+
+class CharacterItems {
+  constructor(){
+    this.list = list || [];
+  }
+
+  // set / get list of items
+  set list(list) {
+    if (typeof list !== 'array') console.error(`list must be an array: ${list}`);
+    list.forEach((item) => {if( !(item instanceof Skill) ){ console.error(`Object is not a Skill: ${item}`); } });
+    this._list = list;
+  };
+
+  get list() {
+    return this._list;
+  }
+
+  // Methods
+  push(item) {
+    if (!(item instanceof Skill)) console.error(`Item was not a skill: ${item}`);
+    this.list.push(item);
+  }
+
+  remove(item){
+    const list = this.list;
+    if(typeof item === 'string') item = list.filter(el => el.name === item)[0];
+    if(!item){console.error(`Item not found: ${item}`)};
+    list.splice(list.indexOf(item), 1);
+    this.sort();
+  }
+
+  sort() {
+    this.list.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  clear() {
+    this.list.length = 0;
+  };
+
+  reduceList(){
+    return this.list.reduce((accu, val) => {
+      if(!accu[val]) accu[val] = 0;
+      accu[val]++;
+      return accu;
+    }, {});
+  }
+}
+
+class EnemyCharacter {
+  // { name: "slime", class: 'normal', type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, }
+  constructor(name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp) {
+    this.name = name || 'none';
+    this.class = cls || 'normal'; // normal, boss, or elite
+    this.type = type || 'none';
+    this.difficultyRating = difficultyRating || -1; // default to -1 (no rating)
+    this.killXp = killXp || 0;
+    this.skills = new CharacterSkills(skillList);
+    this.hp = (maxHp) ? new CharacterStatPoints(maxHp) : new CharacterStatPoints(50);
+    this.mp = (maxMp) ? new CharacterStatPoints(maxMp) : new CharacterStatPoints(50);
+    this.status = new CharacterStatus;
+  }
+  
+  fromObject(obj) {
+    let name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp;
+    name = obj.name || 'none';
+    cls = obj.cls || 'normal'; // normal, boss, or elite
+    type = obj.type || 'none';
+    difficultyRating = obj.difficultyRating || -1; // default to -1 (no rating)
+    killXp = obj.killXp || 0;
+    skillList = obj.skillList || [];
+    maxHp = obj.maxHp || 50; // new CharacterStatPoints(maxHp);
+    maxMp = obj.maxMp || 50; // new CharacterStatPoints(maxMp);
+    return new EnemyCharacter(name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp);
+  }
+
+  set name(name) {
+    if (typeof name !== 'string') console.error(`name must be a string: ${name}`);
+    this._name = name;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set class(cls){
+    const acceptedValues = ['normal', 'boss', 'elite'];
+    if(!acceptedValues.includes(cls)) console.error(`Class must be 'normal', 'boss', or 'elite': ${cls}`);
+    this._class = cls;
+  }
+
+  get class(){
+    return this._class;
+  }
+
+  set type(type){
+    if(typeof type !== 'string') console.error(`type must be a string: ${type}`);
+    if(type.length !== 1) console.error(`type must be a single character icon as a string: ${type}`);
+    this._type = type;
+  }
+
+  get type(){
+    return this._type;
+  }
+
+  set difficultyRating(num){
+    if(typeof num !== 'number') console.error(`difficultyRating must be a number: ${num}`);
+    this._difficultyRating = num;
+  }
+
+  get difficultyRating(){
+    return this._difficultyRating;
+  }
+
+  set killXp(value) {
+    if (typeof value !== 'number') console.error(`killXp must be a number: ${value}`);
+    this._killXp = value;
+  }
+
+  get killXp() {
+    return this._killXp;
+  }
+
+  getDisplayName(){
+    return `${this.name} ${this.type}`
+  }
+};
+
+class PlayerCharacter {
   constructor() {
     this.hp = new CharacterStatPoints(50);
     this.mp = new CharacterStatPoints(50);
@@ -288,10 +424,11 @@ class Player {
 }
 
 export {
-  Player,
+  EnemyCharacter,
+  Item,
+  PlayerCharacter,
   Skill,
   StatusEffect,
-  Item,
 }
 
 // skills: {
