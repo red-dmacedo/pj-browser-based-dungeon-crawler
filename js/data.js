@@ -1,5 +1,5 @@
 // import { StatusEffect } from "./classes";
-import { Item, Skill, StatusEffect } from './classes.js';
+import { Item, Skill, StatusEffect } from './data-rewrite.js';
 
 // Status effects:
 const stun = StatusEffect.fromObject({ type: 'stun', duration: 3, description: 'Turn is skipped' });

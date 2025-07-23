@@ -142,3 +142,6 @@ const game = {
   },
 };
 */
+
+// const arr = Array(25).fill('');
+// console.log(arr);
