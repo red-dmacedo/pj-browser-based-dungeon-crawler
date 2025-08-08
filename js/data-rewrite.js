@@ -211,9 +211,15 @@ class CharacterStatPoints {
 
 class CharacterXp extends CharacterStatPoints {
   constructor(maxValue) {
+    super(maxValue);
     this.value = 0;
     this.maxValue = maxValue || 10;
   }
+
+  // set value(value) {
+  //   if(typeof value !== 'number') return;
+  //   this._value = value;
+  // }
 
   add = (value) => {
     if (typeof value !== 'number') throw new Error(`Cannot add: ${value}`);
@@ -232,7 +238,7 @@ class CharacterStatus {
 
   // set / get list of status effects
   set list(list) {
-    if (typeof list !== 'array') throw new Error(`list must be an array: ${list}`);
+    if (!Array.isArray(list)) throw new Error(`list must be an array: ${list}`);
     this._list = list;
   };
 
@@ -259,7 +265,7 @@ class CharacterSkills {
 
   // set / get list of skills
   set list(list) {
-    if (typeof list !== 'array') throw new Error(`list must be an array: ${list}`);
+    if (!Array.isArray(list)) throw new Error(`list must be an array: ${list}`);
     list.forEach((item) => { if (!(item instanceof Skill)) { throw new Error(`Object is not a Skill: ${item}`); } });
     this._list = list;
   };
@@ -289,7 +295,7 @@ class CharacterSkills {
 };
 
 class CharacterItems {
-  constructor() {
+  constructor(list) {
     this.list = list || [];
   }
 
@@ -336,9 +342,9 @@ class CharacterItems {
 }
 
 class EnemyCharacter {
-  constructor(name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp) {
+  constructor(name, className, type, skillList, difficultyRating, killXp, maxHp, maxMp) {
     this.name = name || 'none';
-    this.class = cls || 'normal'; // normal, boss, or elite
+    this.className = className || 'normal'; // normal, boss, or elite
     this.type = type || 'none';
     this.difficultyRating = difficultyRating || -1; // default to -1 (no rating)
     this.killXp = killXp || 0;
@@ -348,17 +354,16 @@ class EnemyCharacter {
     this.status = new CharacterStatus;
   }
 
-  fromObject = (obj) => {
-    let name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp;
-    name = obj.name || 'none';
-    cls = obj.cls || 'normal'; // normal, boss, or elite
-    type = obj.type || 'none';
-    difficultyRating = obj.difficultyRating || -1; // default to -1 (no rating)
-    killXp = obj.killXp || 0;
-    skillList = obj.skillList || [];
-    maxHp = obj.maxHp || 50; // new CharacterStatPoints(maxHp);
-    maxMp = obj.maxMp || 50; // new CharacterStatPoints(maxMp);
-    return new EnemyCharacter(name, cls, type, skillList, difficultyRating, killXp, maxHp, maxMp);
+  static fromObject = ({ name, className, type, skillList, difficultyRating, killXp, maxHp, maxMp }) => {
+    name = name || 'none';
+    className = className || 'normal'; // normal, boss, or elite
+    type = type || 'none';
+    difficultyRating = difficultyRating || -1; // default to -1 (no rating)
+    killXp = killXp || 0;
+    skillList = skillList || [];
+    maxHp = maxHp || 50; // new CharacterStatPoints(maxHp);
+    maxMp = maxMp || 50; // new CharacterStatPoints(maxMp);
+    return new EnemyCharacter(name, className, type, skillList, difficultyRating, killXp, maxHp, maxMp);
   }
 
   set name(name) {
@@ -370,19 +375,19 @@ class EnemyCharacter {
     return this._name;
   }
 
-  set class(cls) {
+  set className(cls) {
     const acceptedValues = ['normal', 'boss', 'elite'];
     if (!acceptedValues.includes(cls)) throw new Error(`Class must be 'normal', 'boss', or 'elite': ${cls}`);
-    this._class = cls;
+    this._className = cls;
   }
 
-  get class() {
-    return this._class;
+  get className() {
+    return this._className;
   }
 
   set type(type) {
     if (typeof type !== 'string') throw new Error(`type must be a string: ${type}`);
-    if (type.length !== 1) throw new Error(`type must be a single character icon as a string: ${type}`);
+    // if (type.length !== 1) throw new Error(`type must be a single character icon as a string: ${type}`);
     this._type = type;
   }
 
@@ -425,25 +430,30 @@ class PlayerCharacter {
 
 class Map {
   constructor(floorNum, playerLocation) {
-    if(!floorNum) floorNum = 1;
-    if(!playerLocation) playerLocation = 25;
+    // if (this.floorData) {
+    //   this.clearFloorData();
+    //   this.updateDisplay();
+    // }
+    if (!floorNum) floorNum = 1;
+    if (!playerLocation) playerLocation = 25;
     this.playerLocation = playerLocation; // start location
     this.dungeonEntrance = 22; // Entrance for a 5x5 board
     this.currentFloor = floorNum;
     this.allFloors = allFloors; // allFloors defined below
     this.floorData = Array(25).fill('');
-    // this.allowEvt = true;
+    this.enable();
     this.#displayEls.mapEl.addEventListener("click", this.evtMapMovement);
     this.startFloor(floorNum);
+    this.updateDisplay();
   };
 
-  set allowEvt(bool){
-    if(typeof bool !== 'boolean') throw new Error(`allowEvt must be a boolean value: ${bool}`);
-    this.allowEvt = bool;
-  };
-
-  get allowEvt(){
-    return this.allowEvt;
+  reset = () => {
+    this.clearHighlights();
+    this.enable();
+    this.playerLocation = 25;
+    this.floorData = Array(25).fill('');
+    this.startFloor(this.currentFloor);
+    this.updateDisplay();
   };
 
   clearFloorData = () => {
@@ -451,12 +461,12 @@ class Map {
   };
 
   startFloor = (floorNum) => {
-    if(!(floorNum > 0 && floorNum <= this.allFloors.length)) throw new Error(`Floor number cannot be 0 or larger than ${this.allFloors.length}`);
-    const newFloor = this.allFloors[floorNum-1];
+    if (!(floorNum > 0 && floorNum <= this.allFloors.length)) throw new Error(`Floor number cannot be 0 or larger than ${this.allFloors.length}`);
+    const newFloor = this.allFloors[floorNum - 1];
     this.floorData[newFloor.bossRoom] = icons.boss;
-    newFloor.encounterRooms.forEach(( idx )=>{ this.floorData[idx] = icons.battle }); // Set guranteed encounters
-    newFloor.healRooms.forEach((idx)=>{ this.floorData[idx] = icons.healing }); // Set healing rooms
-    newFloor.treasureRooms.forEach((idx)=>{ this.floorData[idx] = icons.treasure }); // Set treasure rooms
+    newFloor.encounterRooms.forEach((idx) => { this.floorData[idx] = icons.battle }); // Set guranteed encounters
+    newFloor.healRooms.forEach((idx) => { this.floorData[idx] = icons.healing }); // Set healing rooms
+    newFloor.treasureRooms.forEach((idx) => { this.floorData[idx] = icons.treasure }); // Set treasure rooms
   };
 
   // private property that cannot be altered:
@@ -476,12 +486,16 @@ class Map {
     else { throw new Error(`Location is not on the board: ${num}`); };
   };
 
-  get playerLocation(){
+  get playerLocation() {
     return this._playerLocation;
   };
 
   get roomEls() {
     return this.displayEls.mapEl.children;
+  };
+
+  get disabled() {
+    return this._disabled;
   };
 
   updateDisplay = () => {
@@ -510,27 +524,56 @@ class Map {
     (unHighlight) ?
       roomEl.removeAttribute("style") :
       roomEl.setAttribute("style", "background-color: rgba(255,255,200,0.65);");
-      
+
   };
-  
+
+  clearHighlights = () => {
+    const sqrEls = this.#displayEls.mapEl.children;
+    Array.from(sqrEls).map(el => this.highlightRoom(el, true));
+  };
+
   movePlayer = (sqrNum) => {
-    if(typeof sqrNum !== 'number') sqrNum = Number(sqrNum); // force string to number
+    if (typeof sqrNum !== 'number') sqrNum = Number(sqrNum); // force string to number
     this.floorData[this.playerLocation] = ''; // remove old icon
     this.floorData[sqrNum] = icons.player; // set icon in new location
     this.playerLocation = sqrNum; // move player
     this.highlightPlayerLocation();
     this.updateDisplay(); // update player view
   };
-  
+
+  enable = () => {
+    this._disabled = false;
+  };
+
+  disable = () => {
+    this._disabled = true;
+  };
+
   evtMapMovement = (evt) => {
     const target = evt.target;
-    if(
-      !( Array.from(target.classList).includes('sqr') ) || // target must have class of "sqr"
-      !( this.validateMovement(target.id) ) // target must be a valid player movement
+    if (
+      !(Array.from(target.classList).includes('sqr')) || // target must have class of "sqr"
+      !(this.validateMovement(target.id)) || // target must be a valid player movement
+      this._disabled // map is disabled
     ) return;
     this.movePlayer(target.id);
   };
 };
+
+class Battle {
+  constructor(playerObj, enemyObj) {
+    if (!(playerObj instanceof PlayerCharacter)) throw new Error('[Class constructor: Battle]: playerObj must be an instance of PlayerCharacter');
+    if (!(enemyObj instanceof EnemyCharacter)) throw new Error('[Class constructor: Battle]: enemyObj must be an instance of EnemyCharacter');
+    this.player = playerObj;
+    this.enemey = enemyObj;
+  };
+
+  rollNum = rollNum;
+
+  start = () => {
+    this.rollNum(1);
+  };
+}
 // ===== End Classes =====
 // ===== Objects and Arrays of Objects =====
 const allFloors = [
@@ -588,6 +631,16 @@ const allItems = [
   Item.fromObject({ name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", }),
 ];
 
+// Enemies:
+const allEnemies = [
+  EnemyCharacter.fromObject({ name: "slime", className: 'normal', type: "🌊", skillList: [getSkill("nudge"), getSkill("water")], difficultyRating: 1, killXp: 10, maxHp: 20, maxMp: 100, }),
+  EnemyCharacter.fromObject({ name: "goblin", className: 'normal', type: "🪓", skillList: [getSkill("nudge"), getSkill("slash_I")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 20, }),
+  EnemyCharacter.fromObject({ name: "fairy", className: 'normal', type: "⚡", skillList: [getSkill("nudge"), getSkill("lightning")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 100, }),
+  EnemyCharacter.fromObject({ name: "minotaur", className: 'normal', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, }),
+  EnemyCharacter.fromObject({ name: "bigSlime", className: 'boss', type: "🌊", skillList: [getSkill("nudge"), getSkill("water"), getSkill("tackle"), getSkill("lightning")], difficultyRating: 1, killXp: 100, maxHp: 100, maxMp: 100, }),
+  EnemyCharacter.fromObject({ name: "frenziedMinotaur", className: 'boss', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, }),
+];
+
 
 const battleLog = {
   element: document.querySelector('#battle-log'),
@@ -626,6 +679,7 @@ function getItem(name) {
 };
 
 function rollNum(end, start = 0) {
+  if (!end && end !== 0) throw new Error(`Cannot count up to: ${end}`);
   return Math.floor(Math.random() * (end - start + 1)) + start;
 };
 
@@ -656,13 +710,16 @@ function removeItemFromArray(arr, item) {
 };
 
 export {
+  allEnemies,
+  Battle,
   EnemyCharacter,
   Item,
   Map,
   PlayerCharacter,
+  rollNum,
   Skill,
   StatusEffect,
 };
 
-const tMap = new Map;
-tMap.updateDisplay();
+// const tMap = new Map;
+// tMap.updateDisplay();
