@@ -31,7 +31,7 @@ button:hover {
   background-color: lightgray;
 }
 /* ===== Classes ===== */
-.sqr {
+/* .sqr {
   width: 15%;
   aspect-ratio: 1/1;
   border: 3px solid black;
@@ -44,10 +44,27 @@ button:hover {
   align-items: center;
   justify-content: center;
   display: flex;
+} */
+
+.sqr {
+  width: 18.9%;
+  aspect-ratio: 1/1;
+  box-sizing: border-box;
+  border: 3px solid black;
+  /* font-size: 18px; */
+  /* margin-block: 2px; */
+  /* margin-: 2px; */
+  border-color: rgba(200,200,200,1);
+  background-color:rgba(50,50,50,0.8);
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  text-align: center;
 }
 
 .sqr:hover {
-  background-color: white;
+  /* background-color: white; */
+  transform: scale(1.1);
 }
 
 .flex-row {
@@ -181,10 +198,15 @@ button:hover {
 #map {
   display: flex;
   flex-wrap: wrap;
-  width: 325px;
-  margin: 10px;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  box-sizing: border-box;
+  aspect-ratio: 1/1;
+  width: 25vw;
+  gap: 3px;
+  /* min-width: 300px; */
+  /* margin: 0px; */
+  /* align-items: center; */
+  /* justify-content: center; */
 }
 
 #game-area {

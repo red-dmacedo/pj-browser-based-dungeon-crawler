@@ -1,4 +1,4 @@
-import * as data from "./data.js"
+// import * as data from "./data.js"
 
 /* Map representation
 map
@@ -12,10 +12,47 @@ map
 */
 
 // ===== Variables =====
-const player = data.player;
-const battleLog = data.battleLog;
-const enemy = data.enemy;
+// const player = data.player; // object
+// const battleLog = data.battleLog; // object
+// const map = data.map; // object
+// const rollNum = data.rollNum; // function
+// const enemy = data.enemy; // object
 
+// ===== Script =====
+// game.init();
+// document.querySelector('#reset').addEventListener("click", game.init());
+
+/* ===== GRAVEYARD =====
+
+function paction1(evt){                                                  //  <| - Created to test the
+  if(evt) toggleMapElEventListener(false);                               //  <|   toggleMapElEventListener
+};                                                                       //  <|   function
+document.querySelector("#paction1").addEventListener("click", paction1); //  <|
+
+
+for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
+
+// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
+
+// inventory.clear();
+
+// console.dir(player);
+// let tmp = data.tempObj;
+// tmp.init();
+// tmp.method3();
+// tmp.method2();
+
+// clearInvBtns();
+// player.setXp(302);
+// player.setXp(300);
+
+// data.enemy.setEnemy("slime");
+// player.setLv(5);
+// player.lvUpCheck();
+*/
+
+
+/* game object
 // ===== Objects =====
 const game = {
   startRoom: 25,
@@ -31,7 +68,6 @@ const game = {
     game.encounterActive = false;
     game.gameOver = false;
     game.room = 25;
-    data.elem.startSquare.style.opacity = 1;
     game.clearHighlightedSquares();
     game.setMap(game.currentFloor);
     game.toggleMapElEventListener();
@@ -50,87 +86,6 @@ const game = {
       if(i.difficultyRating <= game.currentFloor){ game.enemyList.push(i); } // add enemies from the current floor and below
     };
     game.enemyList = [...new Set(game.enemyList)]; // filter out duplicates
-  },
-
-  nextFloor: function () {
-    if (game.currentFloor <= 3) {
-      game.currentFloor += 1;
-      game.setMap(game.currentFloor);
-    }
-  },
-
-  clearHighlightedSquares: function(){
-    Array.from(data.elem.mapSquares).forEach(el => game.highlightSquare(el, true));
-  },
-
-  setMap: function (floorNum) {
-    let newMap = data.floors[`f${floorNum}`];
-    game.clearMap(); // Clear old map data
-    game.map[newMap.bossRoom] = data.icons.boss; // Set boss location
-    newMap.encounterRooms.forEach((idx) => { game.map[idx] = data.icons.battle }); // Set guaranteed encounters
-    newMap.healRooms.forEach((idx) => { game.map[idx] = data.icons.healing }); // Set healing rooms
-    newMap.treasureRooms.forEach((idx) => { game.map[idx] = data.icons.treasure }); // Set treasure rooms
-  },
-
-  clearMap: function () {
-    game.map = [
-      "", "", "", "", "",
-      "", "", "", "", "",
-      "", "", "", "", "",
-      "", "", "", "", "",
-      "", "", "", "", ""
-    ]
-  },
-
-  updateMap: function () {
-    for (let i = 0; i < game.map.length; i++) {
-      if (game.map[i] === data.icons.player) game.map[i] = "";
-    }
-    game.map[game.room] = data.icons.player;
-  },
-
-  renderMap: function () {
-    for (let i = 0; i < data.elem.mapSquares.length; i++) {
-      data.elem.mapSquares[i].textContent = game.map[i];
-    };
-    if (game.room === game.startRoom) return; // prevent highlight when player is in start room
-    game.highlightSquare(data.elem.mapSquares[game.room]); // show where the player has been
-  },
-
-  movePlayer: function (evt) { // <= player movement and map updates
-    if (
-      !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
-      !(game.validateMovement(evt.target.id)) || // do nothing if move is not valid
-      game.encounterActive || // disallow movement during encounters
-      player.isDead || // player has died
-      player.encounterActive ||
-      game.gameOver // game is over
-    ) return;
-
-    game.room = Number(evt.target.id); // update current room
-    
-    switch(game.map[game.room]){
-      case data.icons.battle:
-        game.forceEncounter();
-        break;
-      case data.icons.boss:
-        game.bossBattle();
-        break;
-      case data.icons.healing:
-        game.fullHeal();
-        break;
-      case data.icons.treasure:
-        game.getTreasure();
-        break;
-      default:
-        // game.chanceEncounter();
-    };
-
-    // Hide the start square if it is visible
-    if (data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
-
-    game.updateMap();
-    game.renderMap();
   },
 
   fullHeal: function(){
@@ -180,68 +135,13 @@ const game = {
     enemy.setEnemy(selectedEnemy);
   },
 
-  randomNumGen: function(start, end) {
-    return Math.floor(Math.random() * (end-start+1)) + start;
-  },
-
-  highlightSquare: function (squareEl, unHighlight = false) {
-    (unHighlight) ?
-      squareEl.removeAttribute("style") :
-      squareEl.setAttribute("style", "background-color: beige");
-  },
-
   toggleMapElEventListener: function (enable = true) {
     (enable) ? // <= ternary
       data.elem.mapEl.addEventListener("click", game.movePlayer) : // <= then statement
       data.elem.mapEl.removeEventListener("click", game.movePlayer); // <= else statement
   },
-
-  validateMovement: function (idx) {
-    if (typeof (idx) !== "number") { idx = Number(idx) };
-
-    if (game.room === game.startRoom && idx === game.firstEnterableRoom) return true; // first move on the map
-
-    let testValue = game.room - idx;
-
-    return (
-      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
-      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
-      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
-      testValue === -5                        // downwards movement | wall detection is unnecessary
-    );
-  },
 };
-
-
-// ===== Script =====
-game.init();
-document.querySelector('#reset').addEventListener("click", game.init());
-
-/* ===== GRAVEYARD =====
-
-function paction1(evt){                                                  //  <| - Created to test the
-  if(evt) toggleMapElEventListener(false);                               //  <|   toggleMapElEventListener
-};                                                                       //  <|   function
-document.querySelector("#paction1").addEventListener("click", paction1); //  <|
-
-
-for( let i=0; i<20; i++ ){ data.battleLog.newLogItem(`battle text ${i}`); }; // Add temp battleLogItems
-
-// player.addItems("sword_I","hp_potion_I","mp_potion_I"); // test items
-
-// inventory.clear();
-
-// console.dir(player);
-// let tmp = data.tempObj;
-// tmp.init();
-// tmp.method3();
-// tmp.method2();
-
-// clearInvBtns();
-// player.setXp(302);
-// player.setXp(300);
-
-// data.enemy.setEnemy("slime");
-// player.setLv(5);
-// player.lvUpCheck();
 */
+
+// const arr = Array(25).fill('');
+// console.log(arr);

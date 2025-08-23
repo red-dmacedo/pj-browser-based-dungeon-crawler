@@ -1,82 +1,54 @@
-/*
-  {
-    player,
-    enemy,
-    allSkills,
-    allEnemies,
-    floors,
-  } and most sub-objects are better defined as classes.
-*/
-const allSkills = {
-  fire: { name: "fire", Multiplier: 1.5, mpCost: 50, helpText: "1.5x mAtk", },
-  lightning: { name: "lightning", Multiplier: 0.5, mpCost: 20, helpText: "0.5x mAtk; Chance to stun enemy", },
-  nudge: { name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", },
-  slash_I: { name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", },
-  slash_II: { name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", },
-  slash_III: { name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", },
-  slash_IV: { name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", },
-  tackle: { name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", },
-  water: { name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", },
+// import { StatusEffect } from "./classes";
+import { Item, Skill, StatusEffect } from './data-rewrite.js';
+
+// Status effects:
+const stun = StatusEffect.fromObject({ type: 'stun', duration: 3, description: 'Turn is skipped' });
+const fireDot = StatusEffect.fromObject({ type: 'dot', duration: 1, description: 'Take 1x fire damage every turn' }); // damage over time
+
+const allSkills = [
+  Skill.fromObject({ name: 'fire', multiplier: 1.5, mpCost: 50, helpText: '1.5x mAtk;', statusEffect: fireDot, }),
+  Skill.fromObject({ name: 'lightning', multiplier: 0.5, mpCost: 20, helpText: '0.5x mAtk; Chance to stun enemy', statusEffect: stun, }),
+  Skill.fromObject({ name: "nudge", Multiplier: 0.2, mpCost: 0, helpText: "0.2x Atk", }),
+  Skill.fromObject({ name: "slash_I", Multiplier: 1, mpCost: 0, helpText: "1x Atk", }),
+  Skill.fromObject({ name: "slash_II", Multiplier: 1.3, mpCost: 0, helpText: "1.3x Atk", }),
+  Skill.fromObject({ name: "slash_III", Multiplier: 2, mpCost: 0, helpText: "2x Atk", }),
+  Skill.fromObject({ name: "slash_IV", Multiplier: 3, mpCost: 0, helpText: "3x Atk", }),
+  Skill.fromObject({ name: "tackle", Multiplier: 1.5, mpCost: 0, helpText: "1.5x Atk", }),
+  Skill.fromObject({ name: "water", Multiplier: 0.1, mpCost: 10, helpText: "0.1x mAtk; Kill enemies below 20% HP", }),
+  // Skill.fromObject(),
+]
+
+function getSkill(name) {
+  return allSkills.filter(el => el.name === name)[0];
 };
 
-const allEnemies = {
-  slime: { name: "slime", type: "🌊", skillList: ["nudge", "water"], difficultyRating: 1, killXp: 10, hp: 20, mp: 100, },
-  goblin: { name: "goblin", type: "🪓", skillList: ["nudge", "slash_I"], difficultyRating: 1, killXp: 30, hp: 50, mp: 20, },
-  fairy: { name: "fairy", type: "⚡", skillList: ["nudge", "lightning"], difficultyRating: 1, killXp: 30, hp: 50, mp: 100, },
-  minotaur: { name: "minotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-};
+const allEnemies = [
+  { name: "slime", class: 'normal', type: "🌊", skillList: [getSkill("nudge"), getSkill("water")], difficultyRating: 1, killXp: 10, maxHp: 20, maxMp: 100, },
+  { name: "goblin", class: 'normal', type: "🪓", skillList: [getSkill("nudge"), getSkill("slash_I")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 20, },
+  { name: "fairy", class: 'normal', type: "⚡", skillList: [getSkill("nudge"), getSkill("lightning")], difficultyRating: 1, killXp: 30, maxHp: 50, maxMp: 100, },
+  { name: "minotaur", class: 'normal', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, },
+  { name: "bigSlime", class: 'boss', type: "🌊", skillList: [getSkill("nudge"), getSkill("water"), getSkill("tackle"), getSkill("lightning")], difficultyRating: 1, killXp: 100, maxHp: 100, maxMp: 100, },
+  { name: "frenziedMinotaur", class: 'boss', type: "🪓", skillList: [getSkill("tackle"), getSkill("slash_I"), getSkill("slash_II")], difficultyRating: 2, killXp: 50, maxHp: 130, maxMp: 100, },
+];
 
-const bossEnemies = {
-  bigSlime: { name: "bigSlime", type: "🌊", skillList: ["nudge", "water", "tackle", "lightning"], difficultyRating: 1, killXp: 100, hp: 100, mp: 100, },
-  frenziedMinotaur: { name: "frenziedMinotaur", type: "🪓", skillList: ["tackle", "slash_I", "slash_II"], difficultyRating: 2, killXp: 50, hp: 130, mp: 100, },
-};
+const allItems = [
+  Item.fromObject({ name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", }),
+  Item.fromObject({ name: "HP Potion I", stat: "hp", value: 50, helpText: "+50% hp", }),
+  Item.fromObject({ name: "HP Potion II", stat: "hp", value: 80, helpText: "+80% hp", }),
+  Item.fromObject({ name: "HP Potion III", stat: "hp", value: 100, helpText: "+100% hp", }),
+  Item.fromObject({ name: "MP Potion I", stat: "mp", value: 50, helpText: "+50% mp", }),
+  Item.fromObject({ name: "MP Potion II", stat: "mp", value: 80, helpText: "+80% mp", }),
+  Item.fromObject({ name: "MP Potion III", stat: "mp", value: 100, helpText: "+100% mp", }),
+];
 
-const allItems = {
-  hp_potion_I: { name: "hp_potion_I", type: "consumable", stat: "hp", value: 50, helpText: "Recover 50% hp", },
-  hp_potion_II: { name: "hp_potion_II", type: "consumable", stat: "hp", value: 80, helpText: "Recover 80% hp", },
-  hp_potion_III: { name: "hp_potion_III", type: "consumable", stat: "hp", value: 100, helpText: "Recover 100% hp", },
-  mp_potion_I: { name: "mp_potion_I", type: "consumable", stat: "mp", value: 50, helpText: "Recover 50% mp", },
-  mp_potion_II: { name: "mp_potion_II", type: "consumable", stat: "mp", value: 80, helpText: "Recover 80% mp", },
-  mp_potion_III: { name: "mp_potion_III", type: "consumable", stat: "mp", value: 100, helpText: "Recover 100% mp", },
-  ruby_amulet: { name: "ruby_amulet", type: "equipment", stat: "matk", value: 40, helpText: "A valuable necklace - +40 matk", },
-  sword_I: { name: "sword_I", type: "equipment", stat: "atk", value: 10, helpText: "A rusted sword - +10 atk", },
-  sword_II: { name: "sword_II", type: "equipment", stat: "atk", value: 30, helpText: "A decorative sword - +30 atk", },
-  sword_III: { name: "sword_III", type: "equipment", stat: "atk", value: 60, helpText: "A masterfully crafted sword - +60 atk", },
-  wizard_cap: { name: "wizard_cap", type: "equipment", stat: "matk", value: 20, helpText: "Someone left this lying on the ground - +20 matk", },
-};
-
-const floors = {
-  /* this map is kept here as a reference
-  map:[
-    "0",   "1",  "2",  "3",  "4",
-    "5",   "6",  "7",  "8",  "9",
-    "10",  "11", "12", "13", "14",
-    "15",  "16", "17", "18", "19",
-    "20",  "21", "22", "23", "24"
-  ]
-  */
-  f1: {
-    name: "1F",
-    bossRoom: 19,
-    encounterRooms: [9,],
-    healRooms: [0],
-    treasureRooms: [10, 4, 13],
-  },
-  f2: {
-    name: "2F",
-    bossLocation: 16,
-    encounterRooms: [14,],
-    healRooms: [],
-    treasureRooms: [],
-  },
-  f3: {
-    name: "3F",
-    bossLocation: 0,
-    encounterRooms: [16, 3],
-    healRooms: [],
-    treasureRooms: [],
-  },
-};
+const allEquipment = [
+  { name: "empty", position: 'any', stat: "", value: 0, helpText: "empty", },
+  { name: "Ruby Amulet", position: 'neck', stat: "matk", value: 40, helpText: "+40 matk", },
+  { name: "Sword I", position: 'handR', stat: "atk", value: 10, helpText: "+10 atk", },
+  { name: "Sword II", position: 'handR', stat: "atk", value: 30, helpText: "+30 atk", },
+  { name: "Sword III", position: 'handR', stat: "atk", value: 60, helpText: "+60 atk", },
+  { name: "Wizard Cap", position: 'head', stat: "matk", value: 20, helpText: "+20 matk", },
+];
 
 const icons = {
   player: "👣",
@@ -88,6 +60,835 @@ const icons = {
   hp: "🟥",
 };
 
+const map = {
+  el: document.querySelector("#map"),
+  startSqrEl: document.querySelector(".sqr25"),
+  sqrEls: document.querySelectorAll(".sqr"),
+  startRoom: 25,
+  firstDungeonRoom: 22,
+  playerLocation: 25,
+  floor: 1,
+  rooms: Array(25).fill(''), // ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],
+  disabled: false,
+
+  floors: [
+    /* this map is kept here as a reference
+      map: [
+        "0",   "1",  "2",  "3",  "4",
+        "5",   "6",  "7",  "8",  "9",
+        "10",  "11", "12", "13", "14",
+        "15",  "16", "17", "18", "19",
+        "20",  "21", "22", "23", "24"
+      ]
+    */
+    { name: "1F", bossRoom: 19, encounterRooms: [9,], healRooms: [0], treasureRooms: [10, 4, 13], },
+    { name: "2F", bossLocation: 16, encounterRooms: [14,], healRooms: [], treasureRooms: [], },
+    { name: "3F", bossLocation: 0, encounterRooms: [16, 3], healRooms: [], treasureRooms: [], },
+  ],
+
+  init: function (floorNum) {
+    map.showStartSqr();
+    map.floor = 1;
+    map.playerLocation = 25;
+    map.clear(); // clear map.rooms
+    map.sqrEls.forEach((el) => { map.highlightSquare(el, true) }); // Remove square highlights (reset)
+    (floorNum) ? map.setMapFloor(floorNum) : map.setMapFloor(1); // start on a specific floor or floor 1
+    map.disabled = false; // clear if set
+  },
+
+  clear: function () {
+    map.rooms = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',];
+  },
+
+  validateMovement: function (idx) {
+    if (typeof (idx) !== "number") { idx = Number(idx) };
+    if (map.playerLocation === map.startRoom && idx === map.firstDungeonRoom) return true; // first move on the map
+    let testValue = map.playerLocation - idx;
+
+    return ( // return true or false
+      (testValue === 1 && idx % 5 !== 4) ||   // move right, unless there is a wall there
+      (testValue === -1 && idx % 5 !== 0) ||  // move left, unless there is a wall there
+      testValue === 5 ||                      // upwards movement | wall detection is unnecessary
+      testValue === -5                        // downwards movement | wall detection is unnecessary
+    );
+  },
+
+  nextFloor: function () {
+    if (map.floor === map.floors.length) return;
+    map.floor++;
+    map.setMapFloor(map.floor);
+  },
+
+  setMapFloor: function (floorNum) {
+    let newMap = map.floors[floorNum - 1];
+    map.clear(); // Clear old map data
+    map.rooms[newMap.bossRoom] = icons.boss; // Set boss location
+    newMap.encounterRooms.forEach((idx) => { map.rooms[idx] = icons.battle }); // Set guaranteed encounters
+    newMap.healRooms.forEach((idx) => { map.rooms[idx] = icons.healing }); // Set healing rooms
+    newMap.treasureRooms.forEach((idx) => { map.rooms[idx] = icons.treasure }); // Set treasure rooms
+  },
+
+  updateRooms: function () { // move player icon
+    map.rooms.forEach((rm) => { if (rm === icons.player) { rm = ''; return }; });
+    map.rooms[map.playerLocation] = data.icons.player;
+  },
+
+  renderMap: function () { // render map.rooms to user
+    map.sqrEls.forEach((el, idx) => { el.textContent = map.rooms[idx]; });
+    if (map.playerLocation === map.startRoom) return; // prevent highlight when player is in start room
+    map.highlightSquare(map.sqrEls[map.playerLocation]); // show where the player has been
+  },
+
+  highlightSquare: function (squareEl, disable = false, color = 'beige') { // highlight rooms the player has passed through
+    if (!disable && squareEl.hasAttribute('style')) return; // exit if square is already highlighted
+    (disable) ? squareEl.removeAttribute("style") : squareEl.style.backgroundColor = color; // remove highlight or set highlight
+  },
+
+  evtPlayerMove: function (evt) { // <= player movement and map updates
+    if (
+      !evt.target.classList.contains("sqr") || // Leave if target was not a square on the map
+      !(game.validateMovement(evt.target.id)) || // do nothing if move is not valid
+      game.encounterActive || // disallow movement during encounters
+      player.isDead || // player has died
+      player.encounterActive ||
+      game.gameOver // game is over
+    ) return;
+
+    game.room = Number(evt.target.id); // update current room
+
+    switch (game.map[game.room]) {
+      case data.icons.battle:
+        game.forceEncounter();
+        break;
+      case data.icons.boss:
+        game.bossBattle();
+        break;
+      case data.icons.healing:
+        game.fullHeal();
+        break;
+      case data.icons.treasure:
+        game.getTreasure();
+        break;
+      default:
+      // game.chanceEncounter();
+    };
+
+    // Hide the start square if it is visible
+    if (data.elem.startSquare.style.opacity !== 0) data.elem.startSquare.style.opacity = 0;
+
+    game.updateMap();
+    game.renderMap();
+  },
+
+  showStartSqr: function () {
+    map.startSqrEl.style.opacity = 1;
+  },
+
+  hideStartSqr: function () {
+    map.startSqrEl.style.opacity = 0;
+  },
+};
+
+const enemy = {
+  isDead: false,
+  killXp: 0,
+  name: "",
+  status: {
+    list: [],
+    add: function (statusObj) {
+      const status = enemy.status;
+      status.list.push(statusObj);
+    },
+
+    clear: function () {
+      enemy.status.list.length = 0;
+    },
+  },
+  // HP
+  hp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.hp.value += val;
+      if (player.hp.value > player.hp.maxValue) player.hp.value = player.hp.maxValue;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+
+    subtract: function (val) {
+      player.hp.value -= val;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+  },
+  // MP
+  mp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      enemy.mp.value += val;
+      if (enemy.mp.value > enemy.mp.maxValue) enemy.mp.value = enemy.mp.maxValue;
+    },
+
+    subtract: function (val) {
+      enemy.mp.value -= val;
+    },
+  },
+
+  skills: {
+    list: [],
+    add: function (skil) {
+      const skills = player.skills
+      if (typeof (skil) === 'string') skil = allSkills.filter(el => el.name === skil.toLowerCase())[0];
+      if (typeof (skil) !== 'object') { console.log('[player.skills.add()] Item is not an object:', skil); return; };
+      if (!allSkills.includes(skil)) console.log('[player.skills.add()] Item does not exist:', skil);
+      skills.list.push(skil);
+      skills.removeDuplicates();
+      skills.sortList();
+    },
+
+    sortList: function () {
+      sortArr(player.skills.list, 'name');
+    },
+
+    clearList: function () {
+      player.skills.list.length = 0;
+    },
+
+    removeDuplicates: function () {
+      player.skills.list = [...new Set(player.skills.list)];
+    },
+  },
+
+  // Methods
+  init: function () {
+    enemy.setCharacter('slime');
+  },
+
+  setCharacter: function (enemyObj) {
+    if (typeof (enemyObj) === 'string') enemyObj = allEnemies.filter(el => el.name === enemyObj)[0];
+
+    // HP
+    enemy.hp.value = enemyObj.hp;
+    enemy.hp.maxValue = enemyObj.hp;
+    // MP
+    enemy.mp.value = enemyObj.mp;
+    enemy.mp.maxValue = enemyObj.mp;
+    // etc
+    enemy.name = enemyObj.name;
+    enemy.status.clear(); // clear old statuses
+    enemy.skills.clearList(); // clear skills from previous character
+    enemyObj.skillList.forEach((skil) => { enemy.skills.add(skil) });
+  },
+};
+
+const player = {
+  isDead: false,
+  status: [],
+  // HP
+  hp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.hp.value += val;
+      if (player.hp.value > player.hp.maxValue) player.hp.value = player.hp.maxValue;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+
+    subtract: function (val) {
+      player.hp.value -= val;
+      if (player.hp.value < 0) player.isDead = true;
+    },
+  },
+  // MP
+  mp: {
+    value: 1,
+    maxValue: 10,
+
+    add: function (val) {
+      player.mp.value += val;
+      if (player.mp.value > player.mp.maxValue) player.mp.value = player.mp.maxValue;
+    },
+
+    subtract: function (val) {
+      player.mp.value -= val;
+    },
+  },
+  // XP
+  xp: {
+    value: 5,
+    maxValue: 1000,
+
+    lvUpCheck: function () {
+      if (player.xp.value >= player.exp.maxValue) return true;
+      return false;
+    },
+  },
+  // LV
+  lv: 1,
+  // etc
+  levels: [
+    { lv: 1, name: "Lv1", baseAtk: 50, startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    { lv: 2, name: "Lv2", baseAtk: 70, startingXp: 0, maxXp: 200, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    { lv: 3, name: "Lv3", baseAtk: 80, startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    { lv: 4, name: "Lv4", baseAtk: 100, startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    { lv: 5, name: "Lv5", baseAtk: 120, startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+  ],
+
+  skills: {
+    list: [],
+    add: function (skil) {
+      const skills = player.skills
+      if (typeof (skil) === 'string') skil = allSkills.filter(el => el.name === skil.toLowerCase())[0];
+      if (typeof (skil) !== 'object') { console.log('[player.skills.add()] Item is not an object:', skil); return; };
+      if (!allSkills.includes(skil)) console.log('[player.skills.add()] Item does not exist:', skil);
+      skills.list.push(skil);
+      skills.removeDuplicates();
+      skills.sortList();
+    },
+
+    sortList: function () {
+      sortArr(player.skills.list, 'name');
+    },
+
+    clearList: function () {
+      player.skills.list.length = 0;
+    },
+
+    removeDuplicates: function () {
+      player.skills.list = [...new Set(player.skills.list)];
+    },
+  },
+
+  items: {
+    list: [],
+
+    add: function (item) {
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase())[0];
+      if (typeof (item) !== 'object') { console.log('[player.item.add()] Item is not an object:', item); return; };
+      if (!allItems.includes(item)) console.log('[player.item.add()] Item does not exist:', item);
+      player.items.list.push(item);
+    },
+
+    remove: function (item) {
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase());
+      if (typeof (item) !== 'object') { console.log('[player.item.remove()] Item is not an object:', item); return; };
+      if (!player.items.list.includes(item)) console.log('[player.item.remove()] Item does not exist:', item);
+      removeItemFromArray(player.items.list, item);
+    },
+
+    sortList: function () {
+      sortArr(player.items.list, 'name');
+    },
+
+    clearList: function () {
+      player.items.list.length = 0;
+    },
+  },
+
+  equipment: {
+    list: [],
+    head: {},
+    neck: {},
+    torso: {},
+    handR: {},
+    handL: {},
+    legs: {},
+    emptyItem: allEquipment.filter(el => el.name === 'empty')[0],
+
+    add: function (item) {
+      const equipment = player.equipment;
+      if (typeof (item) === 'string') item = allEquipment.filter(el => el.name === item.toLowerCase())[0];
+      if (typeof (item) !== 'object') { console.log('[player.equipment.add()] Item is not an object:', item); return; };
+      if (!allEquipment.includes(item)) { console.log('[player.equipment.add()] Item does not exist:', item); return; };
+      equipment.list.push(item);
+      equipment.sortList();
+    },
+
+    equip: function (item) {
+      const equipment = player.equipment;
+      if (typeof (item) === 'string') item = equipment.list.filter(el => el.name === item.toLowerCase())[0];
+      if (!item) { console.log('[player.equipment.equip()] Item not found:', item); return; };
+      equipment[item.position] = item;
+    },
+
+    unEquip: function (item) {
+      const equipment = player.equipment;
+      const emptyItem = equipment.emptyItem;
+      if (typeof (item) === 'string') item = equipment.list.filter(el => el.name === item.toLowerCase())[0];
+      if (!item) { console.log('[player.equipment.unEquip()] Item not found:', item); return; };
+      equipment[item.position] = emptyItem;
+    },
+
+    clearAll: function () {
+      const equipment = player.equipment;
+      const emptyItem = equipment.emptyItem;
+      equipment.list.length = 0; // clear equipment list
+      equipment.head = emptyItem; // clear position
+      equipment.neck = emptyItem; // clear position
+      equipment.torso = emptyItem; // clear position
+      equipment.handR = emptyItem; // clear position
+      equipment.handL = emptyItem; // clear position
+      equipment.legs = emptyItem; // clear position
+    },
+
+    sortList: function () {
+      sortArr(player.equipment.list, 'name');
+    },
+  },
+
+  // Methods
+  init: function (lv) {
+    player.skills.clearList();
+    player.items.clearList();
+    player.initStats(lv);
+  },
+
+  initStats: function (lv) {
+    if (typeof (lv) === 'string') lv = Number(lv); // convert to number
+    if (!lv) lv = 1; // set default level
+    if (lv > player.levels.length) lv = player.levels.length; // prevent setting a level higher than max lv
+    newLv = player.levels[lv - 1]; // get level object
+    // HP
+    player.hp.maxValue = newLv.maxHp;
+    player.hp.value = player.hp.maxValue;
+    // MP
+    player.mp.maxValue = newLv.maxMp;
+    player.mp.value = player.mp.maxValue;
+    // XP
+    player.xp.maxValue = newLv.maxXp;
+    player.xp.value = 0;
+    player.lv = newLv.lv;
+    newLv.newSkills.forEach((skil) => { skil = allSkills.filter(s => s.name === skil); player.skills.add(skil) });
+  },
+};
+
+const battleLog = {
+  element: document.querySelector('#battle-log'),
+  logItems: document.querySelectorAll('#battle-log p'),
+  lines: 0,
+
+  init: function () {
+    battleLog.clear();
+    battleLog.lines = 0;
+  },
+
+  newLine: function (pText, color) {
+    battleLog.lines++;
+    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
+    let logItem = document.createElement('p'); // new paragraph tag
+    logItem.textContent = `[${battleLog.lines}] ${pText}`;
+    if (battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
+    if (color) logItem.style.color = color;
+    battleLog.element.prepend(logItem);
+    // battleLog.element.appendChild(logItem); // swapped to prepend
+  },
+
+  clear: function () {
+    battleLog.logItems.forEach(ptag => ptag.remove());
+    battleLog.logItems = document.querySelectorAll('#battle-log p');
+  },
+};
+/* ===== Functions ===== */
+function rollNum(start, end) {
+  return Math.floor(Math.random() * (end - start + 1)) + start;
+};
+
+function sortArr(arr, prop) {
+  let propType, arrowFunc;
+  if (prop) { propType = typeof (arr[0][prop]) }
+  else { propType = typeof (arr[0]) };
+
+  switch (propType) {
+    case 'string':
+      if (prop) { arrowFunc = (a, b) => a[prop].localeCompare(b[prop]); }
+      else { arrowFunc = (a, b) => a.localeCompare(b) };
+      break;
+    case 'number':
+      if (prop) { arrowFunc = (a, b) => a[prop] - b[prop] }
+      else { arrowFunc = (a, b) => a - b; };
+      break;
+    default:
+      console.log(`Cannot sort property type: ${propType}`);
+      return;
+  };
+
+  arr.sort(arrowFunc);
+
+  // if (prop) {
+  //   propType = typeof (arr[0][prop])
+  //   switch (propType) {
+  //     case "string":
+  //       arr.sort((a, b) => a[prop].localeCompare(b[prop]));
+  //       break;
+  //     case "number":
+  //       arr.sort((a, b) => a - b);
+  //       break;
+  //     default:
+  //       console.log(`Cannot sort property type: ${propType}`);
+  //   };
+  // };
+
+  // propType = typeof (arr[0]);
+  // switch (propType) {
+  //   case "string":
+  //     arr.sort((a, b) => a.localeCompare(b));
+  //     break;
+  //   case "number":
+  //     arr.sort((a, b) => a - b);
+  //     break;
+  //   default:
+  //     console.log(`Cannot sort property type: ${propType}`);
+  // };
+};
+
+function removeItemFromArray(arr, item) {
+  arr = arr.splice(arr.indexOf(item), 1);
+};
+
+export {
+  allSkills,
+  allEnemies,
+  allItems,
+  icons,
+  map,
+  battleLog,
+  rollNum,
+}
+
+/* ===== Graveyard =====
+
+===== Object Behavior when using the object name vs 'this' keyword =====
+export const tempObj = {
+  prop1: 'one',
+  init: function () {
+    tempObj[prop]1 = 'three';
+    tempObj.method1();
+  },
+  method1: function (){
+    console.dir(tempObj);
+  },
+  method2: () => { // working
+    tempObj.method1();
+  },
+  method3: function() { // working
+    console.log('prop1:', tempObj[prop]1);
+    tempObj.method1();
+  },
+};
+export const tempObj2 = {
+  prop1: 'one',
+  init: function () {
+    this[prop]1 = 'three';
+    this.method1();
+  },
+  method1: function (){
+    console.dir(this);
+  },
+  method2: () => { // Error message: Uncaught TypeError: Cannot read properties of undefined (reading 'method1')
+    this.method1();
+  },
+  method3: function() { // working
+    console.log('prop1:', this[prop]1);
+    this.method1();
+  },
+};
+
+
+  ===== player.setLv =====
+  // replaced for modularity: player.stats.lvUp(), player.stats.lvUpCheck(), player.setFirstLv(), player.setLv()
+  setLv: function (num) {
+    let stats = player.stats;
+    if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
+    if (num < 1) num = 1; // fix outrageous numbers
+
+    let newLevel = player.levels[`lv${num}`];
+    if (!newLevel) return; // exit if level is not found
+
+    let skills = player.inventory.skills;
+
+    stats.lv = num;
+    // Xp
+    stats.maxXp = newLevel.maxXp;
+    let excessXp = stats.xp - stats.maxXp;
+    (excessXp > 0) ?
+      stats.xp = excessXp :
+      stats.xp = newLevel.startingXp;
+    // HP
+    stats.maxHp = newLevel.maxHp;
+    stats.hp = stats.maxHp;
+    // MP
+    stats.maxMp = newLevel.maxMp;
+    stats.mp = stats.maxMp;
+    // new skills
+    for (let i = 1; i <= stats.lv; i++) { // <= add skills from previous levels
+      let lvObj = player.levels[`lv${i}`];
+      lvObj.newSkills.forEach(skillname => { skills.add(skillname) });
+    };
+    skills.removeDuplicates();
+    skills.sort();
+    stats.update();
+  },
+
+===== old player object =====
+const player = {
+  firstLv: 1,
+  lastLv: 5,
+  lv: 1,
+  baseAtk: 100,
+  hp: 5,
+  mp: 5,
+  xp: 0,
+  maxHp: 10,
+  maxMp: 10,
+  maxXp: 10,
+  icon: icons.player,
+  equipment: [],
+  skillList: [],
+  items: [],
+
+  levels: {
+    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
+    lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
+    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
+    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
+    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
+  },
+
+  playerEls: {
+    hpEl: document.querySelector('#player-hp'),
+    mpEl: document.querySelector('#player-mp'),
+    xpEl: document.querySelector('#player-xp'),
+    lvEl: document.querySelector('#player-lv'),
+  },
+
+  displayHp: function () {
+    player.playerEls.hpEl.textContent = `${player.hp}/${player.maxHp}`;
+  },
+
+  displayMp: function () {
+    player.playerEls.mpEl.textContent = `${player.mp}/${player.maxMp}`;
+  },
+
+  displayXp: function () {
+    player.playerEls.xpEl.textContent = `${player.xp}/${player.maxXp}`;
+  },
+
+  displayLv: function () {
+    player.playerEls.lvEl.textContent = player.lv;
+  },
+
+  displayStats: function () {
+    player.displayHp();
+    player.displayMp();
+    player.displayXp();
+    player.displayLv();
+  },
+
+  init: function (lv = 1) {
+    player.setLv(lv);
+    player.addStartingItems();
+  },
+
+  setLv: function (num) {
+    if (num > 5) num = 5; // fix outrageous numbers
+    if (num < 1) num = 1; // fix outrageous numbers
+    if (!(player.levels[`lv${num}`])) return; // exit if level is not found
+    player.lv = num;
+    let newLevel = player.levels[`lv${player.lv}`];
+    player.displayLv();
+    // Xp
+    player.maxXp = newLevel.maxXp;
+    let excessXp = player.xp - player.maxXp;
+    (excessXp > 0) ?
+      player.setXp(excessXp) :
+      player.setXp(newLevel.startingXp);
+    // HP
+    player.maxHp = newLevel.maxHp;
+    player.setHp(player.maxHp);
+    // MP
+    player.maxMp = newLevel.maxMp;
+    player.setMp(player.maxMp);
+    // new skills
+    for (let i = 1; i <= num; i++) { // <= add skills from previous levels
+      let lvObj = player.levels[`lv${i}`];
+      lvObj.newSkills.forEach(skillname => { player.addSkill(skillname) });
+    };
+    player.removeSkillDuplicates();
+    player.sortSkills();
+  },
+
+  removeSkillDuplicates: function () {
+    player.skillList = [...new Set(player.skillList)];
+  },
+
+  addSkill: function (name) {
+    let skill = skills[name];
+    if (skill) player.skillList.push(skill);
+  },
+
+  sortArrayByNameProperty: function (arr) {
+    arr.sort((a, b) => a.name.localeCompare(b.name));
+  },
+
+  sortEquipment: function () {
+    player.sortArrayByNameProperty(player.equipment);
+  },
+
+  sortItems: function () {
+    player.sortArrayByNameProperty(player.items);
+  },
+
+  sortSkills: function () {
+    player.sortArrayByNameProperty(player.skillList);
+  },
+
+  addItems: function (...names) {
+    for (let i of names) {
+      let item = allItems[i];
+      if(!item) console.log(`Invalid item: ${i}`);
+      switch (item.type) {
+        case "consumable":
+          player.items.push(item);
+          break;
+        case "equipment":
+          player.equipment.push(item);
+          break;
+      };
+    };
+    player.sortItems();
+    player.sortEquipment();
+  },
+
+  lvUpCheck: function () {
+    if (player.xp < player.maxXp) return; // leave if xp is not sufficient
+    player.setLv(player.lv + 1)
+  },
+
+  setHp: function (num) {
+    player.hp = num;
+    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
+    player.displayHp();
+  },
+
+  setMp: function (num) {
+    player.mp = num;
+    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
+    player.displayMp();
+  },
+
+  setXp: function (num) {
+    player.xp = num;
+    player.lvUpCheck();
+    player.displayXp();
+  },
+
+  addHp: function (num) {
+    player.hp += num;
+    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
+    player.displayHp();
+  },
+
+  addMp: function (num) {
+    player.mp += num;
+    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
+    player.displayMp();
+  },
+
+  addXp: function (num) {
+    player.xp += num; // add xp
+    player.lvUpCheck(); // check for level up
+    player.displayXp(); // display result to html
+  },
+
+  useSkill: function (name) {
+    let skill = skills[name];
+    player.mp = player.mp - skill.mpCost
+  },
+
+  addStartingItems: function () {
+    player.addItems(
+      'sword_I',
+      'hp_potion_I',
+      'hp_potion_I',
+      'hp_potion_I',
+      'mp_potion_I',
+      'mp_potion_I'
+    );
+  },
+};
+
+===== old inventory object =====
+const inventory = {
+  commandBtnEls: document.querySelectorAll('#inventory button'),
+  invEl: document.querySelector('#inventory'),
+
+  menu: {
+    invMenuEl: document.querySelector('#inv-menu'),
+    skillsBtnEl: document.querySelector('#inv-skills-btn'),
+    itemsBtnEl: document.querySelector('#inv-items-btn'),
+    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
+  },
+
+  init: function () {
+    inventory.clearCommandBtns();
+    inventory.menu.invMenuEl.addEventListener("click", inventory.swapInventory);
+  },
+
+  clearCommandBtns: function () {
+    inventory.commandBtnEls.forEach(el => el.remove());
+  },
+
+  clearItems: function () {
+    player.items.length = 0;
+    player.equipment.length = 0;
+    player.addStartingItems()
+  },
+
+  loadNewCommandBtns: function () {
+    inventory.commandBtnEls = document.querySelectorAll('#inventory button')
+  },
+
+  addCommandBtn: function (text) {
+    let nBtn = document.createElement('button');
+    nBtn.type = 'button';
+    nBtn.classList.add('inv-btn');
+    nBtn.textContent = text;
+    inventory.invEl.appendChild(nBtn);
+  },
+
+  swapInventory: function (evt) {
+    const btnNames = ['Skills', 'Items', 'Equipment'];
+    if (!(btnNames.includes(evt.target.textContent))) return; // Exit if button is not in the list
+    // Button Highlights
+    document.querySelectorAll('.inv-menu-btn').forEach((el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
+    evt.target.classList.add("highlight-btn") // highlight selected button
+    // Determine list
+    inventory.loadNewCommandBtns();
+    inventory.clearCommandBtns(); // clear old buttons
+    let list;
+    switch (evt.target.textContent) {
+      case btnNames[0]:
+        list = player.skillList;
+        break;
+      case btnNames[1]:
+        list = player.items;
+        break;
+      case btnNames[2]:
+        list = player.equipment;
+        break;
+      default:
+        console.log(`swapInventory: No case for ${evt.target.textContent}`);
+        return; // leave function
+    };
+    // add buttons to inventory
+    for (let i of list){ inventory.addCommandBtn(i.name); };
+  },
+};
+*/
+
+/* ===== Graveyard 2 ===
 const enemy = {
   name: "Cpu",
   hp: 0,
@@ -191,7 +992,6 @@ const enemy = {
     };
   },
 };
-
 const player = {
   isDead: false,
   encounterActive: false,
@@ -711,381 +1511,6 @@ const player = {
     return arr.filter(i => i.name === name);
   },
 };
-
-// ===== Elements =====
-const elem = {
-  mapEl: document.querySelector("#map"),
-  mapSquares: document.querySelectorAll(".sqr"),
-  startSquare: document.querySelector(".sqr25"),
-};
-
-const battleLog = {
-  element: document.querySelector('#battle-log'),
-  logItems: document.querySelectorAll('#battle-log p'),
-  lines: 0,
-
-  init: function () {
-    battleLog.clear();
-    battleLog.lines = 0;
-  },
-
-  newLine: function (pText, color) {
-    battleLog.lines++;
-    if (!pText) { console.log('No text was passed to battleLog.newLogItem'); return; }; // left in because only changing the code will allow execution
-    let logItem = document.createElement('p'); // new paragraph tag
-    logItem.textContent = `[${battleLog.lines}] ${pText}`;
-    if(battleLog.lines % 2 === 0) logItem.style.color = 'rgba(180,180,180,1)';
-    if(color) logItem.style.color = color;
-    battleLog.element.prepend(logItem);
-    // battleLog.element.appendChild(logItem); // swapped to prepend
-  },
-
-  clear: function () {
-    battleLog.logItems.forEach(ptag => ptag.remove());
-    battleLog.logItems = document.querySelectorAll('#battle-log p');
-  },
-};
-
-export {
-  allSkills,
-  allEnemies,
-  allItems,
-  floors,
-  icons,
-  enemy,
-  elem,
-  battleLog,
-  player,
-  bossEnemies,
-}
-
-/* ===== Graveyard =====
-
-===== Object Behavior when using the object name vs 'this' keyword =====
-export const tempObj = {
-  prop1: 'one',
-  init: function () {
-    tempObj.prop1 = 'three';
-    tempObj.method1();
-  },
-  method1: function (){
-    console.dir(tempObj);
-  },
-  method2: () => { // working
-    tempObj.method1();
-  },
-  method3: function() { // working
-    console.log('prop1:', tempObj.prop1);
-    tempObj.method1();
-  },
-};
-export const tempObj2 = {
-  prop1: 'one',
-  init: function () {
-    this.prop1 = 'three';
-    this.method1();
-  },
-  method1: function (){
-    console.dir(this);
-  },
-  method2: () => { // Error message: Uncaught TypeError: Cannot read properties of undefined (reading 'method1')
-    this.method1();
-  },
-  method3: function() { // working
-    console.log('prop1:', this.prop1);
-    this.method1();
-  },
-};
-
-
-  ===== player.setLv =====
-  // replaced for modularity: player.stats.lvUp(), player.stats.lvUpCheck(), player.setFirstLv(), player.setLv()
-  setLv: function (num) {
-    let stats = player.stats;
-    if (num > stats.maxLv) num = stats.maxLv; // fix outrageous numbers
-    if (num < 1) num = 1; // fix outrageous numbers
-
-    let newLevel = player.levels[`lv${num}`];
-    if (!newLevel) return; // exit if level is not found
-
-    let skills = player.inventory.skills;
-
-    stats.lv = num;
-    // Xp
-    stats.maxXp = newLevel.maxXp;
-    let excessXp = stats.xp - stats.maxXp;
-    (excessXp > 0) ?
-      stats.xp = excessXp :
-      stats.xp = newLevel.startingXp;
-    // HP
-    stats.maxHp = newLevel.maxHp;
-    stats.hp = stats.maxHp;
-    // MP
-    stats.maxMp = newLevel.maxMp;
-    stats.mp = stats.maxMp;
-    // new skills
-    for (let i = 1; i <= stats.lv; i++) { // <= add skills from previous levels
-      let lvObj = player.levels[`lv${i}`];
-      lvObj.newSkills.forEach(skillname => { skills.add(skillname) });
-    };
-    skills.removeDuplicates();
-    skills.sort();
-    stats.update();
-  },
-
-===== old player object =====
-const player = {
-  firstLv: 1,
-  lastLv: 5,
-  lv: 1,
-  baseAtk: 100,
-  hp: 5,
-  mp: 5,
-  xp: 0,
-  maxHp: 10,
-  maxMp: 10,
-  maxXp: 10,
-  icon: icons.player,
-  equipment: [],
-  skillList: [],
-  items: [],
-
-  levels: {
-    lv1: { name: "Lv1", startingXp: 0, maxXp: 100, maxHp: 100, maxMp: 100, newSkills: ["slash_I", "nudge", "water",], },
-    lv2: { name: "Lv2", startingXp: 0, maxXp: 300, maxHp: 120, maxMp: 120, newSkills: ["slash_II", "lightning",], },
-    lv3: { name: "Lv3", startingXp: 0, maxXp: 300, maxHp: 140, maxMp: 140, newSkills: ["fire",], },
-    lv4: { name: "Lv4", startingXp: 0, maxXp: 500, maxHp: 160, maxMp: 160, newSkills: ["slash_III",], },
-    lv5: { name: "Lv5", startingXp: 0, maxXp: 1000, maxHp: 200, maxMp: 200, newSkills: ["slash_IV",], },
-  },
-
-  playerEls: {
-    hpEl: document.querySelector('#player-hp'),
-    mpEl: document.querySelector('#player-mp'),
-    xpEl: document.querySelector('#player-xp'),
-    lvEl: document.querySelector('#player-lv'),
-  },
-
-  displayHp: function () {
-    player.playerEls.hpEl.textContent = `${player.hp}/${player.maxHp}`;
-  },
-
-  displayMp: function () {
-    player.playerEls.mpEl.textContent = `${player.mp}/${player.maxMp}`;
-  },
-
-  displayXp: function () {
-    player.playerEls.xpEl.textContent = `${player.xp}/${player.maxXp}`;
-  },
-
-  displayLv: function () {
-    player.playerEls.lvEl.textContent = player.lv;
-  },
-
-  displayStats: function () {
-    player.displayHp();
-    player.displayMp();
-    player.displayXp();
-    player.displayLv();
-  },
-
-  init: function (lv = 1) {
-    player.setLv(lv);
-    player.addStartingItems();
-  },
-
-  setLv: function (num) {
-    if (num > 5) num = 5; // fix outrageous numbers
-    if (num < 1) num = 1; // fix outrageous numbers
-    if (!(player.levels[`lv${num}`])) return; // exit if level is not found
-    player.lv = num;
-    let newLevel = player.levels[`lv${player.lv}`];
-    player.displayLv();
-    // Xp
-    player.maxXp = newLevel.maxXp;
-    let excessXp = player.xp - player.maxXp;
-    (excessXp > 0) ?
-      player.setXp(excessXp) :
-      player.setXp(newLevel.startingXp);
-    // HP
-    player.maxHp = newLevel.maxHp;
-    player.setHp(player.maxHp);
-    // MP
-    player.maxMp = newLevel.maxMp;
-    player.setMp(player.maxMp);
-    // new skills
-    for (let i = 1; i <= num; i++) { // <= add skills from previous levels
-      let lvObj = player.levels[`lv${i}`];
-      lvObj.newSkills.forEach(skillname => { player.addSkill(skillname) });
-    };
-    player.removeSkillDuplicates();
-    player.sortSkills();
-  },
-
-  removeSkillDuplicates: function () {
-    player.skillList = [...new Set(player.skillList)];
-  },
-
-  addSkill: function (name) {
-    let skill = skills[name];
-    if (skill) player.skillList.push(skill);
-  },
-
-  sortArrayByNameProperty: function (arr) {
-    arr.sort((a, b) => a.name.localeCompare(b.name));
-  },
-
-  sortEquipment: function () {
-    player.sortArrayByNameProperty(player.equipment);
-  },
-
-  sortItems: function () {
-    player.sortArrayByNameProperty(player.items);
-  },
-
-  sortSkills: function () {
-    player.sortArrayByNameProperty(player.skillList);
-  },
-
-  addItems: function (...names) {
-    for (let i of names) {
-      let item = allItems[i];
-      if(!item) console.log(`Invalid item: ${i}`);
-      switch (item.type) {
-        case "consumable":
-          player.items.push(item);
-          break;
-        case "equipment":
-          player.equipment.push(item);
-          break;
-      };
-    };
-    player.sortItems();
-    player.sortEquipment();
-  },
-
-  lvUpCheck: function () {
-    if (player.xp < player.maxXp) return; // leave if xp is not sufficient
-    player.setLv(player.lv + 1)
-  },
-
-  setHp: function (num) {
-    player.hp = num;
-    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
-    player.displayHp();
-  },
-
-  setMp: function (num) {
-    player.mp = num;
-    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
-    player.displayMp();
-  },
-
-  setXp: function (num) {
-    player.xp = num;
-    player.lvUpCheck();
-    player.displayXp();
-  },
-
-  addHp: function (num) {
-    player.hp += num;
-    if (player.hp > player.maxHp) player.hp = player.maxHp; // prevent going over the cap
-    player.displayHp();
-  },
-
-  addMp: function (num) {
-    player.mp += num;
-    if (player.mp > player.maxMp) player.mp = player.maxMp; // prevent going over the cap
-    player.displayMp();
-  },
-
-  addXp: function (num) {
-    player.xp += num; // add xp
-    player.lvUpCheck(); // check for level up
-    player.displayXp(); // display result to html
-  },
-
-  useSkill: function (name) {
-    let skill = skills[name];
-    player.mp = player.mp - skill.mpCost
-  },
-
-  addStartingItems: function () {
-    player.addItems(
-      'sword_I',
-      'hp_potion_I',
-      'hp_potion_I',
-      'hp_potion_I',
-      'mp_potion_I',
-      'mp_potion_I'
-    );
-  },
-};
-
-===== old inventory object =====
-const inventory = {
-  commandBtnEls: document.querySelectorAll('#inventory button'),
-  invEl: document.querySelector('#inventory'),
-
-  menu: {
-    invMenuEl: document.querySelector('#inv-menu'),
-    skillsBtnEl: document.querySelector('#inv-skills-btn'),
-    itemsBtnEl: document.querySelector('#inv-items-btn'),
-    equipmentBtnEl: document.querySelector('#inv-equipment-btn'),
-  },
-
-  init: function () {
-    inventory.clearCommandBtns();
-    inventory.menu.invMenuEl.addEventListener("click", inventory.swapInventory);
-  },
-
-  clearCommandBtns: function () {
-    inventory.commandBtnEls.forEach(el => el.remove());
-  },
-
-  clearItems: function () {
-    player.items.length = 0;
-    player.equipment.length = 0;
-    player.addStartingItems()
-  },
-
-  loadNewCommandBtns: function () {
-    inventory.commandBtnEls = document.querySelectorAll('#inventory button')
-  },
-
-  addCommandBtn: function (text) {
-    let nBtn = document.createElement('button');
-    nBtn.type = 'button';
-    nBtn.classList.add('inv-btn');
-    nBtn.textContent = text;
-    inventory.invEl.appendChild(nBtn);
-  },
-
-  swapInventory: function (evt) {
-    const btnNames = ['Skills', 'Items', 'Equipment'];
-    if (!(btnNames.includes(evt.target.textContent))) return; // Exit if button is not in the list
-    // Button Highlights
-    document.querySelectorAll('.inv-menu-btn').forEach((el) => { el.classList.remove("highlight-btn") }); // Remove highlight-btn class from all menu items
-    evt.target.classList.add("highlight-btn") // highlight selected button
-    // Determine list
-    inventory.loadNewCommandBtns();
-    inventory.clearCommandBtns(); // clear old buttons
-    let list;
-    switch (evt.target.textContent) {
-      case btnNames[0]:
-        list = player.skillList;
-        break;
-      case btnNames[1]:
-        list = player.items;
-        break;
-      case btnNames[2]:
-        list = player.equipment;
-        break;
-      default:
-        console.log(`swapInventory: No case for ${evt.target.textContent}`);
-        return; // leave function
-    };
-    // add buttons to inventory
-    for (let i of list){ inventory.addCommandBtn(i.name); };
-  },
-};
 */
+
+// Final Line
